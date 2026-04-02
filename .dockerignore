@@ -1,0 +1,25 @@
+.git
+.gitignore
+
+# Local notes
+prompt.txt
+
+# Node/Next.js workspace
+web/node_modules
+web/.next
+web/out
+web/dist
+web/coverage
+
+# Env and logs
+web/.env
+web/.env.local
+web/.env.development.local
+web/.env.test.local
+web/.env.production.local
+*.log
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode
