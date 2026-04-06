@@ -9,12 +9,23 @@ const bodyTypeLabel: Record<SelectorState["bodyType"], string> = {
   hatchback: "Хэтчбек",
   suv: "Кроссовер/SUV",
 };
-
-const purchaseGoalLabel: Record<SelectorState["purchaseGoal"], string> = {
-  family: "Для семьи",
-  "first-car": "Первый авто",
-  city: "На каждый день",
-  comfort: "Комфорт и класс выше",
+const transmissionLabel: Record<SelectorState["transmission"], string> = {
+  any: "Любая",
+  automatic: "Автомат",
+  manual: "Механика",
+};
+const driveLabel: Record<SelectorState["drive"], string> = {
+  any: "Любой",
+  fwd: "Передний",
+  rwd: "Задний",
+  awd: "Полный",
+};
+const fuelLabel: Record<SelectorState["fuel"], string> = {
+  any: "Любое",
+  petrol: "Бензин",
+  diesel: "Дизель",
+  hybrid: "Гибрид",
+  electric: "Электро",
 };
 
 type SelectionSummaryProps = {
@@ -23,9 +34,11 @@ type SelectionSummaryProps = {
 
 export function SelectionSummary({ selector }: SelectionSummaryProps) {
   return (
-    <Card className="space-y-4 p-5 md:p-6">
+    <Card className="space-y-3 border-l-4 border-[color:var(--color-brand-accent)] p-4 md:p-5">
       <div>
-        <h3 className="text-lg font-semibold tracking-tight text-slate-950">Ваш выбор</h3>
+        <h3 className="text-base font-semibold tracking-tight text-[color:var(--color-brand-primary)] md:text-lg">
+          Ваш выбор
+        </h3>
         <p className="mt-1 text-sm text-slate-600">
           Подбираем авто именно по этим параметрам.
         </p>
@@ -41,11 +54,17 @@ export function SelectionSummary({ selector }: SelectionSummaryProps) {
           Тип кузова: <span className="font-semibold">{bodyTypeLabel[selector.bodyType]}</span>
         </p>
         <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">
+          Коробка: <span className="font-semibold">{transmissionLabel[selector.transmission]}</span>
+        </p>
+        <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">
           Город: <span className="font-semibold">{selector.city}</span>
         </p>
         <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700 md:col-span-2">
-          Цель покупки:{" "}
-          <span className="font-semibold">{purchaseGoalLabel[selector.purchaseGoal]}</span>
+          Расширенные параметры:{" "}
+          <span className="font-semibold">
+            привод {driveLabel[selector.drive]}, год от {selector.yearFrom}, пробег до{" "}
+            {selector.maxMileageKm.toLocaleString("ru-RU")} км, топливо {fuelLabel[selector.fuel]}
+          </span>
         </p>
       </div>
     </Card>

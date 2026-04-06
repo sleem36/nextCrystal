@@ -1,7 +1,10 @@
 export const METRIKA_GOALS = {
   heroCtaClick: "hero_cta_click",
-  scenarioSelected: "scenario_selected",
   quizCompleted: "quiz_completed",
+  /** Переход в каталог с параметрами квиза */
+  catalogFromQuizClick: "catalog_from_quiz_click",
+  /** Открыта модалка заявки с карточки авто (не отправка формы) */
+  leadModalOpen: "lead_modal_open",
   leadSubmitted: "lead_submitted",
 } as const;
 

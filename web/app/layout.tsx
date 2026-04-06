@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 import { YandexMetrika } from "@/components/yandex-metrika";
 import "./globals.css";
 
@@ -10,8 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Crystal Motors - Премиальный подбор авто",
-  description: "MVP посадка для быстрых заявок и подбора авто.",
+  title: "Crystal Motors — подбор автомобиля с пробегом",
+  description:
+    "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Crystal Motors.",
 };
 
 export default function RootLayout({
@@ -23,11 +25,12 @@ export default function RootLayout({
 
   return (
     <html lang="ru" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+      <body className="flex min-h-full flex-col overflow-x-hidden bg-[color:var(--background)]">
+        <SiteHeader />
         {children}
         <SiteFooter />
+        <YandexMetrika id={metrikaId} />
       </body>
-      <YandexMetrika id={metrikaId} />
     </html>
   );
 }

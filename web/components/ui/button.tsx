@@ -8,9 +8,9 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-slate-900 text-white shadow-[0_10px_30px_rgba(15,23,42,0.28)] hover:bg-slate-800 focus-visible:ring-slate-600",
+    "bg-[color:var(--color-brand-accent)] text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:ring-[color:var(--color-brand-accent)] transition-colors duration-150 ease-out",
   secondary:
-    "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 focus-visible:ring-slate-300",
+    "bg-white text-[color:var(--color-brand-primary)] border border-slate-300 hover:border-slate-400 hover:bg-slate-50 focus-visible:ring-[color:var(--color-brand-primary)] transition-colors duration-150",
 };
 
 export function Button({
@@ -20,7 +20,7 @@ export function Button({
 }: ButtonProps) {
   return (
     <button
-      className={`inline-flex h-12 items-center justify-center rounded-xl px-6 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${className}`}
+      className={`inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] px-5 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${className}`}
       {...props}
     />
   );

@@ -6,22 +6,33 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { METRIKA_GOALS, trackGoal } from "@/lib/analytics";
 import { formatCurrency } from "@/lib/format";
-import { CarBodyType, CarTag } from "@/types/car";
+import { CarBodyType } from "@/types/car";
+import type { DriveFilter, FuelFilter, TransmissionFilter } from "@/components/landing/quick-selector";
 
 type LeadFormProps = {
+  variant?: "card" | "plain";
+  /** Заголовок скрыт (например, заголовок в модалке) */
+  hideTitle?: boolean;
+  onSuccess?: () => void;
   context: {
     city: string;
-    selectedCarId?: string;
+    /** Единый id авто для всех экранов (если выбрано конкретное авто) */
+    carId?: string;
     monthlyBudget: number;
     maxPriceRub: number;
     bodyType: CarBodyType | "any";
-    purchaseGoal: CarTag;
-    scenario: "budget" | "family" | "first-car";
+    transmission: TransmissionFilter;
+    drive: DriveFilter;
+    fuel: FuelFilter;
+    yearFrom: number;
+    maxMileageKm: number;
+    /** Источник потребности (если есть в сценарии) */
+    purchaseGoal?: string;
     utm: Record<string, string>;
   };
 };
 
-export function LeadForm({ context }: LeadFormProps) {
+export function LeadForm({ context, variant = "card", hideTitle = false, onSuccess }: LeadFormProps) {
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -80,15 +91,16 @@ export function LeadForm({ context }: LeadFormProps) {
       }
 
       trackGoal(metrikaId, METRIKA_GOALS.leadSubmitted, {
-        scenario: context.scenario,
         monthlyBudget: context.monthlyBudget,
         maxPriceRub: context.maxPriceRub,
         city: context.city,
+        fuel: context.fuel,
       });
       setStatus("success");
       setName("");
       setPhone("");
       setWebsite("");
+      onSuccess?.();
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
         setErrorMessage("Сервер отвечает слишком долго. Повторите попытку.");
@@ -100,16 +112,22 @@ export function LeadForm({ context }: LeadFormProps) {
     }
   };
 
-  return (
-    <Card className="space-y-5" id="lead-form">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-          Оставьте заявку
-        </h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Перезвоним и зафиксируем условия по платежу {formatCurrency(context.monthlyBudget)}.
+  const inner = (
+    <>
+      {!hideTitle ? (
+        <div>
+          <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-brand-primary)]">
+            Оставьте заявку
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Перезвоним и уточним варианты в бюджете {formatCurrency(context.monthlyBudget)}.
+          </p>
+        </div>
+      ) : (
+        <p className="text-sm text-slate-600">
+          Перезвоним и уточним варианты в бюджете {formatCurrency(context.monthlyBudget)}.
         </p>
-      </div>
+      )}
 
       <form className="grid gap-4 md:grid-cols-2" onSubmit={onSubmit}>
         <Input
@@ -137,7 +155,7 @@ export function LeadForm({ context }: LeadFormProps) {
         />
         <div className="md:col-span-2">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Отправка..." : "Получить подборку и расчет"}
+            {isSubmitting ? "Отправка..." : "Отправить заявку"}
           </Button>
         </div>
       </form>
@@ -154,6 +172,16 @@ export function LeadForm({ context }: LeadFormProps) {
           Заявка отправлена. Менеджер свяжется с вами в ближайшее время.
         </p>
       ) : null}
+    </>
+  );
+
+  if (variant === "plain") {
+    return <div className="space-y-5">{inner}</div>;
+  }
+
+  return (
+    <Card className="space-y-5" id="lead-form">
+      {inner}
     </Card>
   );
 }

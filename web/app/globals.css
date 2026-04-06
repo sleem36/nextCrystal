@@ -1,9 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --font-inter: "Inter", "Segoe UI", sans-serif;
+  /* Primary = типографика/структура; CTA = accent */
+  --background: #f3f4f6;
+  --foreground: #171717;
+  --font-inter: "Inter", "Segoe UI", system-ui, sans-serif;
+  --color-brand-primary: #171717;
+  --color-brand-accent: #dc2626;
+  --color-brand-accent-hover: #b91c1c;
+  --color-brand-muted: #6b7280;
+  --color-link: #2563eb;
+  /* Hero: не плоский чёрный — тёплый затемняющий градиент поверх фото/видео */
+  --hero-overlay-top: rgba(15, 23, 42, 0.55);
+  --hero-overlay-mid: rgba(30, 41, 59, 0.45);
+  --hero-overlay-bottom: rgba(15, 23, 42, 0.75);
+  --hero-grain-opacity: 0.035;
+  --radius-card: 0.75rem;
+  --radius-button: 0.5rem;
+  --motion-fast: 150ms;
+  --motion-panel: 280ms;
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-out: cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 @theme inline {
@@ -16,4 +33,74 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter);
+}
+
+/* Layout containers: wide for cards/results, narrow for text/forms */
+.container-wide {
+  width: min(calc(100% - 1.5rem), 96rem);
+  margin-inline: auto;
+}
+
+.container-narrow {
+  width: min(calc(100% - 1.5rem), 72rem);
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .container-wide,
+  .container-narrow {
+    width: min(calc(100% - 3rem), var(--container-max));
+  }
+
+  .container-wide {
+    --container-max: 96rem;
+  }
+
+  .container-narrow {
+    --container-max: 72rem;
+  }
+}
+
+/* Читаемость текста на видео без тяжёлой «карточки» */
+.hero-text-shadow {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.85),
+    0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Очень слабый film grain поверх hero (не влияет на контраст текста) */
+.hero-grain {
+  pointer-events: none;
+  opacity: var(--hero-grain-opacity);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+.focus-target-highlight {
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 0 0 2px rgba(220, 38, 38, 0.35),
+    0 10px 28px rgba(220, 38, 38, 0.14);
+  background: linear-gradient(180deg, rgba(220, 38, 38, 0.06), rgba(220, 38, 38, 0.01));
+  transition:
+    box-shadow 180ms ease-out,
+    background-color 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .hero-bg-video {
+    display: none !important;
+  }
+
+  .focus-target-highlight {
+    transition: none;
+  }
 }

@@ -4,11 +4,42 @@ import { z } from "zod";
 
 const requestCounters = new Map<string, { count: number; resetAt: number }>();
 
+const bodyTypeLabel: Record<"any" | "sedan" | "liftback" | "suv" | "hatchback", string> = {
+  any: "Любой",
+  sedan: "Седан",
+  liftback: "Лифтбек",
+  suv: "Кроссовер/SUV",
+  hatchback: "Хэтчбек",
+};
+
+const transmissionLabel: Record<"any" | "automatic" | "manual", string> = {
+  any: "Любая",
+  automatic: "Автомат",
+  manual: "Механика",
+};
+
+const driveLabel: Record<"any" | "fwd" | "rwd" | "awd", string> = {
+  any: "Любой",
+  fwd: "Передний",
+  rwd: "Задний",
+  awd: "Полный",
+};
+
+const fuelLabel: Record<"any" | "petrol" | "diesel" | "hybrid" | "electric", string> = {
+  any: "Любое",
+  petrol: "Бензин",
+  diesel: "Дизель",
+  hybrid: "Гибрид",
+  electric: "Электро",
+};
+
 const leadSchema = z.object({
   name: z.string().optional(),
   phone: z.string().min(10),
   context: z.object({
     city: z.string(),
+    carId: z.string().optional(),
+    /** Backward compatibility for previous payloads */
     selectedCarId: z.string().optional(),
     monthlyBudget: z.number(),
     maxPriceRub: z.number(),
@@ -19,13 +50,18 @@ const leadSchema = z.object({
       z.literal("suv"),
       z.literal("hatchback"),
     ]),
-    purchaseGoal: z.union([
-      z.literal("family"),
-      z.literal("first-car"),
-      z.literal("city"),
-      z.literal("comfort"),
+    transmission: z.union([z.literal("any"), z.literal("automatic"), z.literal("manual")]),
+    drive: z.union([z.literal("any"), z.literal("fwd"), z.literal("rwd"), z.literal("awd")]),
+    fuel: z.union([
+      z.literal("any"),
+      z.literal("petrol"),
+      z.literal("diesel"),
+      z.literal("hybrid"),
+      z.literal("electric"),
     ]),
-    scenario: z.enum(["budget", "family", "first-car"]),
+    yearFrom: z.number(),
+    maxMileageKm: z.number(),
+    purchaseGoal: z.string().optional(),
     utm: z.record(z.string(), z.string()),
   }),
   antiSpam: z.object({
@@ -75,6 +111,7 @@ export async function POST(request: Request) {
     }
 
     const { name, phone, context, antiSpam } = result.data;
+    const normalizedCarId = context.carId ?? context.selectedCarId;
     if (antiSpam.website) {
       return NextResponse.json({ ok: true });
     }
@@ -108,14 +145,18 @@ export async function POST(request: Request) {
       text: [
         `Имя: ${name || "Не указано"}`,
         `Телефон: ${phone}`,
-        `Город: ${context.city}`,
-        `Сценарий: ${context.scenario}`,
-        `ID авто: ${context.selectedCarId || "Не выбрано"}`,
-        `Бюджет в месяц: ${context.monthlyBudget}`,
-        `Бюджет авто: ${context.maxPriceRub}`,
-        `Тип кузова: ${context.bodyType}`,
-        `Цель покупки: ${context.purchaseGoal}`,
-        `UTM: ${JSON.stringify(context.utm)}`,
+        `Город: ${context.city || "Не указан"}`,
+        `ID авто: ${normalizedCarId || "Не выбрано"}`,
+        `Цель покупки: ${context.purchaseGoal || "Не указана"}`,
+        `Бюджет в месяц: ${context.monthlyBudget ?? "Не указан"}`,
+        `Бюджет авто: ${context.maxPriceRub ?? "Не указан"}`,
+        `Тип кузова: ${bodyTypeLabel[context.bodyType]}`,
+        `Коробка: ${transmissionLabel[context.transmission]}`,
+        `Привод: ${driveLabel[context.drive]}`,
+        `Топливо: ${fuelLabel[context.fuel]}`,
+        `Год от: ${context.yearFrom}`,
+        `Пробег до: ${context.maxMileageKm}`,
+        `UTM: ${Object.keys(context.utm).length ? JSON.stringify(context.utm) : "Не переданы"}`,
       ].join("\n"),
     });
 
