@@ -11,6 +11,8 @@ web/.next/
 web/out/
 web/dist/
 web/coverage/
+web/test-results/
+web — копия*/
 
 # Env files
 web/.env

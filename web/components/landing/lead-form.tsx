@@ -180,7 +180,7 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
   }
 
   return (
-    <Card className="space-y-5" id="lead-form">
+    <Card className="space-y-5 p-4 md:p-5" id="lead-form">
       {inner}
     </Card>
   );
