@@ -179,7 +179,19 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
       ) : null}
 
       <p className="text-xs text-slate-500">
-        Нажимая кнопку, вы соглашаетесь на обработку персональных данных.
+        Нажимая кнопку, вы соглашаетесь на{" "}
+        <a href="/legal/privacy" className="underline hover:no-underline">
+          обработку персональных данных
+        </a>
+        ,{" "}
+        <a href="/legal/terms" className="underline hover:no-underline">
+          пользовательское соглашение
+        </a>{" "}
+        и{" "}
+        <a href="/legal/consent" className="underline hover:no-underline">
+          согласие на обработку ПДн
+        </a>
+        .
       </p>
 
       {status === "success" ? (

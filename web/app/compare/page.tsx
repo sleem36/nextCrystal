@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { CompareInsufficient } from "@/components/compare/compare-insufficient";
+import { CompareAnalyticsClient } from "@/components/compare/compare-analytics-client";
 import { CompareRedirectFromStorage } from "@/components/compare/compare-redirect-from-storage";
 import { CompareStorageSync } from "@/components/compare/compare-storage-sync";
 import { CompareTable } from "@/components/compare/compare-table";
@@ -58,6 +59,7 @@ export default async function ComparePage({
   return (
     <>
       <CompareStorageSync ids={syncIds} />
+      <CompareAnalyticsClient ids={syncIds} />
       <CompareTable cars={cars} missingIds={missingIds} />
     </>
   );

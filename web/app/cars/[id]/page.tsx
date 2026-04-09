@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CarDetailLeadClient } from "@/components/catalog/car-detail-lead-client";
+import { CarOpenedTracker } from "@/components/catalog/car-opened-tracker";
 import { CarPassportBlock } from "@/components/catalog/car-passport-block";
 import { CarVideoSection } from "@/components/catalog/car-video-section";
 import { VehicleGallery } from "@/components/catalog/vehicle-gallery";
@@ -46,6 +47,14 @@ export default async function CarDetailPage({
 
   return (
     <article className="container-wide space-y-8 pb-12 pt-4 md:pb-16 md:pt-6">
+      <CarOpenedTracker
+        carId={car.id}
+        city={car.cities[0] ?? "Барнаул"}
+        monthlyBudget={car.monthlyPaymentRub}
+        maxPriceRub={car.priceRub}
+        bodyType={car.bodyType}
+        transmission={car.transmission}
+      />
       <nav className="text-sm">
         <Link
           href="/cars"

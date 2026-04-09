@@ -3,6 +3,13 @@ export const METRIKA_GOALS = {
   quizCompleted: "quiz_completed",
   /** Переход в каталог с параметрами квиза */
   catalogFromQuizClick: "catalog_from_quiz_click",
+  catalogOpened: "catalog_opened",
+  catalogFiltersApplied: "catalog_filters_applied",
+  carOpened: "car_opened",
+  compareOpened: "compare_opened",
+  compareAdd: "compare_add",
+  compareRemove: "compare_remove",
+  noResultsShown: "no_results_shown",
   /** Открыта модалка заявки с карточки авто (не отправка формы) */
   leadModalOpen: "lead_modal_open",
   leadSubmitted: "lead_submitted",

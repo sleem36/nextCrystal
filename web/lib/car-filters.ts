@@ -66,6 +66,7 @@ const PAYMENT_METHODS: PaymentMethod[] = ["credit", "cash"];
 
 function parseFuel(value: string | undefined): FuelFilter {
   if (!value) return "any";
+  if (value === "electric") return "any";
   return FUELS.includes(value as FuelFilter) ? (value as FuelFilter) : "any";
 }
 
@@ -146,10 +147,7 @@ function matchesSecondary(car: Car, f: CarListingFilters): boolean {
   if (car.year < f.yearFrom) return false;
   if (car.mileageKm > f.maxMileageKm) return false;
   if (f.drive !== "any" && car.drive !== f.drive) return false;
-  if (f.fuel !== "any") {
-    if (f.fuel === "electric") return false;
-    if (car.fuel !== f.fuel) return false;
-  }
+  if (f.fuel !== "any" && car.fuel !== f.fuel) return false;
   return true;
 }
 
@@ -187,10 +185,7 @@ export function getRelaxedSuggestions(cars: Car[], f: CarListingFilters): Car[] 
       const transmissionMatch =
         f.transmission === "any" || car.transmission === f.transmission;
       const driveMatch = f.drive === "any" || car.drive === f.drive;
-      const fuelMatch =
-        f.fuel === "any" ||
-        f.fuel === "electric" ||
-        car.fuel === f.fuel;
+      const fuelMatch = f.fuel === "any" || car.fuel === f.fuel;
       const yearMatch = car.year >= relaxedYearFrom;
       const mileageMatch = car.mileageKm <= relaxedMileage;
       return (

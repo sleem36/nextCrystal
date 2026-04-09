@@ -12,6 +12,7 @@ function td() {
 }
 
 export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: string[] }) {
+  const compareIdsParam = cars.map((car) => car.id).join(",");
   return (
     <div className="container-wide space-y-6 py-8 md:py-10">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -31,6 +32,23 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
         >
           ← В каталог
         </Link>
+      </div>
+
+      <div className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5">
+        <h2 className="text-base font-semibold text-[color:var(--color-brand-primary)] md:text-lg">
+          Нужна консультация по сравнению?
+        </h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Оставьте заявку, и менеджер поможет выбрать лучший вариант из текущего сравнения.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            href={`/cars?fromCompare=1&compareIds=${encodeURIComponent(compareIdsParam)}#catalog-lead`}
+            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] transition-colors duration-150 ease-out hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+          >
+            Оставить заявку на консультацию
+          </Link>
+        </div>
       </div>
 
       {missingIds.length > 0 ? (

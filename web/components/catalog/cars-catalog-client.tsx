@@ -11,6 +11,7 @@ import { LeadForm } from "@/components/landing/lead-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OptionCard } from "@/components/ui/option-card";
+import { METRIKA_GOALS, trackGoal } from "@/lib/analytics";
 import {
   carListingFiltersToSearchParams,
   DEFAULT_CAR_LISTING_FILTERS,
@@ -221,7 +222,6 @@ function FiltersPanel({
             <option value="petrol">Бензин</option>
             <option value="diesel">Дизель</option>
             <option value="hybrid">Гибрид</option>
-            <option value="electric">Электро</option>
           </select>
         </div>
         <Input
@@ -264,6 +264,7 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
   const { compareIds, toggle } = useCompareSelection();
   const sp = useSearchParams();
   const router = useRouter();
+  const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
 
   const utm = useMemo(
     () => utmFromSearchParams(Object.fromEntries(sp.entries())),
@@ -282,15 +283,60 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
   );
 
   const apply = (f: CarListingFilters) => {
-    router.push(`/cars?${carListingFiltersToSearchParams(f).toString()}`);
+    const params = carListingFiltersToSearchParams(f);
+    for (const [key, value] of Object.entries(utm)) {
+      params.set(key, value);
+    }
+    trackGoal(metrikaId, METRIKA_GOALS.catalogFiltersApplied, {
+      action: "apply",
+      paymentMethod: f.paymentMethod,
+      city: f.city,
+      ...(f.paymentMethod === "credit" ? { monthlyBudget: f.monthlyBudget } : {}),
+      maxPriceRub: f.maxPriceRub,
+      bodyType: f.bodyType,
+      transmission: f.transmission,
+    });
+    router.push(`/cars?${params.toString()}`);
   };
 
   const reset = () => {
-    router.push("/cars");
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(utm)) {
+      params.set(key, value);
+    }
+    trackGoal(metrikaId, METRIKA_GOALS.catalogFiltersApplied, {
+      action: "reset",
+    });
+    const query = params.toString();
+    router.push(query ? `/cars?${query}` : "/cars");
   };
 
   const showList = filtered.length > 0 ? filtered : relaxed;
   const isRelaxed = filtered.length === 0 && relaxed.length > 0;
+
+  useEffect(() => {
+    trackGoal(metrikaId, METRIKA_GOALS.catalogOpened, {
+      paymentMethod: filters.paymentMethod,
+      city: filters.city,
+      ...(filters.paymentMethod === "credit" ? { monthlyBudget: filters.monthlyBudget } : {}),
+      maxPriceRub: filters.maxPriceRub,
+      bodyType: filters.bodyType,
+      transmission: filters.transmission,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- только при первом открытии каталога
+  }, []);
+
+  useEffect(() => {
+    if (showList.length > 0) return;
+    trackGoal(metrikaId, METRIKA_GOALS.noResultsShown, {
+      paymentMethod: filters.paymentMethod,
+      city: filters.city,
+      ...(filters.paymentMethod === "credit" ? { monthlyBudget: filters.monthlyBudget } : {}),
+      maxPriceRub: filters.maxPriceRub,
+      bodyType: filters.bodyType,
+      transmission: filters.transmission,
+    });
+  }, [filters, metrikaId, showList.length]);
 
   return (
     <div className="space-y-8">
@@ -332,7 +378,25 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
                 compare={{
                   checked: compareIds.includes(car.id),
                   disabled: !compareIds.includes(car.id) && compareIds.length >= 3,
-                  onToggle: () => toggle(car.id),
+                  onToggle: () => {
+                    const willAdd = !compareIds.includes(car.id);
+                    toggle(car.id);
+                    trackGoal(
+                      metrikaId,
+                      willAdd ? METRIKA_GOALS.compareAdd : METRIKA_GOALS.compareRemove,
+                      {
+                        carId: car.id,
+                        paymentMethod: filters.paymentMethod,
+                        city: filters.city,
+                        ...(filters.paymentMethod === "credit"
+                          ? { monthlyBudget: filters.monthlyBudget }
+                          : {}),
+                        maxPriceRub: filters.maxPriceRub,
+                        bodyType: filters.bodyType,
+                        transmission: filters.transmission,
+                      },
+                    );
+                  },
                 }}
               />
             ))}
