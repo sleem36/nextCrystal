@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useSyncExternalStore, useState } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -82,21 +83,23 @@ export function HeroCompact({ onPrimaryClick }: HeroCompactProps) {
       {/* Фон на весь viewport: рендерим видео только в режиме "Видео". */}
       <div className="absolute inset-0 z-0">
         {bgMode === "image" ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={POSTER_SRC}
             alt=""
             className="h-full w-full object-cover object-center"
-            fetchPriority="high"
+            fill
+            priority
+            sizes="100vw"
           />
         ) : (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={FALLBACK_IMG}
               alt=""
               className="absolute inset-0 h-full w-full object-cover object-center"
-              fetchPriority="high"
+              fill
+              priority
+              sizes="100vw"
             />
             {showVideo ? (
               <video

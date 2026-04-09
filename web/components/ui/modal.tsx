@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useId } from "react";
+import { ReactNode, useEffect, useId, useRef } from "react";
 
 type ModalProps = {
   open: boolean;
@@ -13,11 +13,48 @@ type ModalProps = {
 export function Modal({ open, onClose, title, description, children }: ModalProps) {
   const titleId = useId();
   const descId = useId();
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
+    previousActiveElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    const dialogEl = dialogRef.current;
+    const focusableSelector =
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    const focusables = Array.from(
+      dialogEl?.querySelectorAll<HTMLElement>(focusableSelector) ?? [],
+    ).filter((el) => !el.hasAttribute("disabled"));
+
+    const firstFocusable = focusables[0] ?? dialogEl;
+    firstFocusable?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab" || !dialogEl) return;
+
+      const cycle = Array.from(dialogEl.querySelectorAll<HTMLElement>(focusableSelector)).filter(
+        (el) => !el.hasAttribute("disabled"),
+      );
+      if (cycle.length === 0) return;
+
+      const first = cycle[0];
+      const last = cycle[cycle.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -25,6 +62,7 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+      previousActiveElementRef.current?.focus();
     };
   }, [open, onClose]);
 
@@ -43,6 +81,8 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={description ? descId : undefined}
+        tabIndex={-1}
+        ref={dialogRef}
         className="relative z-10 flex max-h-[min(92vh,720px)] w-full max-w-lg flex-col rounded-t-[var(--radius-card)] border border-slate-200 bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.12)] transition-transform duration-200 ease-out motion-reduce:transition-none sm:rounded-[var(--radius-card)] sm:shadow-xl"
       >
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">

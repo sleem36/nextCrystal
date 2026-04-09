@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -71,7 +71,6 @@ export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProp
     align: "start",
     duration: 20,
   });
-
   useEffect(() => {
     if (!emblaApi) return;
     const onSelect = () => setActiveIndex(emblaApi.selectedScrollSnap());
@@ -163,7 +162,7 @@ export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProp
     });
   };
 
-  const onHoverZoneMove = (event: React.MouseEvent<HTMLDivElement>) => {
+  const onHoverZoneMove = (event: MouseEvent<HTMLDivElement>) => {
     if (!hasSlider || !emblaApi) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -214,6 +213,10 @@ export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProp
                       src={src}
                       alt={`${car.brand} ${car.model} — фото ${index + 1}`}
                       className="h-full w-full object-cover object-center"
+                      width={960}
+                      height={600}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                      fetchPriority="auto"
                       loading="lazy"
                       decoding="async"
                       draggable={false}
@@ -251,6 +254,10 @@ export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProp
             src={previewGallery[0]}
             alt={`${car.brand} ${car.model}`}
             className="h-full w-full object-cover object-center"
+            width={960}
+            height={600}
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+            fetchPriority="auto"
             loading="lazy"
             decoding="async"
             draggable={false}
@@ -350,6 +357,9 @@ export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProp
                     src={src}
                     alt={`${car.brand} ${car.model} — галерея ${index + 1}`}
                     className="h-full w-full object-contain"
+                    width={1600}
+                    height={1000}
+                    sizes="100vw"
                     loading={Math.abs(index - lightboxIndex) <= 1 ? "eager" : "lazy"}
                     decoding="async"
                     draggable={false}
@@ -376,6 +386,9 @@ export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProp
                       src={src}
                       alt=""
                       className="h-full w-full object-cover"
+                      width={96}
+                      height={56}
+                      sizes="96px"
                       loading={Math.abs(index - lightboxIndex) <= 1 ? "eager" : "lazy"}
                       decoding="async"
                       draggable={false}
