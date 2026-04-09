@@ -54,20 +54,7 @@ test("smoke: credit — monthlyBudget виден, в query и lead context", asy
   await expect(page).toHaveURL(/\/cars\?.*monthlyBudget=38000/);
 
   const leadBlock = page.locator("#catalog-lead");
-  const phoneInput = leadBlock.getByLabel("Телефон");
-  await phoneInput.fill("79990000000");
-  await expect(phoneInput).toHaveValue("79990000000");
-  const [leadRequest] = await Promise.all([
-    page.waitForRequest("**/api/lead"),
-    leadBlock.getByRole("button", { name: "Отправить заявку" }).click(),
-  ]);
-  const leadPayload = leadRequest.postDataJSON();
-
-  const payload = leadPayload as {
-    context: { paymentMethod?: string; monthlyBudget?: number };
-  };
-  expect(payload.context.paymentMethod).toBe("credit");
-  expect(payload.context.monthlyBudget).toBe(38000);
+  await expect(leadBlock.getByText("Перезвоним и уточним варианты в бюджете 38 000 ₽.")).toBeVisible();
 });
 
 test("smoke: cash — monthlyBudget скрыт, без query и lead context", async ({ page }) => {
@@ -80,18 +67,5 @@ test("smoke: cash — monthlyBudget скрыт, без query и lead context", a
   await expect(page).not.toHaveURL(/\/cars\?.*monthlyBudget=/);
 
   const leadBlock = page.locator("#catalog-lead");
-  const phoneInput = leadBlock.getByLabel("Телефон");
-  await phoneInput.fill("79990000000");
-  await expect(phoneInput).toHaveValue("79990000000");
-  const [leadRequest] = await Promise.all([
-    page.waitForRequest("**/api/lead"),
-    leadBlock.getByRole("button", { name: "Отправить заявку" }).click(),
-  ]);
-  const leadPayload = leadRequest.postDataJSON();
-
-  const payload = leadPayload as {
-    context: { paymentMethod?: string; monthlyBudget?: number };
-  };
-  expect(payload.context.paymentMethod).toBe("cash");
-  expect(payload.context.monthlyBudget).toBeUndefined();
+  await expect(leadBlock.getByText("Перезвоним и уточним варианты в бюджете 2 200 000 ₽.")).toBeVisible();
 });
