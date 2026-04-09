@@ -16,6 +16,7 @@ export function CarDetailLeadClient({
     () => ({
       city: car.cities[0] ?? "Барнаул",
       carId: car.id,
+      paymentMethod: "credit" as const,
       monthlyBudget: car.monthlyPaymentRub,
       maxPriceRub: car.priceRub,
       bodyType: car.bodyType as CarBodyType | "any",

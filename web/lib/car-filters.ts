@@ -3,11 +3,13 @@ import type { CarBodyType } from "@/types/car";
 import type {
   DriveFilter,
   FuelFilter,
+  PaymentMethod,
   TransmissionFilter,
 } from "@/components/landing/quick-selector";
 
 /** Параметры листинга /cars — те же семантики, что у квиза на главной */
 export type CarListingFilters = {
+  paymentMethod: PaymentMethod;
   monthlyBudget: number;
   maxPriceRub: number;
   bodyType: CarBodyType | "any";
@@ -20,6 +22,7 @@ export type CarListingFilters = {
 };
 
 export const DEFAULT_CAR_LISTING_FILTERS: CarListingFilters = {
+  paymentMethod: "credit",
   monthlyBudget: 35000,
   maxPriceRub: 2500000,
   bodyType: "any",
@@ -59,10 +62,16 @@ function parseDrive(value: string | undefined): DriveFilter {
 }
 
 const FUELS: FuelFilter[] = ["any", "petrol", "diesel", "hybrid", "electric"];
+const PAYMENT_METHODS: PaymentMethod[] = ["credit", "cash"];
 
 function parseFuel(value: string | undefined): FuelFilter {
   if (!value) return "any";
   return FUELS.includes(value as FuelFilter) ? (value as FuelFilter) : "any";
+}
+
+function parsePaymentMethod(value: string | undefined): PaymentMethod {
+  if (!value) return "credit";
+  return PAYMENT_METHODS.includes(value as PaymentMethod) ? (value as PaymentMethod) : "credit";
 }
 
 /** Разбор querystring для /cars */
@@ -76,6 +85,7 @@ export function parseCarListingSearchParams(
   };
 
   return {
+    paymentMethod: parsePaymentMethod(get("paymentMethod")),
     monthlyBudget: parseIntParam(get("monthlyBudget"), DEFAULT_CAR_LISTING_FILTERS.monthlyBudget),
     maxPriceRub: parseIntParam(get("maxPriceRub"), DEFAULT_CAR_LISTING_FILTERS.maxPriceRub),
     bodyType: parseBodyType(get("bodyType")),
@@ -90,6 +100,7 @@ export function parseCarListingSearchParams(
 
 /** Ключи query, задающие фильтры листинга (без UTM и прочего) */
 export const CATALOG_FILTER_PARAM_KEYS = [
+  "paymentMethod",
   "monthlyBudget",
   "maxPriceRub",
   "bodyType",
@@ -107,7 +118,10 @@ export function hasCatalogFilterParams(searchParams: URLSearchParams): boolean {
 
 export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearchParams {
   const p = new URLSearchParams();
-  p.set("monthlyBudget", String(f.monthlyBudget));
+  p.set("paymentMethod", String(f.paymentMethod));
+  if (f.paymentMethod === "credit") {
+    p.set("monthlyBudget", String(f.monthlyBudget));
+  }
   p.set("maxPriceRub", String(f.maxPriceRub));
   if (f.bodyType !== "any") p.set("bodyType", f.bodyType);
   if (f.transmission !== "any") p.set("transmission", f.transmission);
@@ -120,7 +134,7 @@ export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearch
 }
 
 function matchesPrimary(car: Car, f: CarListingFilters): boolean {
-  if (car.monthlyPaymentRub > f.monthlyBudget) return false;
+  if (f.paymentMethod === "credit" && car.monthlyPaymentRub > f.monthlyBudget) return false;
   if (car.priceRub > f.maxPriceRub) return false;
   if (!car.cities.includes(f.city)) return false;
   if (f.bodyType !== "any" && car.bodyType !== f.bodyType) return false;
@@ -165,7 +179,8 @@ export function getRelaxedSuggestions(cars: Car[], f: CarListingFilters): Car[] 
   const scored = cars
     .filter((car) => {
       const budgetMatch =
-        car.monthlyPaymentRub <= relaxedFilters.monthlyBudget &&
+        (relaxedFilters.paymentMethod === "cash" ||
+          car.monthlyPaymentRub <= relaxedFilters.monthlyBudget) &&
         car.priceRub <= relaxedFilters.maxPriceRub;
       const cityMatch = car.cities.includes(f.city);
       const bodyMatch = f.bodyType === "any" || car.bodyType === f.bodyType;
@@ -190,10 +205,10 @@ export function getRelaxedSuggestions(cars: Car[], f: CarListingFilters): Car[] 
     })
     .sort((a, b) => {
       const scoreA =
-        Math.abs(a.monthlyPaymentRub - f.monthlyBudget) +
+        (f.paymentMethod === "credit" ? Math.abs(a.monthlyPaymentRub - f.monthlyBudget) : 0) +
         Math.abs(a.priceRub - f.maxPriceRub) / 50;
       const scoreB =
-        Math.abs(b.monthlyPaymentRub - f.monthlyBudget) +
+        (f.paymentMethod === "credit" ? Math.abs(b.monthlyPaymentRub - f.monthlyBudget) : 0) +
         Math.abs(b.priceRub - f.maxPriceRub) / 50;
       return scoreA - scoreB;
     });

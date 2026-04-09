@@ -26,6 +26,7 @@ export function LandingMvp() {
   const [carsLoading, setCarsLoading] = useState(true);
   const [carsError, setCarsError] = useState("");
   const [selector, setSelector] = useState<SelectorState>({
+    paymentMethod: "credit",
     monthlyBudget: 35000,
     maxPriceRub: 2500000,
     bodyType: "any",
@@ -91,7 +92,8 @@ export function LandingMvp() {
   const primaryFilteredCars = useMemo(
     () =>
       cars.filter((car) => {
-        if (car.monthlyPaymentRub > selector.monthlyBudget) return false;
+        if (selector.paymentMethod === "credit" && car.monthlyPaymentRub > selector.monthlyBudget)
+          return false;
         if (car.priceRub > selector.maxPriceRub) return false;
         if (!car.cities.includes(selector.city)) return false;
         if (selector.bodyType !== "any" && car.bodyType !== selector.bodyType) return false;
@@ -125,8 +127,9 @@ export function LandingMvp() {
     const relaxedMileage = selector.maxMileageKm + 30000;
     const similarCars = cars
       .filter((car) => {
-        const budgetMatch =
-          car.monthlyPaymentRub <= relaxedMonthlyBudget && car.priceRub <= relaxedMaxPrice;
+        const monthlyMatch =
+          selector.paymentMethod === "cash" || car.monthlyPaymentRub <= relaxedMonthlyBudget;
+        const budgetMatch = monthlyMatch && car.priceRub <= relaxedMaxPrice;
         const cityMatch = car.cities.includes(selector.city);
         const bodyMatch = selector.bodyType === "any" || car.bodyType === selector.bodyType;
         const transmissionMatch =
@@ -147,10 +150,14 @@ export function LandingMvp() {
       })
       .sort((a, b) => {
         const scoreA =
-          Math.abs(a.monthlyPaymentRub - selector.monthlyBudget) +
+          (selector.paymentMethod === "credit"
+            ? Math.abs(a.monthlyPaymentRub - selector.monthlyBudget)
+            : 0) +
           Math.abs(a.priceRub - selector.maxPriceRub) / 50;
         const scoreB =
-          Math.abs(b.monthlyPaymentRub - selector.monthlyBudget) +
+          (selector.paymentMethod === "credit"
+            ? Math.abs(b.monthlyPaymentRub - selector.monthlyBudget)
+            : 0) +
           Math.abs(b.priceRub - selector.maxPriceRub) / 50;
         return scoreA - scoreB;
       });
@@ -164,7 +171,8 @@ export function LandingMvp() {
     () => ({
       city: selector.city,
       carId: selectedCar?.id,
-      monthlyBudget: selector.monthlyBudget,
+      paymentMethod: selector.paymentMethod,
+      monthlyBudget: selector.paymentMethod === "credit" ? selector.monthlyBudget : undefined,
       maxPriceRub: selector.maxPriceRub,
       bodyType: selector.bodyType,
       transmission: selector.transmission,
@@ -274,6 +282,7 @@ export function LandingMvp() {
                   setQuizComplete(true);
                   saveQuizAnswers(selector);
                   trackGoal(metrikaId, METRIKA_GOALS.quizCompleted, {
+                    paymentMethod: selector.paymentMethod,
                     monthlyBudget: selector.monthlyBudget,
                     maxPriceRub: selector.maxPriceRub,
                     city: selector.city,
@@ -304,6 +313,7 @@ export function LandingMvp() {
                       onClick={() =>
                         trackGoal(metrikaId, METRIKA_GOALS.catalogFromQuizClick, {
                           city: selector.city,
+                          paymentMethod: selector.paymentMethod,
                           monthlyBudget: selector.monthlyBudget,
                         })
                       }

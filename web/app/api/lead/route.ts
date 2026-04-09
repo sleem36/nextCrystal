@@ -33,6 +33,11 @@ const fuelLabel: Record<"any" | "petrol" | "diesel" | "hybrid" | "electric", str
   electric: "Электро",
 };
 
+const paymentMethodLabel: Record<"credit" | "cash", string> = {
+  credit: "Кредит",
+  cash: "Наличные",
+};
+
 const leadSchema = z.object({
   name: z.string().optional(),
   phone: z.string().min(10),
@@ -41,7 +46,8 @@ const leadSchema = z.object({
     carId: z.string().optional(),
     /** Backward compatibility for previous payloads */
     selectedCarId: z.string().optional(),
-    monthlyBudget: z.number(),
+    paymentMethod: z.union([z.literal("credit"), z.literal("cash")]).default("credit"),
+    monthlyBudget: z.number().optional(),
     maxPriceRub: z.number(),
     bodyType: z.union([
       z.literal("any"),
@@ -148,7 +154,10 @@ export async function POST(request: Request) {
         `Город: ${context.city || "Не указан"}`,
         `ID авто: ${normalizedCarId || "Не выбрано"}`,
         `Цель покупки: ${context.purchaseGoal || "Не указана"}`,
-        `Бюджет в месяц: ${context.monthlyBudget ?? "Не указан"}`,
+        `Способ оплаты: ${paymentMethodLabel[context.paymentMethod]}`,
+        `Бюджет в месяц: ${
+          context.paymentMethod === "credit" ? (context.monthlyBudget ?? "Не указан") : "Не применимо"
+        }`,
         `Бюджет авто: ${context.maxPriceRub ?? "Не указан"}`,
         `Тип кузова: ${bodyTypeLabel[context.bodyType]}`,
         `Коробка: ${transmissionLabel[context.transmission]}`,

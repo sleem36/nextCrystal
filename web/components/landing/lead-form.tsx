@@ -7,7 +7,12 @@ import { Input } from "@/components/ui/input";
 import { METRIKA_GOALS, trackGoal } from "@/lib/analytics";
 import { formatCurrency } from "@/lib/format";
 import { CarBodyType } from "@/types/car";
-import type { DriveFilter, FuelFilter, TransmissionFilter } from "@/components/landing/quick-selector";
+import type {
+  DriveFilter,
+  FuelFilter,
+  PaymentMethod,
+  TransmissionFilter,
+} from "@/components/landing/quick-selector";
 
 type LeadFormProps = {
   variant?: "card" | "plain";
@@ -18,7 +23,8 @@ type LeadFormProps = {
     city: string;
     /** Единый id авто для всех экранов (если выбрано конкретное авто) */
     carId?: string;
-    monthlyBudget: number;
+    paymentMethod: PaymentMethod;
+    monthlyBudget?: number;
     maxPriceRub: number;
     bodyType: CarBodyType | "any";
     transmission: TransmissionFilter;
@@ -91,7 +97,8 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
       }
 
       trackGoal(metrikaId, METRIKA_GOALS.leadSubmitted, {
-        monthlyBudget: context.monthlyBudget,
+        paymentMethod: context.paymentMethod,
+        ...(context.monthlyBudget ? { monthlyBudget: context.monthlyBudget } : {}),
         maxPriceRub: context.maxPriceRub,
         city: context.city,
         fuel: context.fuel,
@@ -120,12 +127,20 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
             Оставьте заявку
           </h2>
           <p className="mt-2 text-sm text-slate-600">
-            Перезвоним и уточним варианты в бюджете {formatCurrency(context.monthlyBudget)}.
+            Перезвоним и уточним варианты в бюджете{" "}
+            {context.paymentMethod === "credit" && context.monthlyBudget
+              ? formatCurrency(context.monthlyBudget)
+              : formatCurrency(context.maxPriceRub)}
+            .
           </p>
         </div>
       ) : (
         <p className="text-sm text-slate-600">
-          Перезвоним и уточним варианты в бюджете {formatCurrency(context.monthlyBudget)}.
+          Перезвоним и уточним варианты в бюджете{" "}
+          {context.paymentMethod === "credit" && context.monthlyBudget
+            ? formatCurrency(context.monthlyBudget)
+            : formatCurrency(context.maxPriceRub)}
+          .
         </p>
       )}
 

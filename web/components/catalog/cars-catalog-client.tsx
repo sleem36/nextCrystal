@@ -10,6 +10,7 @@ import { buildCompareHref } from "@/lib/compare-selection";
 import { LeadForm } from "@/components/landing/lead-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { OptionCard } from "@/components/ui/option-card";
 import {
   carListingFiltersToSearchParams,
   DEFAULT_CAR_LISTING_FILTERS,
@@ -57,7 +58,8 @@ function CatalogLeadBlock({
     () => ({
       city: filters.city,
       carId: undefined as string | undefined,
-      monthlyBudget: filters.monthlyBudget,
+      paymentMethod: filters.paymentMethod,
+      monthlyBudget: filters.paymentMethod === "credit" ? filters.monthlyBudget : undefined,
       maxPriceRub: filters.maxPriceRub,
       bodyType: filters.bodyType,
       transmission: filters.transmission,
@@ -103,14 +105,31 @@ function FiltersPanel({
         Параметры как в быстром подборе на главной. Нажмите «Применить», чтобы обновить URL и выдачу.
       </p>
       <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Input
-          label="Платёж в месяц, ₽"
-          type="number"
-          min={15000}
-          step={1000}
-          value={draft.monthlyBudget}
-          onChange={(e) => setDraft((d) => ({ ...d, monthlyBudget: Number(e.target.value) }))}
-        />
+        <div className="space-y-2 text-sm text-slate-700 md:col-span-2 lg:col-span-3">
+          <span className="font-medium">Способ оплаты</span>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:max-w-md">
+            <OptionCard
+              label="Кредит"
+              selected={draft.paymentMethod === "credit"}
+              onClick={() => setDraft((d) => ({ ...d, paymentMethod: "credit" }))}
+            />
+            <OptionCard
+              label="Наличные"
+              selected={draft.paymentMethod === "cash"}
+              onClick={() => setDraft((d) => ({ ...d, paymentMethod: "cash" }))}
+            />
+          </div>
+        </div>
+        {draft.paymentMethod === "credit" ? (
+          <Input
+            label="Платёж в месяц, ₽"
+            type="number"
+            min={15000}
+            step={1000}
+            value={draft.monthlyBudget}
+            onChange={(e) => setDraft((d) => ({ ...d, monthlyBudget: Number(e.target.value) }))}
+          />
+        ) : null}
         <Input
           label="Макс. цена авто, ₽"
           type="number"
@@ -293,7 +312,8 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
           {isRelaxed ? (
             <div className="rounded-[var(--radius-card)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
               По текущим фильтрам ничего не нашлось — показаны{" "}
-              <strong>ближайшие по параметрам</strong> (смягчены платёж, цена, год и пробег). Попробуйте
+              <strong>ближайшие по параметрам</strong> (смягчены{" "}
+              {filters.paymentMethod === "credit" ? "платёж, " : ""}цена, год и пробег). Попробуйте
               изменить город или КПП — или оставьте заявку ниже.
             </div>
           ) : null}

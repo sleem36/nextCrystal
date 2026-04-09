@@ -44,9 +44,15 @@ export function SelectionSummary({ selector }: SelectionSummaryProps) {
         </p>
       </div>
       <div className="grid gap-2 text-sm md:grid-cols-2">
-        <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">
-          Платеж в месяц: <span className="font-semibold">{formatCurrency(selector.monthlyBudget)}</span>
-        </p>
+        {selector.paymentMethod === "credit" ? (
+          <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">
+            Платеж в месяц: <span className="font-semibold">{formatCurrency(selector.monthlyBudget)}</span>
+          </p>
+        ) : (
+          <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">
+            Способ оплаты: <span className="font-semibold">Наличные</span>
+          </p>
+        )}
         <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">
           Максимальный бюджет: <span className="font-semibold">{formatCurrency(selector.maxPriceRub)}</span>
         </p>

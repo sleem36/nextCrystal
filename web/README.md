@@ -117,6 +117,13 @@ CARS_API_URL=
 - На `/cars` без фильтров в URL, если есть сохранённый квиз, показывается баннер **«Применить из квиза»** (без автоподстановки без клика). «Скрыть» помечает сессию: баннер не показывается до нового прохождения квиза (ключ `sessionStorage`: `crystal_quiz_catalog_banner_dismissed`).
 - Чтобы сбросить сохранённые ответы квиза вручную: очистите `localStorage` для сайта или удалите ключ `crystal_quiz_answers` в DevTools.
 
+### Payment method (`credit` / `cash`)
+
+- В первом шаге квиза выбирается `paymentMethod`: `credit` (Кредит) или `cash` (Наличные).
+- Для `credit` показывается поле `monthlyBudget`, и фильтрация учитывает и `monthlyBudget`, и `maxPriceRub`.
+- Для `cash` поле `monthlyBudget` скрыто, в query не передаётся, а фильтрация работает только от `maxPriceRub` (+ остальные параметры).
+- `paymentMethod` сохраняется в `localStorage` (квиз), прокидывается в `/cars` через query и передаётся в `lead context` / письмо менеджеру.
+
 ### LocalStorage ключи
 
 - `crystal_quiz_answers` — сохранённые ответы квиза.

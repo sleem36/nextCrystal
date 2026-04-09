@@ -10,8 +10,10 @@ import { CarBodyType } from "@/types/car";
 export type TransmissionFilter = "any" | "automatic" | "manual";
 export type DriveFilter = "any" | "fwd" | "rwd" | "awd";
 export type FuelFilter = "any" | "petrol" | "diesel" | "hybrid" | "electric";
+export type PaymentMethod = "credit" | "cash";
 
 export type SelectorState = {
+  paymentMethod: PaymentMethod;
   monthlyBudget: number;
   maxPriceRub: number;
   bodyType: CarBodyType | "any";
@@ -31,7 +33,12 @@ type QuickSelectorProps = {
 
 export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProps) {
   const [step, setStep] = useState(1);
-  const totalSteps = 5;
+  const isCredit = value.paymentMethod === "credit";
+  const totalSteps = isCredit ? 6 : 5;
+  const paymentMethodOptions: Array<{ id: PaymentMethod; label: string }> = [
+    { id: "credit", label: "Кредит" },
+    { id: "cash", label: "Наличные" },
+  ];
   const bodyTypeOptions: Array<{ id: SelectorState["bodyType"]; label: string }> = [
     { id: "any", label: "Любой" },
     { id: "sedan", label: "Седан" },
@@ -58,13 +65,30 @@ export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProp
     "Пермь",
     "Оренбург",
   ];
+  const showMonthlyStep = step === 2 && isCredit;
+  const showMaxPriceStep = step === 3 || (!isCredit && step === 2);
+  const bodyStep = isCredit ? 4 : 3;
+  const transmissionStep = isCredit ? 5 : 4;
+  const showCityStep = step === totalSteps;
   const canContinue = useMemo(() => {
-    if (step === 1) return value.monthlyBudget >= 15000;
-    if (step === 2) return value.maxPriceRub >= 700000;
-    if (step === 3) return Boolean(value.bodyType);
-    if (step === 4) return Boolean(value.transmission);
+    if (step === 1) return Boolean(value.paymentMethod);
+    if (showMonthlyStep) return value.monthlyBudget >= 15000;
+    if (showMaxPriceStep) return value.maxPriceRub >= 700000;
+    if (step === bodyStep) return Boolean(value.bodyType);
+    if (step === transmissionStep) return Boolean(value.transmission);
     return Boolean(value.city);
-  }, [step, value]);
+  }, [bodyStep, showMaxPriceStep, showMonthlyStep, step, transmissionStep, value]);
+
+  const goNext = () => {
+    setStep((prev) => {
+      if (prev === 1 && !isCredit) return 2;
+      return prev + 1;
+    });
+  };
+
+  const goBack = () => {
+    setStep((prev) => prev - 1);
+  };
 
   return (
     <Card className="space-y-4 p-4 md:space-y-5 md:p-5">
@@ -77,9 +101,29 @@ export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProp
         </p>
       </div>
       {step === 1 ? (
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-slate-700">1) Способ оплаты</p>
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2" role="radiogroup" aria-label="Способ оплаты">
+            {paymentMethodOptions.map((item) => (
+              <OptionCard
+                key={item.id}
+                label={item.label}
+                selected={value.paymentMethod === item.id}
+                onClick={() =>
+                  onChange({
+                    ...value,
+                    paymentMethod: item.id,
+                  })
+                }
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {showMonthlyStep ? (
         <>
           <Input
-            label="1) Комфортный платеж в месяц, ₽"
+            label="2) Комфортный платеж в месяц, ₽"
             type="number"
             min={15000}
             step={1000}
@@ -96,10 +140,10 @@ export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProp
           </p>
         </>
       ) : null}
-      {step === 2 ? (
+      {showMaxPriceStep ? (
         <>
           <Input
-            label="2) Максимальный бюджет авто, ₽"
+            label={`${isCredit ? "3" : "2"}) Максимальный бюджет авто, ₽`}
             type="number"
             min={700000}
             step={50000}
@@ -112,13 +156,13 @@ export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProp
             }
           />
           <p className="-mt-2 text-xs text-slate-500">
-            Выдача учитывает и платеж в месяц, и общую стоимость авто.
+            Выдача учитывает {isCredit ? "платеж в месяц и " : ""}общую стоимость авто.
           </p>
         </>
       ) : null}
-      {step === 3 ? (
+      {step === bodyStep ? (
         <div className="space-y-2">
-          <p className="text-sm font-medium text-slate-700">3) Тип кузова</p>
+          <p className="text-sm font-medium text-slate-700">{isCredit ? "4" : "3"}) Тип кузова</p>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2" role="radiogroup" aria-label="Тип кузова">
             {bodyTypeOptions.map((item) => (
               <OptionCard
@@ -131,9 +175,9 @@ export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProp
           </div>
         </div>
       ) : null}
-      {step === 4 ? (
+      {step === transmissionStep ? (
         <div className="space-y-2">
-          <p className="text-sm font-medium text-slate-700">4) Коробка передач</p>
+          <p className="text-sm font-medium text-slate-700">{isCredit ? "5" : "4"}) Коробка передач</p>
           <div
             className="grid grid-cols-1 gap-2 md:grid-cols-2"
             role="radiogroup"
@@ -150,9 +194,9 @@ export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProp
           </div>
         </div>
       ) : null}
-      {step === 5 ? (
+      {showCityStep ? (
         <div className="space-y-2">
-          <p className="text-sm font-medium text-slate-700">5) Город</p>
+          <p className="text-sm font-medium text-slate-700">{isCredit ? "6" : "5"}) Город</p>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2" role="radiogroup" aria-label="Город">
             {cityOptions.map((item) => (
               <OptionCard
@@ -167,16 +211,12 @@ export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProp
       ) : null}
       <div className="flex flex-wrap gap-2">
         {step > 1 ? (
-          <Button variant="secondary" onClick={() => setStep((prev) => prev - 1)}>
+          <Button variant="secondary" onClick={goBack}>
             Назад
           </Button>
         ) : null}
         {step < totalSteps ? (
-          <Button
-            className="w-full sm:w-auto"
-            disabled={!canContinue}
-            onClick={() => setStep((prev) => prev + 1)}
-          >
+          <Button className="w-full sm:w-auto" disabled={!canContinue} onClick={goNext}>
             Далее
           </Button>
         ) : (

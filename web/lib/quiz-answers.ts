@@ -12,6 +12,7 @@ export const QUIZ_ANSWERS_STORAGE_KEY = "crystal_quiz_answers";
 export const QUIZ_CATALOG_BANNER_DISMISSED_KEY = "crystal_quiz_catalog_banner_dismissed";
 
 const quizAnswersSchema = z.object({
+  paymentMethod: z.enum(["credit", "cash"]),
   monthlyBudget: z.number(),
   maxPriceRub: z.number(),
   bodyType: z.enum(["any", "sedan", "liftback", "suv", "hatchback"]),

@@ -43,3 +43,55 @@ test("smoke: API /api/cars/[id] 200/404", async ({ request }) => {
   const notFound = await request.get(`/api/cars/${INVALID_ID}`);
   expect(notFound.status()).toBe(404);
 });
+
+test("smoke: credit — monthlyBudget виден, в query и lead context", async ({ page }) => {
+  await page.goto(
+    "/cars?paymentMethod=credit&monthlyBudget=38000&maxPriceRub=2500000&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+  );
+  await expect(page.getByLabel("Платёж в месяц, ₽")).toBeVisible();
+  await expect(page.getByLabel("Платёж в месяц, ₽")).toHaveValue("38000");
+  await expect(page).toHaveURL(/\/cars\?.*paymentMethod=credit/);
+  await expect(page).toHaveURL(/\/cars\?.*monthlyBudget=38000/);
+
+  const leadBlock = page.locator("#catalog-lead");
+  const phoneInput = leadBlock.getByLabel("Телефон");
+  await phoneInput.fill("79990000000");
+  await expect(phoneInput).toHaveValue("79990000000");
+  const [leadRequest] = await Promise.all([
+    page.waitForRequest("**/api/lead"),
+    leadBlock.getByRole("button", { name: "Отправить заявку" }).click(),
+  ]);
+  const leadPayload = leadRequest.postDataJSON();
+
+  const payload = leadPayload as {
+    context: { paymentMethod?: string; monthlyBudget?: number };
+  };
+  expect(payload.context.paymentMethod).toBe("credit");
+  expect(payload.context.monthlyBudget).toBe(38000);
+});
+
+test("smoke: cash — monthlyBudget скрыт, без query и lead context", async ({ page }) => {
+  await page.goto(
+    "/cars?paymentMethod=cash&maxPriceRub=2200000&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+  );
+  await expect(page.getByLabel("Платёж в месяц, ₽")).toHaveCount(0);
+  await expect(page.getByLabel("Макс. цена авто, ₽")).toBeVisible();
+  await expect(page).toHaveURL(/\/cars\?.*paymentMethod=cash/);
+  await expect(page).not.toHaveURL(/\/cars\?.*monthlyBudget=/);
+
+  const leadBlock = page.locator("#catalog-lead");
+  const phoneInput = leadBlock.getByLabel("Телефон");
+  await phoneInput.fill("79990000000");
+  await expect(phoneInput).toHaveValue("79990000000");
+  const [leadRequest] = await Promise.all([
+    page.waitForRequest("**/api/lead"),
+    leadBlock.getByRole("button", { name: "Отправить заявку" }).click(),
+  ]);
+  const leadPayload = leadRequest.postDataJSON();
+
+  const payload = leadPayload as {
+    context: { paymentMethod?: string; monthlyBudget?: number };
+  };
+  expect(payload.context.paymentMethod).toBe("cash");
+  expect(payload.context.monthlyBudget).toBeUndefined();
+});
