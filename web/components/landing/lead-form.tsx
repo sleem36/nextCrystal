@@ -154,18 +154,18 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
 
       <form className="grid gap-4 md:grid-cols-2" onSubmit={onSubmit}>
         <Input
-          label="Имя"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Как к вам обращаться"
-        />
-        <Input
           label="Телефон"
           required
           value={phone}
           onChange={(event) => setPhone(event.target.value)}
           placeholder="+7 (___) ___-__-__"
           error={status === "error" ? phoneError || errorMessage || "Не удалось отправить форму" : ""}
+        />
+        <Input
+          label="Имя (необязательно)"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Как к вам обращаться"
         />
         {prepaymentTermsUrl ? (
           <label className="md:col-span-2 flex items-start gap-2 text-sm text-slate-700">

@@ -77,6 +77,9 @@ export default async function CarDetailPage({
     ...(extra.exteriorOptions ?? []),
   ];
   const facts = [
+    car.year ? { label: "Год", value: String(car.year) } : null,
+    car.mileageKm > 0 ? { label: "Пробег", value: `${formatMileage(car.mileageKm)} км` } : null,
+    car.city?.trim() ? { label: "Город", value: car.city.trim() } : null,
     extra.powerHp ? { label: "Мощность", value: `${extra.powerHp} л.с.` } : null,
     { label: "КПП", value: transmissionLabel(car.transmission) },
     { label: "Привод", value: driveLabel(car.drive) },
@@ -100,7 +103,7 @@ export default async function CarDetailPage({
   )}`;
 
   return (
-    <article className="container-wide space-y-8 pb-24 pt-4 md:pb-16 md:pt-6">
+    <article className="container-wide mx-auto max-w-[1280px] space-y-8 pb-24 pt-4 md:pb-16 md:pt-6">
       <CarOpenedTracker
         carId={car.id}
         city={car.city}
@@ -143,7 +146,7 @@ export default async function CarDetailPage({
               Платёж / мес:{" "}
               <span className="font-semibold text-slate-900">{formatCurrency(car.monthlyPaymentRub)}</span>
             </p>
-            <p className="mt-1 text-sm text-slate-600">Есть интерес к этому авто.</p>
+            <p className="mt-1 text-sm text-slate-600">Авто в наличии и проверено.</p>
             <div className="mt-3 flex flex-wrap gap-2">
               {trustChips.slice(0, 3).map((chip) => (
                 <span
@@ -158,14 +161,9 @@ export default async function CarDetailPage({
               <a href="#lead-form" className={ctaPrimaryClass}>
                 Оставить заявку
               </a>
-              <a
-                href="#lead-form"
-                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-[color:var(--color-brand-primary)] transition-colors hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-primary)] focus-visible:ring-offset-2"
-              >
-                Получить консультацию
-              </a>
+              <CarPhoneReveal className="mt-0" carId={car.id} city={car.city} paymentMethod={paymentMethod} />
             </div>
-            <CarPhoneReveal />
+            <p className="mt-2 text-xs text-slate-500">Свяжемся в ближайшее время</p>
           </div>
           <CarFactsGrid facts={facts} />
           {paymentMethod === "credit" ? (
@@ -185,40 +183,49 @@ export default async function CarDetailPage({
         <p className="mt-1 text-sm font-semibold text-slate-900">{car.city}</p>
       </div>
 
-      <CarPassportBlock passport={car.passport} />
-
       <CarOptionsChips options={options} />
 
-      <CarVideoSection url={car.videoReviewUrl} leadHref="#lead-form" />
-
-      <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5">
-        <h2 className="text-base font-semibold text-[color:var(--color-brand-primary)] md:text-lg">
-          Нужна консультация прямо сейчас?
-        </h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Напишите в удобный канал, а заявку в форме можно оставить позже.
-        </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
-          >
-            Написать в WhatsApp
-          </a>
-          <a
-            href={telegramHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
-          >
-            Написать в Telegram
-          </a>
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
+        <div className="space-y-6">
+          <CarPassportBlock passport={car.passport} />
+          <CarVideoSection
+            url={car.videoReviewUrl}
+            leadHref="#lead-form"
+            carId={car.id}
+            city={car.city}
+            paymentMethod={paymentMethod}
+          />
+        </div>
+        <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+          <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5">
+            <h2 className="text-base font-semibold text-[color:var(--color-brand-primary)] md:text-lg">
+              Нужна консультация прямо сейчас?
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Напишите в удобный канал, а заявку в форме можно оставить позже.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              >
+                Написать в WhatsApp
+              </a>
+              <a
+                href={telegramHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              >
+                Написать в Telegram
+              </a>
+            </div>
+          </section>
+          <TradeInCtaPanel leadHref="#lead-form" />
         </div>
       </section>
-
-      <TradeInCtaPanel leadHref="#lead-form" />
 
       <MobileStickyBookingBar priceRub={car.priceRub} />
     </article>

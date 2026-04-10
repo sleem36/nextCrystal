@@ -11,6 +11,7 @@ export const METRIKA_GOALS = {
   compareRemove: "compare_remove",
   noResultsShown: "no_results_shown",
   phoneRevealed: "phone_revealed",
+  videoReviewRequested: "video_review_requested",
   /** Открыта модалка заявки с карточки авто (не отправка формы) */
   leadModalOpen: "lead_modal_open",
   leadSubmitted: "lead_submitted",

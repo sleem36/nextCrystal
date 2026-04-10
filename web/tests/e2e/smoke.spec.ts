@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const VALID_ID = "toyota-camry-2021-ru234";
+const NO_VIDEO_ID = "kia-rio-2022-ru112";
 const INVALID_ID = "not-found-id";
 
 test("smoke: главная открывается и есть главный CTA", async ({ page }) => {
@@ -21,6 +22,17 @@ test("smoke: /cars -> /cars/[id], есть блок заявки", async ({ page
   await page.getByRole("link", { name: "Смотреть авто" }).first().click();
   await expect(page).toHaveURL(/\/cars\/[^/?#]+/);
   await expect(page.locator("#lead-form").first()).toBeVisible();
+  const phoneButton = page.getByRole("button", { name: "Показать номер" });
+  await expect(phoneButton).toBeVisible();
+  await phoneButton.click({ force: true });
+});
+
+test("smoke: /cars/[id] без видео — CTA видеообзора виден и кликабелен", async ({ page }) => {
+  await page.goto(`/cars/${NO_VIDEO_ID}`);
+  const videoCta = page.getByRole("link", { name: "Запросить видеообзор" });
+  await expect(videoCta).toBeVisible();
+  await videoCta.click();
+  await expect(page).toHaveURL(/\/cars\/[^/?#]+(#lead-form)?/);
 });
 
 test("smoke: /compare?ids=... открывает таблицу", async ({ page }) => {
