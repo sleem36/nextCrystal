@@ -85,7 +85,7 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
             <Row label="Привод" cars={cars} render={(c) => driveLabel(c.drive)} />
             <Row label="Топливо" cars={cars} render={(c) => fuelLabel(c.fuel)} />
             <Row label="Цвет" cars={cars} render={(c) => c.color} />
-            <Row label="Города" cars={cars} render={(c) => c.cities.join(", ")} />
+            <Row label="Город" cars={cars} render={(c) => c.city} />
             <Row label="Владельцев по ПТС" cars={cars} render={(c) => String(c.passport.owners)} />
             <Row
               label="ПТС"

@@ -40,8 +40,10 @@ type LeadFormProps = {
 
 export function LeadForm({ context, variant = "card", hideTitle = false, onSuccess }: LeadFormProps) {
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
+  const prepaymentTermsUrl = process.env.NEXT_PUBLIC_PREPAYMENT_TERMS_URL;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [prepaymentAccepted, setPrepaymentAccepted] = useState(false);
   const [website, setWebsite] = useState("");
   const [startedAt] = useState(() => Date.now());
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,6 +69,11 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
 
     if (phoneError) {
       setStatus("error");
+      return;
+    }
+    if (prepaymentTermsUrl && !prepaymentAccepted) {
+      setStatus("error");
+      setErrorMessage("Подтвердите условия возврата предоплаты.");
       return;
     }
 
@@ -106,6 +113,7 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
       setStatus("success");
       setName("");
       setPhone("");
+      setPrepaymentAccepted(false);
       setWebsite("");
       onSuccess?.();
     } catch (error) {
@@ -159,6 +167,28 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
           placeholder="+7 (___) ___-__-__"
           error={status === "error" ? phoneError || errorMessage || "Не удалось отправить форму" : ""}
         />
+        {prepaymentTermsUrl ? (
+          <label className="md:col-span-2 flex items-start gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={prepaymentAccepted}
+              onChange={(event) => setPrepaymentAccepted(event.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-slate-300 text-[color:var(--color-brand-accent)] focus:ring-[color:var(--color-brand-accent)]"
+            />
+            <span>
+              Согласен с{" "}
+              <a
+                href={prepaymentTermsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:no-underline"
+              >
+                условиями возврата предоплаты
+              </a>
+              .
+            </span>
+          </label>
+        ) : null}
         <input
           tabIndex={-1}
           autoComplete="off"

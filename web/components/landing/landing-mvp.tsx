@@ -95,7 +95,7 @@ export function LandingMvp() {
         if (selector.paymentMethod === "credit" && car.monthlyPaymentRub > selector.monthlyBudget)
           return false;
         if (car.priceRub > selector.maxPriceRub) return false;
-        if (!car.cities.includes(selector.city)) return false;
+        if (car.city !== selector.city) return false;
         if (selector.bodyType !== "any" && car.bodyType !== selector.bodyType) return false;
         if (selector.transmission !== "any" && car.transmission !== selector.transmission)
           return false;
@@ -130,7 +130,7 @@ export function LandingMvp() {
         const monthlyMatch =
           selector.paymentMethod === "cash" || car.monthlyPaymentRub <= relaxedMonthlyBudget;
         const budgetMatch = monthlyMatch && car.priceRub <= relaxedMaxPrice;
-        const cityMatch = car.cities.includes(selector.city);
+        const cityMatch = car.city === selector.city;
         const bodyMatch = selector.bodyType === "any" || car.bodyType === selector.bodyType;
         const transmissionMatch =
           selector.transmission === "any" || car.transmission === selector.transmission;

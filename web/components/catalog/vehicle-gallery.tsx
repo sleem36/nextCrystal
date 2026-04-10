@@ -8,9 +8,10 @@ type VehicleGalleryProps = {
   brand: string;
   model: string;
   year: number;
+  className?: string;
 };
 
-export function VehicleGallery({ images, brand, model, year }: VehicleGalleryProps) {
+export function VehicleGallery({ images, brand, model, year, className = "" }: VehicleGalleryProps) {
   const title = `${brand} ${model}, ${year}`;
   const gallery = useMemo(() => images, [images]);
   const previewGallery = useMemo(() => gallery.slice(0, 5), [gallery]);
@@ -19,10 +20,8 @@ export function VehicleGallery({ images, brand, model, year }: VehicleGalleryPro
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const hoverRafRef = useRef<number | null>(null);
-  const hoverSegmentRef = useRef<number | null>(null);
   const scrollYRef = useRef(0);
-  const hasSlider = previewGallery.length > 1;
+  const hasSlider = gallery.length > 1;
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     dragFree: false,
@@ -46,14 +45,6 @@ export function VehicleGallery({ images, brand, model, year }: VehicleGalleryPro
       emblaApi.off("reInit", onSelect);
     };
   }, [emblaApi]);
-
-  useEffect(() => {
-    return () => {
-      if (hoverRafRef.current) {
-        window.cancelAnimationFrame(hoverRafRef.current);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (!lightboxEmblaApi) return;
@@ -116,33 +107,6 @@ export function VehicleGallery({ images, brand, model, year }: VehicleGalleryPro
     lightboxEmblaApi?.scrollNext();
   };
 
-  const onBarHover = (index: number) => {
-    if (!emblaApi) return;
-    if (hoverRafRef.current) {
-      window.cancelAnimationFrame(hoverRafRef.current);
-    }
-    hoverRafRef.current = window.requestAnimationFrame(() => {
-      emblaApi.scrollTo(index);
-      hoverRafRef.current = null;
-    });
-  };
-
-  const onHoverZoneMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!hasSlider || !emblaApi) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const segmentWidth = rect.width / previewGallery.length;
-    const nextIndex = Math.min(previewGallery.length - 1, Math.max(0, Math.floor(x / segmentWidth)));
-    if (nextIndex !== hoverSegmentRef.current) {
-      hoverSegmentRef.current = nextIndex;
-      onBarHover(nextIndex);
-    }
-  };
-
-  const onHoverZoneLeave = () => {
-    hoverSegmentRef.current = null;
-  };
-
   if (!previewGallery.length) {
     return (
       <div className="aspect-[16/10] w-full bg-slate-100 text-sm text-slate-500 flex items-center justify-center rounded-[var(--radius-card)] border border-slate-200">
@@ -153,16 +117,12 @@ export function VehicleGallery({ images, brand, model, year }: VehicleGalleryPro
 
   return (
     <>
-      <div
-        className="group relative aspect-[16/10] w-full overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100"
-        onMouseMove={onHoverZoneMove}
-        onMouseLeave={onHoverZoneLeave}
-      >
-        {hasSlider ? (
-          <>
+      <div className={`space-y-2 lg:grid lg:h-full lg:grid-rows-[minmax(0,1fr)_5rem] lg:gap-2 lg:space-y-0 ${className}`}>
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100 lg:aspect-auto lg:h-full">
+          {hasSlider ? (
             <div className="h-full overflow-hidden" ref={emblaRef}>
               <div className="flex h-full">
-                {previewGallery.map((src, index) => (
+                {gallery.map((src, index) => (
                   <div key={`img-${index}`} className="relative min-w-0 flex-[0_0_100%]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -174,44 +134,70 @@ export function VehicleGallery({ images, brand, model, year }: VehicleGalleryPro
                       draggable={false}
                       onClick={() => openLightbox(index)}
                     />
-                    {hiddenCount > 0 && index === previewGallery.length - 1 ? (
-                      <button
-                        type="button"
-                        onClick={() => openLightbox(index)}
-                        className="absolute inset-0 flex items-center justify-center bg-black/45 text-sm font-semibold text-white"
-                      >
-                        Еще {hiddenCount} фото
-                      </button>
-                    ) : null}
                   </div>
                 ))}
               </div>
             </div>
-            <div className="absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/55 via-black/20 to-transparent px-2 pb-2 pt-5">
-              <div className="flex items-center gap-1.5">
-                {previewGallery.map((_, index) => (
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={previewGallery[0]}
+              alt={title}
+              className="h-full w-full cursor-zoom-in object-cover object-center"
+              loading="eager"
+              decoding="async"
+              draggable={false}
+              onClick={() => openLightbox(0)}
+            />
+          )}
+        </div>
+        <div className="overflow-x-auto lg:h-20">
+          <div className="flex min-w-max gap-1.5 lg:h-full">
+            {previewGallery.map((src, index) => (
+              <button
+                key={`thumb-preview-${index}`}
+                type="button"
+                onClick={() => {
+                  emblaApi?.scrollTo(index);
+                  setActiveIndex(index);
+                }}
+                className={`relative h-20 w-32 shrink-0 overflow-hidden rounded-md border transition lg:h-full ${
+                  activeIndex === index
+                    ? "border-[color:var(--color-brand-accent)]"
+                    : "border-slate-300 hover:border-slate-400"
+                }`}
+                aria-label={`Показать фото ${index + 1}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                />
+                {hiddenCount > 0 && index === previewGallery.length - 1 ? (
                   <span
-                    key={`slide-${index}`}
-                    className={`h-1.5 flex-1 rounded-full transition-colors duration-150 ${
-                      index === activeIndex ? "bg-white" : "bg-white/40 hover:bg-white/70"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          </>
-        ) : (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={previewGallery[0]}
-            alt={title}
-            className="h-full w-full cursor-zoom-in object-cover object-center"
-            loading="eager"
-            decoding="async"
-            draggable={false}
-            onClick={() => openLightbox(0)}
-          />
-        )}
+                    aria-hidden
+                    className="absolute inset-0 flex items-center justify-center bg-black/50 text-base font-semibold text-white"
+                  >
+                    Показать все
+                  </span>
+                ) : null}
+              </button>
+            ))}
+            {hiddenCount > 0 ? (
+              <button
+                type="button"
+                onClick={() => openLightbox(activeIndex)}
+                className="inline-flex h-20 w-32 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-white px-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Показать все
+              </button>
+            ) : null}
+          </div>
+        </div>
       </div>
 
       {lightboxOpen ? (

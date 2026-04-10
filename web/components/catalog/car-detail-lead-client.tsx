@@ -14,7 +14,7 @@ export function CarDetailLeadClient({
 }) {
   const context = useMemo(
     () => ({
-      city: car.cities[0] ?? "Барнаул",
+      city: car.city,
       carId: car.id,
       paymentMethod: "credit" as const,
       monthlyBudget: car.monthlyPaymentRub,

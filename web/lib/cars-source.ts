@@ -31,7 +31,8 @@ export const carSchema = z.object({
   drive: z.enum(["fwd", "rwd", "awd"]),
   fuel: z.enum(["petrol", "diesel", "hybrid"]),
   color: z.string(),
-  cities: z.array(z.string()),
+  city: z.string().optional(),
+  cities: z.array(z.string()).optional(),
   images: z.array(z.string().url()).min(1),
   trustPoints: z.array(z.string()),
   tags: z.array(z.enum(["family", "first-car", "city", "comfort"])),
@@ -43,7 +44,18 @@ export const carsArraySchema = z.array(carSchema);
 
 function parseCarsPayload(data: unknown): Car[] {
   const parsed = carsArraySchema.parse(data);
-  return parsed;
+  return parsed.map((car) => {
+    const cityFromArray = car.cities?.find((item) => item.trim());
+    const city = car.city?.trim() || cityFromArray || "Барнаул";
+    if (!car.city && car.cities && car.cities.length > 1) {
+      // TODO: when external source is normalized, remove fallback from cities[].
+      console.warn(`[cars-source] multiple cities for ${car.id}; using first valid city "${city}"`);
+    }
+    return {
+      ...car,
+      city,
+    };
+  });
 }
 
 async function loadCarsFromFile(): Promise<Car[]> {

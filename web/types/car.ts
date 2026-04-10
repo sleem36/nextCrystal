@@ -34,7 +34,7 @@ export type Car = {
   drive: CarDrive;
   fuel: CarFuel;
   color: string;
-  cities: string[];
+  city: string;
   /** Публичные URL изображений (листинг / галерея) */
   images: string[];
   trustPoints: string[];
