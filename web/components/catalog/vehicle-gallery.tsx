@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 
 type VehicleGalleryProps = {
@@ -14,14 +14,20 @@ type VehicleGalleryProps = {
 export function VehicleGallery({ images, brand, model, year, className = "" }: VehicleGalleryProps) {
   const title = `${brand} ${model}, ${year}`;
   const gallery = useMemo(() => images, [images]);
-  const previewGallery = useMemo(() => gallery.slice(0, 5), [gallery]);
+  const MAX_VISIBLE_GALLERY = 5;
+  const MAX_THUMB_SLOTS = 5;
+  const previewGallery = useMemo(() => gallery.slice(0, MAX_VISIBLE_GALLERY), [gallery]);
   const totalPhotos = gallery.length;
   const hiddenCount = Math.max(0, totalPhotos - previewGallery.length);
+  const thumbPreviewLimit = hiddenCount > 0 ? MAX_THUMB_SLOTS - 1 : MAX_THUMB_SLOTS;
+  const thumbPreview = previewGallery.slice(0, thumbPreviewLimit);
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const scrollYRef = useRef(0);
-  const hasSlider = gallery.length > 1;
+  const hoverRafRef = useRef<number | null>(null);
+  const hoverSegmentRef = useRef<number | null>(null);
+  const hasSlider = previewGallery.length > 1;
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     dragFree: false,
@@ -45,6 +51,24 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
       emblaApi.off("reInit", onSelect);
     };
   }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.reInit();
+  }, [emblaApi, previewGallery]);
+
+  useEffect(() => {
+    if (activeIndex <= Math.max(0, previewGallery.length - 1)) return;
+    setActiveIndex(Math.max(0, previewGallery.length - 1));
+  }, [activeIndex, previewGallery.length]);
+
+  useEffect(() => {
+    return () => {
+      if (hoverRafRef.current) {
+        window.cancelAnimationFrame(hoverRafRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!lightboxEmblaApi) return;
@@ -107,6 +131,36 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
     lightboxEmblaApi?.scrollNext();
   };
 
+  const onBarHover = (index: number) => {
+    if (!emblaApi) return;
+    if (hoverRafRef.current) {
+      window.cancelAnimationFrame(hoverRafRef.current);
+    }
+    hoverRafRef.current = window.requestAnimationFrame(() => {
+      emblaApi.scrollTo(index);
+      hoverRafRef.current = null;
+    });
+  };
+
+  const onHoverZoneMove = (event: MouseEvent<HTMLDivElement>) => {
+    if (!hasSlider || !emblaApi) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const segmentWidth = rect.width / previewGallery.length;
+    const nextIndex = Math.min(
+      previewGallery.length - 1,
+      Math.max(0, Math.floor(x / segmentWidth)),
+    );
+    if (nextIndex !== hoverSegmentRef.current) {
+      hoverSegmentRef.current = nextIndex;
+      onBarHover(nextIndex);
+    }
+  };
+
+  const onHoverZoneLeave = () => {
+    hoverSegmentRef.current = null;
+  };
+
   if (!previewGallery.length) {
     return (
       <div className="aspect-[16/10] w-full bg-slate-100 text-sm text-slate-500 flex items-center justify-center rounded-[var(--radius-card)] border border-slate-200">
@@ -118,42 +172,66 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
   return (
     <>
       <div className={`space-y-2 lg:grid lg:h-full lg:grid-rows-[minmax(0,1fr)_5rem] lg:gap-2 lg:space-y-0 ${className}`}>
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100 lg:aspect-auto lg:h-full">
+        <div
+          className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100 lg:aspect-auto lg:h-full lg:min-h-[280px]"
+          onMouseMove={onHoverZoneMove}
+          onMouseLeave={onHoverZoneLeave}
+        >
           {hasSlider ? (
-            <div className="h-full overflow-hidden" ref={emblaRef}>
-              <div className="flex h-full">
-                {gallery.map((src, index) => (
-                  <div key={`img-${index}`} className="relative min-w-0 flex-[0_0_100%]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={src}
-                      alt={`${title} — фото ${index + 1}`}
-                      className="h-full w-full cursor-zoom-in object-cover object-center"
-                      loading={index === 0 ? "eager" : "lazy"}
-                      decoding="async"
-                      draggable={false}
-                      onClick={() => openLightbox(index)}
-                    />
-                  </div>
-                ))}
+            <>
+              <div className="absolute inset-0 overflow-hidden" ref={emblaRef}>
+                <div className="flex h-full">
+                  {previewGallery.map((src, index) => (
+                    <div
+                      key={`img-${index}`}
+                      className="relative h-full min-h-0 min-w-0 flex-[0_0_100%] shrink-0"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={src}
+                        alt={`${title} — фото ${index + 1}`}
+                        className="h-full w-full cursor-zoom-in object-cover object-center"
+                        loading={index === 0 ? "eager" : "lazy"}
+                        decoding="async"
+                        draggable={false}
+                        onClick={() => openLightbox(index)}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/55 via-black/20 to-transparent px-2 pb-2 pt-5">
+                <div className="flex items-center gap-1.5">
+                  {previewGallery.map((_, index) => (
+                    <span
+                      key={`slide-dot-${index}`}
+                      className={`h-1.5 flex-1 rounded-full transition-colors duration-150 ${
+                        index === activeIndex ? "bg-white" : "bg-white/40"
+                      }`}
+                      aria-hidden
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewGallery[0]}
-              alt={title}
-              className="h-full w-full cursor-zoom-in object-cover object-center"
-              loading="eager"
-              decoding="async"
-              draggable={false}
-              onClick={() => openLightbox(0)}
-            />
+            <div className="absolute inset-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={previewGallery[0]}
+                alt={title}
+                className="h-full w-full cursor-zoom-in object-cover object-center"
+                loading="eager"
+                decoding="async"
+                draggable={false}
+                onClick={() => openLightbox(0)}
+              />
+            </div>
           )}
         </div>
-        <div className="overflow-x-auto lg:h-20">
-          <div className="flex min-w-max gap-1.5 lg:h-full">
-            {previewGallery.map((src, index) => (
+        <div className="overflow-hidden lg:h-20">
+          <div className="grid h-full grid-cols-5 gap-1.5">
+            {thumbPreview.map((src, index) => (
               <button
                 key={`thumb-preview-${index}`}
                 type="button"
@@ -161,7 +239,7 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
                   emblaApi?.scrollTo(index);
                   setActiveIndex(index);
                 }}
-                className={`relative h-20 w-32 shrink-0 overflow-hidden rounded-md border transition lg:h-full ${
+                className={`relative h-full min-h-[62px] w-full overflow-hidden rounded-md border transition ${
                   activeIndex === index
                     ? "border-[color:var(--color-brand-accent)]"
                     : "border-slate-300 hover:border-slate-400"
@@ -177,23 +255,31 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
                   decoding="async"
                   draggable={false}
                 />
-                {hiddenCount > 0 && index === previewGallery.length - 1 ? (
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 flex items-center justify-center bg-black/50 text-base font-semibold text-white"
-                  >
-                    Показать все
-                  </span>
-                ) : null}
               </button>
             ))}
             {hiddenCount > 0 ? (
               <button
                 type="button"
                 onClick={() => openLightbox(activeIndex)}
-                className="inline-flex h-20 w-32 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-white px-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                className="group relative inline-flex h-full min-h-[62px] w-full items-center justify-center overflow-hidden rounded-md border border-slate-300"
+                aria-label={`Показать все фото (${gallery.length})`}
               >
-                Показать все
+                {/* Фон как у соседних превью: последний видимый кадр + затемнение */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={previewGallery[previewGallery.length - 1]}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                />
+                <span className="absolute inset-0 bg-black/45" aria-hidden />
+                <span className="relative z-[1] text-center text-sm font-semibold leading-tight text-white">
+                  Показать все
+                  <br />
+                  <span className="text-xs font-medium text-white/90">+{hiddenCount}</span>
+                </span>
               </button>
             ) : null}
           </div>

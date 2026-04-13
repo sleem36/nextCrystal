@@ -37,7 +37,13 @@ export const carSchema = z.object({
   trustPoints: z.array(z.string()),
   tags: z.array(z.enum(["family", "first-car", "city", "comfort"])),
   passport: carPassportSchema,
+  ownersCount: z.number().int().min(1).optional(),
+  pts: z.enum(["original", "duplicate"]).optional(),
+  accident: z.boolean().optional(),
   videoReviewUrl: z.string().url().optional(),
+  oldPriceRub: z.number().positive().optional(),
+  viewCount: z.number().int().nonnegative().optional(),
+  bookingCount: z.number().int().nonnegative().optional(),
 });
 
 export const carsArraySchema = z.array(carSchema);

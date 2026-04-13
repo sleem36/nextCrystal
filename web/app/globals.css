@@ -77,6 +77,76 @@ body {
   background-size: 180px 180px;
 }
 
+@keyframes catalog-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.catalog-card-enter {
+  animation: catalog-card-enter 0.45s var(--easing-out) both;
+}
+
+/* Двойной range: трек не ловит клики, только ползунки */
+.catalog-dual-range input[type="range"] {
+  pointer-events: none;
+  height: 2rem;
+}
+
+.catalog-dual-range input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+}
+
+.catalog-dual-range input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  background: var(--color-brand-accent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.catalog-dual-range input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  margin-top: -4px;
+  border-radius: 9999px;
+  border: 2px solid #fff;
+  background: var(--color-brand-accent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.catalog-dual-range input[type="range"]::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 8px;
+}
+
+.catalog-dual-range input[type="range"]::-moz-range-track {
+  background: transparent;
+  height: 8px;
+}
+
+.select-arrow-offset {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%231f2937' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px 14px;
+}
+
+.select-arrow-offset::-ms-expand {
+  display: none;
+}
+
 .focus-target-highlight {
   border-radius: var(--radius-card);
   box-shadow:

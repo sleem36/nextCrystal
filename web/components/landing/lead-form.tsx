@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,8 @@ type LeadFormProps = {
   /** Заголовок скрыт (например, заголовок в модалке) */
   hideTitle?: boolean;
   onSuccess?: () => void;
+  /** Для спиннера на кнопке в каталоге во время отправки из модалки */
+  onSubmittingChange?: (submitting: boolean) => void;
   context: {
     city: string;
     /** Единый id авто для всех экранов (если выбрано конкретное авто) */
@@ -38,7 +40,13 @@ type LeadFormProps = {
   };
 };
 
-export function LeadForm({ context, variant = "card", hideTitle = false, onSuccess }: LeadFormProps) {
+export function LeadForm({
+  context,
+  variant = "card",
+  hideTitle = false,
+  onSuccess,
+  onSubmittingChange,
+}: LeadFormProps) {
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
   const prepaymentTermsUrl = process.env.NEXT_PUBLIC_PREPAYMENT_TERMS_URL;
   const [name, setName] = useState("");
@@ -49,6 +57,10 @@ export function LeadForm({ context, variant = "card", hideTitle = false, onSucce
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    onSubmittingChange?.(isSubmitting);
+  }, [isSubmitting, onSubmittingChange]);
 
   const phoneError = useMemo(() => {
     if (!phone) {

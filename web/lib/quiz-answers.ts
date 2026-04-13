@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { SelectorState } from "@/components/landing/quick-selector";
 import {
   carListingFiltersToSearchParams,
+  DEFAULT_CAR_LISTING_FILTERS,
   type CarListingFilters,
 } from "@/lib/car-filters";
 
@@ -54,7 +55,10 @@ export function loadQuizAnswers(): QuizAnswersState | null {
 
 /** Те же поля, что у фильтров /cars */
 export function quizAnswersToListingFilters(state: QuizAnswersState): CarListingFilters {
-  return { ...state };
+  return {
+    ...DEFAULT_CAR_LISTING_FILTERS,
+    ...state,
+  };
 }
 
 /** Ссылка на каталог с фильтрами квиза + сохранение UTM из главной */

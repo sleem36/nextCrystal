@@ -7,11 +7,24 @@ import type {
   TransmissionFilter,
 } from "@/components/landing/quick-selector";
 
-/** Параметры листинга /cars — те же семантики, что у квиза на главной */
+/** Параметры листинга /cars — те же семантики, что у квиза на главной + расширения каталога */
+export type CatalogSort =
+  | "default"
+  | "price_asc"
+  | "price_desc"
+  | "year_desc"
+  | "year_asc"
+  | "mileage_asc"
+  | "mileage_desc"
+  | "popular_desc";
+
+export type OwnerBucket = "1" | "2" | "3plus";
+
 export type CarListingFilters = {
   paymentMethod: PaymentMethod;
   monthlyBudget: number;
   maxPriceRub: number;
+  priceMinRub: number;
   bodyType: CarBodyType | "any";
   transmission: TransmissionFilter;
   city: string;
@@ -19,12 +32,19 @@ export type CarListingFilters = {
   fuel: FuelFilter;
   yearFrom: number;
   maxMileageKm: number;
+  ownerBuckets: OwnerBucket[];
+  accident: "any" | "none" | "yes";
+  /** Пустая строка = любой цвет */
+  color: string;
+  hasVideoOnly: boolean;
+  sort: CatalogSort;
 };
 
 export const DEFAULT_CAR_LISTING_FILTERS: CarListingFilters = {
   paymentMethod: "credit",
   monthlyBudget: 35000,
   maxPriceRub: 2500000,
+  priceMinRub: 0,
   bodyType: "any",
   transmission: "any",
   city: "Барнаул",
@@ -32,6 +52,11 @@ export const DEFAULT_CAR_LISTING_FILTERS: CarListingFilters = {
   fuel: "any",
   yearFrom: 2018,
   maxMileageKm: 90000,
+  ownerBuckets: [],
+  accident: "any",
+  color: "",
+  hasVideoOnly: false,
+  sort: "default",
 };
 
 function parseIntParam(value: string | undefined, fallback: number): number {
@@ -75,6 +100,41 @@ function parsePaymentMethod(value: string | undefined): PaymentMethod {
   return PAYMENT_METHODS.includes(value as PaymentMethod) ? (value as PaymentMethod) : "credit";
 }
 
+const SORTS: CatalogSort[] = [
+  "default",
+  "price_asc",
+  "price_desc",
+  "year_desc",
+  "year_asc",
+  "mileage_asc",
+  "mileage_desc",
+  "popular_desc",
+];
+
+function parseSort(value: string | undefined): CatalogSort {
+  if (!value) return "default";
+  return SORTS.includes(value as CatalogSort) ? (value as CatalogSort) : "default";
+}
+
+const OWNER_BUCKETS: OwnerBucket[] = ["1", "2", "3plus"];
+
+function parseOwnerBuckets(value: string | undefined): OwnerBucket[] {
+  if (!value?.trim()) return [];
+  const parts = value.split(",").map((s) => s.trim()).filter(Boolean);
+  const out: OwnerBucket[] = [];
+  for (const p of parts) {
+    if (OWNER_BUCKETS.includes(p as OwnerBucket)) {
+      out.push(p as OwnerBucket);
+    }
+  }
+  return out;
+}
+
+function parseAccident(value: string | undefined): "any" | "none" | "yes" {
+  if (value === "none" || value === "yes") return value;
+  return "any";
+}
+
 /** Разбор querystring для /cars */
 export function parseCarListingSearchParams(
   raw: Record<string, string | string[] | undefined>,
@@ -89,6 +149,7 @@ export function parseCarListingSearchParams(
     paymentMethod: parsePaymentMethod(get("paymentMethod")),
     monthlyBudget: parseIntParam(get("monthlyBudget"), DEFAULT_CAR_LISTING_FILTERS.monthlyBudget),
     maxPriceRub: parseIntParam(get("maxPriceRub"), DEFAULT_CAR_LISTING_FILTERS.maxPriceRub),
+    priceMinRub: parseIntParam(get("priceMinRub"), DEFAULT_CAR_LISTING_FILTERS.priceMinRub),
     bodyType: parseBodyType(get("bodyType")),
     transmission: parseTransmission(get("transmission")),
     city: get("city")?.trim() || DEFAULT_CAR_LISTING_FILTERS.city,
@@ -96,6 +157,11 @@ export function parseCarListingSearchParams(
     fuel: parseFuel(get("fuel")),
     yearFrom: parseIntParam(get("yearFrom"), DEFAULT_CAR_LISTING_FILTERS.yearFrom),
     maxMileageKm: parseIntParam(get("maxMileageKm"), DEFAULT_CAR_LISTING_FILTERS.maxMileageKm),
+    ownerBuckets: parseOwnerBuckets(get("owners")),
+    accident: parseAccident(get("accident")),
+    color: get("color")?.trim() ?? "",
+    hasVideoOnly: get("hasVideo") === "1",
+    sort: parseSort(get("sort")),
   };
 }
 
@@ -104,6 +170,7 @@ export const CATALOG_FILTER_PARAM_KEYS = [
   "paymentMethod",
   "monthlyBudget",
   "maxPriceRub",
+  "priceMinRub",
   "bodyType",
   "transmission",
   "city",
@@ -111,6 +178,11 @@ export const CATALOG_FILTER_PARAM_KEYS = [
   "fuel",
   "yearFrom",
   "maxMileageKm",
+  "owners",
+  "accident",
+  "color",
+  "hasVideo",
+  "sort",
 ] as const;
 
 export function hasCatalogFilterParams(searchParams: URLSearchParams): boolean {
@@ -124,6 +196,9 @@ export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearch
     p.set("monthlyBudget", String(f.monthlyBudget));
   }
   p.set("maxPriceRub", String(f.maxPriceRub));
+  if (f.priceMinRub > 0) {
+    p.set("priceMinRub", String(f.priceMinRub));
+  }
   if (f.bodyType !== "any") p.set("bodyType", f.bodyType);
   if (f.transmission !== "any") p.set("transmission", f.transmission);
   p.set("city", f.city);
@@ -131,15 +206,35 @@ export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearch
   if (f.fuel !== "any") p.set("fuel", f.fuel);
   p.set("yearFrom", String(f.yearFrom));
   p.set("maxMileageKm", String(f.maxMileageKm));
+  if (f.ownerBuckets.length > 0) {
+    p.set("owners", f.ownerBuckets.join(","));
+  }
+  if (f.accident !== "any") {
+    p.set("accident", f.accident);
+  }
+  if (f.color.trim()) {
+    p.set("color", f.color.trim());
+  }
+  if (f.hasVideoOnly) {
+    p.set("hasVideo", "1");
+  }
+  if (f.sort !== "default") {
+    p.set("sort", f.sort);
+  }
   return p;
 }
 
-function matchesPrimary(car: Car, f: CarListingFilters): boolean {
+function matchesBudgetCityBodyTransmission(car: Car, f: CarListingFilters): boolean {
   if (f.paymentMethod === "credit" && car.monthlyPaymentRub > f.monthlyBudget) return false;
-  if (car.priceRub > f.maxPriceRub) return false;
   if (car.city !== f.city) return false;
   if (f.bodyType !== "any" && car.bodyType !== f.bodyType) return false;
   if (f.transmission !== "any" && car.transmission !== f.transmission) return false;
+  return true;
+}
+
+function matchesPrice(car: Car, f: CarListingFilters): boolean {
+  if (car.priceRub < f.priceMinRub) return false;
+  if (car.priceRub > f.maxPriceRub) return false;
   return true;
 }
 
@@ -151,8 +246,59 @@ function matchesSecondary(car: Car, f: CarListingFilters): boolean {
   return true;
 }
 
+function matchesOwners(car: Car, f: CarListingFilters): boolean {
+  if (f.ownerBuckets.length === 0) return true;
+  const o = car.passport.owners;
+  return f.ownerBuckets.some((b) => {
+    if (b === "1") return o === 1;
+    if (b === "2") return o === 2;
+    return o >= 3;
+  });
+}
+
+function matchesAccident(car: Car, f: CarListingFilters): boolean {
+  if (f.accident === "none" && car.passport.accident.has) return false;
+  if (f.accident === "yes" && !car.passport.accident.has) return false;
+  return true;
+}
+
+function matchesColor(car: Car, f: CarListingFilters): boolean {
+  const q = f.color.trim().toLowerCase();
+  if (!q) return true;
+  return car.color.toLowerCase() === q || car.color.toLowerCase().includes(q);
+}
+
+function matchesVideo(car: Car, f: CarListingFilters): boolean {
+  if (!f.hasVideoOnly) return true;
+  return Boolean(car.videoReviewUrl);
+}
+
+/**
+ * Авто, подходящие под фильтры **кроме** диапазона цены — для подписей min/max у слайдера.
+ */
+export function filterCarsForPriceBounds(cars: Car[], f: CarListingFilters): Car[] {
+  return cars.filter(
+    (car) =>
+      matchesBudgetCityBodyTransmission(car, f) &&
+      matchesSecondary(car, f) &&
+      matchesOwners(car, f) &&
+      matchesAccident(car, f) &&
+      matchesColor(car, f) &&
+      matchesVideo(car, f),
+  );
+}
+
 export function filterCars(cars: Car[], f: CarListingFilters): Car[] {
-  return cars.filter((car) => matchesPrimary(car, f) && matchesSecondary(car, f));
+  return cars.filter(
+    (car) =>
+      matchesBudgetCityBodyTransmission(car, f) &&
+      matchesPrice(car, f) &&
+      matchesSecondary(car, f) &&
+      matchesOwners(car, f) &&
+      matchesAccident(car, f) &&
+      matchesColor(car, f) &&
+      matchesVideo(car, f),
+  );
 }
 
 /** Смягчённые параметры — как на главной при «расширенной» выдаче */
@@ -166,12 +312,18 @@ export function getRelaxedSuggestions(cars: Car[], f: CarListingFilters): Car[] 
     ...f,
     monthlyBudget: relaxedMonthlyBudget,
     maxPriceRub: relaxedMaxPrice,
+    priceMinRub: 0,
     yearFrom: relaxedYearFrom,
     maxMileageKm: relaxedMileage,
     bodyType: "any",
     transmission: "any",
     drive: "any",
     fuel: "any",
+    ownerBuckets: [],
+    accident: "any",
+    color: "",
+    hasVideoOnly: false,
+    sort: "default",
   };
 
   const scored = cars

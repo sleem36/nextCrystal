@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { writeCompareIdsToStorage } from "@/lib/compare-selection";
+import { useCompareStore } from "@/stores/compare-store";
 
-/** Сохраняет id из URL сравнения в localStorage (шаринг / обновление страницы) */
+/** Подтягивает id из URL сравнения в store и localStorage (шаринг / обновление страницы) */
 export function CompareStorageSync({ ids }: { ids: string[] }) {
   useEffect(() => {
-    writeCompareIdsToStorage(ids);
+    useCompareStore.getState().setIds(ids);
   }, [ids]);
 
   return null;

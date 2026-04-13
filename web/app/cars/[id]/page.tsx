@@ -8,6 +8,7 @@ import { CarPhoneReveal } from "@/components/catalog/car-phone-reveal";
 import { CarOptionsChips } from "@/components/catalog/car-options-chips";
 import { MobileStickyBookingBar } from "@/components/catalog/mobile-sticky-booking-bar";
 import { CarOpenedTracker } from "@/components/catalog/car-opened-tracker";
+import { RecentlyViewedTracker } from "@/components/catalog/recently-viewed-tracker";
 import { CarPassportBlock } from "@/components/catalog/car-passport-block";
 import { CarVideoSection } from "@/components/catalog/car-video-section";
 import { TradeInCtaPanel } from "@/components/catalog/trade-in-cta-panel";
@@ -104,6 +105,7 @@ export default async function CarDetailPage({
 
   return (
     <article className="container-wide mx-auto max-w-[1280px] space-y-8 pb-24 pt-4 md:pb-16 md:pt-6">
+      <RecentlyViewedTracker carId={car.id} />
       <CarOpenedTracker
         carId={car.id}
         city={car.city}

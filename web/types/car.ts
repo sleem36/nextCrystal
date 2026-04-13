@@ -40,5 +40,16 @@ export type Car = {
   trustPoints: string[];
   tags: CarTag[];
   passport: CarPassport;
+  /** Плоские поля для карточек/API; если нет — берутся из passport */
+  ownersCount?: number;
+  pts?: CarPtsStatus;
+  /** true — было ДТП (как passport.accident.has) */
+  accident?: boolean;
   videoReviewUrl?: string;
+  /** Зачёркнутая цена для бейджа скидки (если нет — можно сгенерировать на клиенте) */
+  oldPriceRub?: number;
+  /** Просмотры карточки (для сортировки «по популярности» и соц.доказательства) */
+  viewCount?: number;
+  /** Сколько раз оформляли бронь (метрика популярности) */
+  bookingCount?: number;
 };
