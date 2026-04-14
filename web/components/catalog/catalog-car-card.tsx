@@ -82,6 +82,7 @@ export type CatalogCarCardProps = {
   car: Car;
   animationIndex: number;
   imagePriority?: boolean;
+  showWishlistToggle?: boolean;
   compare?: {
     checked: boolean;
     disabled: boolean;
@@ -99,6 +100,7 @@ export function CatalogCarCard({
   car,
   animationIndex,
   imagePriority = false,
+  showWishlistToggle = true,
   compare,
   isBooked,
   bookedUntilMs,
@@ -375,20 +377,22 @@ export function CatalogCarCard({
           </label>
         ) : null}
 
-        <button
-          type="button"
-          data-no-card-nav
-          className="absolute right-2 top-2 z-[7] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white"
-          onClick={(event) => {
-            event.stopPropagation();
-            toggleWishlist(car.id);
-          }}
-          onPointerDown={(event) => event.stopPropagation()}
-          aria-label={isWishlisted ? "Удалить из избранного" : "Добавить в избранное"}
-          aria-pressed={isWishlisted}
-        >
-          <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
-        </button>
+        {showWishlistToggle ? (
+          <button
+            type="button"
+            data-no-card-nav
+            className="absolute right-2 top-2 z-[7] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white"
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleWishlist(car.id);
+            }}
+            onPointerDown={(event) => event.stopPropagation()}
+            aria-label={isWishlisted ? "Удалить из избранного" : "Добавить в избранное"}
+            aria-pressed={isWishlisted}
+          >
+            <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
+          </button>
+        ) : null}
 
         {hasVideo ? (
           <span

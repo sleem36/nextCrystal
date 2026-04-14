@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Heart, MapPin, Menu, Phone, Scale, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +56,7 @@ export function SiteHeader() {
   const [callbackState, setCallbackState] = useState<CallbackFormState>({ name: "", phone: "" });
   const [callbackSubmitting, setCallbackSubmitting] = useState(false);
   const [callbackError, setCallbackError] = useState("");
+  const catalogCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const compareCount = compareIds.length;
   const wishlistCount = wishlistIds.length;
@@ -86,6 +87,33 @@ export function SiteHeader() {
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(
+    () => () => {
+      if (catalogCloseTimerRef.current) {
+        clearTimeout(catalogCloseTimerRef.current);
+      }
+    },
+    [],
+  );
+
+  const openCatalogMenu = () => {
+    if (catalogCloseTimerRef.current) {
+      clearTimeout(catalogCloseTimerRef.current);
+      catalogCloseTimerRef.current = null;
+    }
+    setCatalogOpen(true);
+  };
+
+  const closeCatalogMenuWithDelay = () => {
+    if (catalogCloseTimerRef.current) {
+      clearTimeout(catalogCloseTimerRef.current);
+    }
+    catalogCloseTimerRef.current = setTimeout(() => {
+      setCatalogOpen(false);
+      catalogCloseTimerRef.current = null;
+    }, 160);
+  };
 
   const submitSearch = (event: FormEvent, value: string) => {
     event.preventDefault();
@@ -191,8 +219,16 @@ export function SiteHeader() {
           <nav className="relative hidden items-center gap-5 text-sm lg:flex">
             <div
               className="relative"
-              onMouseEnter={() => setCatalogOpen(true)}
-              onMouseLeave={() => setCatalogOpen(false)}
+              onMouseEnter={openCatalogMenu}
+              onMouseLeave={closeCatalogMenuWithDelay}
+              onFocus={openCatalogMenu}
+              onBlur={(event) => {
+                const nextTarget = event.relatedTarget;
+                if (nextTarget instanceof Node && event.currentTarget.contains(nextTarget)) {
+                  return;
+                }
+                closeCatalogMenuWithDelay();
+              }}
             >
               <button
                 type="button"
@@ -200,15 +236,20 @@ export function SiteHeader() {
                 aria-expanded={catalogOpen}
                 aria-label="Открыть категории каталога"
                 onClick={() => setCatalogOpen((prev) => !prev)}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") {
+                    setCatalogOpen(false);
+                  }
+                }}
               >
                 Каталог
                 <ChevronDown className="h-4 w-4" aria-hidden />
               </button>
               <div
-                className={`absolute left-0 top-full z-50 mt-2 w-72 origin-top rounded-xl border border-slate-200 bg-white p-3 shadow-xl transition duration-150 ${
+                className={`absolute left-0 top-full z-50 w-72 origin-top rounded-xl border border-slate-200 bg-white p-3 shadow-xl transition duration-150 ${
                   catalogOpen
-                    ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
-                    : "pointer-events-none -translate-y-1 scale-95 opacity-0"
+                    ? "pointer-events-auto translate-y-1 scale-100 opacity-100"
+                    : "pointer-events-none -translate-y-0.5 scale-95 opacity-0"
                 }`}
               >
                   {catalogGroups.map((group) => (

@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Heart } from "lucide-react";
 import { bodyTypeLabel, driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
-import { useWishlistStore } from "@/stores/wishlist-store";
 import type { Car } from "@/types/car";
 
 function th() {
@@ -15,9 +13,15 @@ function td() {
   return "border-b border-slate-200 px-3 py-2.5 text-sm text-slate-800";
 }
 
+function fallbackImageSrc(car: Car) {
+  return `https://picsum.photos/seed/${car.id}-compare/480/300`;
+}
+
+function primaryImageSrc(car: Car) {
+  return car.images[0] || fallbackImageSrc(car);
+}
+
 export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: string[] }) {
-  const toggleWishlist = useWishlistStore((state) => state.toggle);
-  const isWishlisted = useWishlistStore((state) => state.has);
   const compareIdsParam = cars.map((car) => car.id).join(",");
   return (
     <div className="container-wide space-y-6 py-8 md:py-10">
@@ -71,25 +75,27 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
               <th className={th()}>Параметр</th>
               {cars.map((car) => (
                 <th key={car.id} className={`${th()} min-w-[160px]`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <Link
-                      href={`/cars/${car.id}`}
-                      className="font-semibold text-[color:var(--color-brand-primary)] hover:text-[color:var(--color-brand-accent)] hover:underline"
-                    >
-                      {car.brand} {car.model}
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => toggleWishlist(car.id)}
-                      className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-slate-300 bg-white text-rose-600 transition hover:bg-slate-50"
-                      aria-label={
-                        isWishlisted(car.id) ? "Удалить из избранного" : "Добавить в избранное"
-                      }
-                      aria-pressed={isWishlisted(car.id)}
-                    >
-                      <Heart className={`h-5 w-5 ${isWishlisted(car.id) ? "fill-current" : ""}`} />
-                    </button>
-                  </div>
+                  <Link
+                    href={`/cars/${car.id}`}
+                    className="mb-2 block overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={primaryImageSrc(car)}
+                      alt={`${car.brand} ${car.model}`}
+                      className="h-24 w-full object-cover object-center transition duration-300 hover:scale-[1.02]"
+                      width={320}
+                      height={180}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </Link>
+                  <Link
+                    href={`/cars/${car.id}`}
+                    className="font-semibold text-[color:var(--color-brand-primary)] hover:text-[color:var(--color-brand-accent)] hover:underline"
+                  >
+                    {car.brand} {car.model}
+                  </Link>
                   <div className="mt-1 font-normal normal-case text-slate-500">{car.year} г.</div>
                 </th>
               ))}

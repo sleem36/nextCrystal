@@ -94,6 +94,7 @@ export function FavoritesClient({ cars }: FavoritesClientProps) {
                 car={car}
                 animationIndex={index}
                 imagePriority={index < 4}
+                showWishlistToggle={false}
                 isBooked={bookedIds.has(car.id)}
                 bookedUntilMs={bookedUntilMap[car.id] ?? null}
                 isBookingSubmitting={bookingSubmittingId === car.id}

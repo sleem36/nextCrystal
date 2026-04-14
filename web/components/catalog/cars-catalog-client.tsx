@@ -115,10 +115,10 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
 
   const carsById = useMemo(() => new Map(cars.map((c) => [c.id, c])), [cars]);
 
-  const priceBounds = useMemo(() => {
+  const strictPriceBounds = useMemo(() => {
     const pool = filterCarsForPriceBounds(cars, filters);
     if (pool.length === 0) {
-      return { min: 0, max: 1 };
+      return { min: 0, max: 0 };
     }
     const prices = pool.map((c) => c.priceRub);
     return { min: Math.min(...prices), max: Math.max(...prices) };
@@ -142,6 +142,15 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
 
   const showList = filtered.length > 0 ? filtered : relaxed;
   const isRelaxed = filtered.length === 0 && relaxed.length > 0;
+
+  const priceBounds = useMemo(() => {
+    const pool = filtered.length > 0 ? filtered : relaxed;
+    if (pool.length === 0) {
+      return strictPriceBounds;
+    }
+    const prices = pool.map((c) => c.priceRub);
+    return { min: Math.min(...prices), max: Math.max(...prices) };
+  }, [filtered, relaxed, strictPriceBounds]);
 
   const sortedList = useMemo(
     () => sortCatalogCars(showList, filters.sort),

@@ -17,16 +17,22 @@ export function PriceRangeSlider({
   onChange,
   formatValue,
 }: PriceRangeSliderProps) {
-  const step = 50000;
   const disabled = !Number.isFinite(minBound) || !Number.isFinite(maxBound) || minBound >= maxBound;
+  const span = Math.max(1, maxBound - minBound);
+  const step = span >= 1_000_000 ? 50_000 : span >= 200_000 ? 10_000 : 1_000;
 
   const clamp = (v: number) => Math.min(maxBound, Math.max(minBound, v));
+  const alignToStep = (v: number) => {
+    const clamped = clamp(v);
+    const offset = Math.round((clamped - minBound) / step) * step;
+    return clamp(minBound + offset);
+  };
 
-  const low = clamp(Math.min(valueMin, valueMax));
-  const high = clamp(Math.max(valueMin, valueMax));
+  const low = alignToStep(Math.min(valueMin, valueMax));
+  const high = alignToStep(Math.max(valueMin, valueMax));
 
   const setLow = (raw: number) => {
-    const v = clamp(raw);
+    const v = alignToStep(raw);
     if (v <= high) {
       onChange({ min: v, max: high });
     } else {
@@ -35,7 +41,7 @@ export function PriceRangeSlider({
   };
 
   const setHigh = (raw: number) => {
-    const v = clamp(raw);
+    const v = alignToStep(raw);
     if (v >= low) {
       onChange({ min: low, max: v });
     } else {
@@ -43,7 +49,6 @@ export function PriceRangeSlider({
     }
   };
 
-  const span = Math.max(1, maxBound - minBound);
   const lowPct = ((low - minBound) / span) * 100;
   const highPct = ((high - minBound) / span) * 100;
 
@@ -80,6 +85,7 @@ export function PriceRangeSlider({
           disabled={disabled}
           aria-label="Минимальная цена"
           className={`${thumbClass} z-30`}
+          style={{ accentColor: "transparent" }}
           onChange={(e) => setLow(Number(e.target.value))}
         />
         <input
@@ -91,6 +97,7 @@ export function PriceRangeSlider({
           disabled={disabled}
           aria-label="Максимальная цена"
           className={`${thumbClass} z-20`}
+          style={{ accentColor: "transparent" }}
           onChange={(e) => setHigh(Number(e.target.value))}
         />
       </div>
