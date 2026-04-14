@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: "Aurora Auto — подбор автомобиля с пробегом",
   description:
     "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Aurora Auto.",
+  verification: {
+    yandex: "ea87bbaee9d4f1b4",
+  },
   alternates: { canonical: "/" },
   openGraph: {
     title: "Aurora Auto — подбор автомобиля с пробегом",
