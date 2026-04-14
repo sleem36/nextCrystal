@@ -31,12 +31,16 @@ export type CarListingFilters = {
   drive: DriveFilter;
   fuel: FuelFilter;
   yearFrom: number;
+  yearTo: number;
+  mileageFromKm: number;
   maxMileageKm: number;
   ownerBuckets: OwnerBucket[];
   accident: "any" | "none" | "yes";
+  pts: "any" | "original" | "duplicate";
   /** Пустая строка = любой цвет */
   color: string;
   hasVideoOnly: boolean;
+  withoutPaintOnly: boolean;
   search: string;
   sort: CatalogSort;
 };
@@ -52,11 +56,15 @@ export const DEFAULT_CAR_LISTING_FILTERS: CarListingFilters = {
   drive: "any",
   fuel: "any",
   yearFrom: 2018,
+  yearTo: new Date().getFullYear(),
+  mileageFromKm: 0,
   maxMileageKm: 90000,
   ownerBuckets: [],
   accident: "any",
+  pts: "any",
   color: "",
   hasVideoOnly: false,
+  withoutPaintOnly: false,
   search: "",
   sort: "default",
 };
@@ -137,6 +145,11 @@ function parseAccident(value: string | undefined): "any" | "none" | "yes" {
   return "any";
 }
 
+function parsePts(value: string | undefined): "any" | "original" | "duplicate" {
+  if (value === "original" || value === "duplicate") return value;
+  return "any";
+}
+
 /** Разбор querystring для /cars */
 export function parseCarListingSearchParams(
   raw: Record<string, string | string[] | undefined>,
@@ -150,19 +163,35 @@ export function parseCarListingSearchParams(
   return {
     paymentMethod: parsePaymentMethod(get("paymentMethod")),
     monthlyBudget: parseIntParam(get("monthlyBudget"), DEFAULT_CAR_LISTING_FILTERS.monthlyBudget),
-    maxPriceRub: parseIntParam(get("maxPriceRub"), DEFAULT_CAR_LISTING_FILTERS.maxPriceRub),
-    priceMinRub: parseIntParam(get("priceMinRub"), DEFAULT_CAR_LISTING_FILTERS.priceMinRub),
+    maxPriceRub: parseIntParam(
+      get("maxPriceRub") ?? get("priceMax"),
+      DEFAULT_CAR_LISTING_FILTERS.maxPriceRub,
+    ),
+    priceMinRub: parseIntParam(
+      get("priceMinRub") ?? get("priceMin"),
+      DEFAULT_CAR_LISTING_FILTERS.priceMinRub,
+    ),
     bodyType: parseBodyType(get("bodyType")),
     transmission: parseTransmission(get("transmission")),
     city: get("city")?.trim() || DEFAULT_CAR_LISTING_FILTERS.city,
     drive: parseDrive(get("drive")),
     fuel: parseFuel(get("fuel")),
     yearFrom: parseIntParam(get("yearFrom"), DEFAULT_CAR_LISTING_FILTERS.yearFrom),
-    maxMileageKm: parseIntParam(get("maxMileageKm"), DEFAULT_CAR_LISTING_FILTERS.maxMileageKm),
+    yearTo: parseIntParam(get("yearTo"), DEFAULT_CAR_LISTING_FILTERS.yearTo),
+    mileageFromKm: parseIntParam(
+      get("mileageFromKm") ?? get("mileageFrom"),
+      DEFAULT_CAR_LISTING_FILTERS.mileageFromKm,
+    ),
+    maxMileageKm: parseIntParam(
+      get("maxMileageKm") ?? get("mileageTo"),
+      DEFAULT_CAR_LISTING_FILTERS.maxMileageKm,
+    ),
     ownerBuckets: parseOwnerBuckets(get("owners")),
     accident: parseAccident(get("accident")),
+    pts: parsePts(get("pts")),
     color: get("color")?.trim() ?? "",
     hasVideoOnly: get("hasVideo") === "1",
+    withoutPaintOnly: get("withoutPaint") === "1",
     search: get("search")?.trim() ?? "",
     sort: parseSort(get("sort")),
   };
@@ -180,11 +209,15 @@ export const CATALOG_FILTER_PARAM_KEYS = [
   "drive",
   "fuel",
   "yearFrom",
+  "yearTo",
+  "mileageFromKm",
   "maxMileageKm",
   "owners",
   "accident",
+  "pts",
   "color",
   "hasVideo",
+  "withoutPaint",
   "search",
   "sort",
 ] as const;
@@ -209,6 +242,10 @@ export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearch
   if (f.drive !== "any") p.set("drive", f.drive);
   if (f.fuel !== "any") p.set("fuel", f.fuel);
   p.set("yearFrom", String(f.yearFrom));
+  p.set("yearTo", String(f.yearTo));
+  if (f.mileageFromKm > 0) {
+    p.set("mileageFromKm", String(f.mileageFromKm));
+  }
   p.set("maxMileageKm", String(f.maxMileageKm));
   if (f.ownerBuckets.length > 0) {
     p.set("owners", f.ownerBuckets.join(","));
@@ -216,11 +253,17 @@ export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearch
   if (f.accident !== "any") {
     p.set("accident", f.accident);
   }
+  if (f.pts !== "any") {
+    p.set("pts", f.pts);
+  }
   if (f.color.trim()) {
     p.set("color", f.color.trim());
   }
   if (f.hasVideoOnly) {
     p.set("hasVideo", "1");
+  }
+  if (f.withoutPaintOnly) {
+    p.set("withoutPaint", "1");
   }
   if (f.search.trim()) {
     p.set("search", f.search.trim());
@@ -247,6 +290,8 @@ function matchesPrice(car: Car, f: CarListingFilters): boolean {
 
 function matchesSecondary(car: Car, f: CarListingFilters): boolean {
   if (car.year < f.yearFrom) return false;
+  if (car.year > f.yearTo) return false;
+  if (car.mileageKm < f.mileageFromKm) return false;
   if (car.mileageKm > f.maxMileageKm) return false;
   if (f.drive !== "any" && car.drive !== f.drive) return false;
   if (f.fuel !== "any" && car.fuel !== f.fuel) return false;
@@ -280,6 +325,16 @@ function matchesVideo(car: Car, f: CarListingFilters): boolean {
   return Boolean(car.videoReviewUrl);
 }
 
+function matchesPts(car: Car, f: CarListingFilters): boolean {
+  if (f.pts === "any") return true;
+  return car.passport.ptsStatus === f.pts;
+}
+
+function matchesWithoutPaint(car: Car, f: CarListingFilters): boolean {
+  if (!f.withoutPaintOnly) return true;
+  return (car.passport.paintedParts ?? []).length === 0;
+}
+
 function matchesSearch(car: Car, f: CarListingFilters): boolean {
   const q = f.search.trim().toLowerCase();
   if (!q) return true;
@@ -297,8 +352,10 @@ export function filterCarsForPriceBounds(cars: Car[], f: CarListingFilters): Car
       matchesSecondary(car, f) &&
       matchesOwners(car, f) &&
       matchesAccident(car, f) &&
+      matchesPts(car, f) &&
       matchesColor(car, f) &&
       matchesVideo(car, f) &&
+      matchesWithoutPaint(car, f) &&
       matchesSearch(car, f),
   );
 }
@@ -311,8 +368,10 @@ export function filterCars(cars: Car[], f: CarListingFilters): Car[] {
       matchesSecondary(car, f) &&
       matchesOwners(car, f) &&
       matchesAccident(car, f) &&
+      matchesPts(car, f) &&
       matchesColor(car, f) &&
-      matchesVideo(car, f),
+      matchesVideo(car, f) &&
+      matchesWithoutPaint(car, f),
   );
 }
 
@@ -329,6 +388,8 @@ export function getRelaxedSuggestions(cars: Car[], f: CarListingFilters): Car[] 
     maxPriceRub: relaxedMaxPrice,
     priceMinRub: 0,
     yearFrom: relaxedYearFrom,
+    yearTo: f.yearTo,
+    mileageFromKm: 0,
     maxMileageKm: relaxedMileage,
     bodyType: "any",
     transmission: "any",
@@ -336,8 +397,10 @@ export function getRelaxedSuggestions(cars: Car[], f: CarListingFilters): Car[] 
     fuel: "any",
     ownerBuckets: [],
     accident: "any",
+    pts: "any",
     color: "",
     hasVideoOnly: false,
+    withoutPaintOnly: false,
     search: "",
     sort: "default",
   };

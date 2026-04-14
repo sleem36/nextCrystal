@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { OptionCard } from "@/components/ui/option-card";
 import { PriceRangeSlider } from "@/components/catalog/price-range-slider";
+import { DEFAULT_CAR_LISTING_FILTERS } from "@/lib/car-filters";
 import { formatCurrency } from "@/lib/format";
 import type { CarBodyType } from "@/types/car";
 import type { CarListingFilters, OwnerBucket } from "@/lib/car-filters";
@@ -69,20 +69,36 @@ export function FilterSidebar({
     });
   };
 
-  const applyWithPriceRules = () => {
+  const nextFilters = useMemo(() => {
     const next = { ...draft };
     if (bounds.min < bounds.max) {
       next.priceMinRub = displayMin <= bounds.min ? 0 : displayMin;
     }
-    onApply(next);
+    if (next.yearFrom > next.yearTo) {
+      next.yearTo = next.yearFrom;
+    }
+    if (next.mileageFromKm > next.maxMileageKm) {
+      next.maxMileageKm = next.mileageFromKm;
+    }
+    return next;
+  }, [bounds.max, bounds.min, displayMin, draft]);
+
+  const canApply = useMemo(
+    () => JSON.stringify(nextFilters) !== JSON.stringify(filters),
+    [filters, nextFilters],
+  );
+  const canReset = useMemo(
+    () => JSON.stringify(filters) !== JSON.stringify(DEFAULT_CAR_LISTING_FILTERS),
+    [filters],
+  );
+
+  const handleApply = () => {
+    onApply(nextFilters);
   };
 
   return (
     <div className="rounded-[16px] border border-slate-200 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.06)] md:p-5">
       <h2 className="text-lg font-semibold text-[color:var(--color-brand-primary)]">Фильтры</h2>
-      <p className="mt-1 text-sm text-slate-600">
-        Параметры как в быстром подборе на главной. Нажмите «Применить», чтобы обновить адрес и выдачу.
-      </p>
 
       <div className="mt-4 space-y-5">
         <div className="space-y-2 text-sm text-slate-700">
@@ -102,42 +118,6 @@ export function FilterSidebar({
             }}
           />
         </div>
-
-        <div className="space-y-2 text-sm text-slate-700">
-          <span className="font-medium">Способ оплаты</span>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <OptionCard
-              label="Кредит"
-              selected={draft.paymentMethod === "credit"}
-              onClick={() => setDraft((d) => ({ ...d, paymentMethod: "credit" }))}
-            />
-            <OptionCard
-              label="Наличные"
-              selected={draft.paymentMethod === "cash"}
-              onClick={() => setDraft((d) => ({ ...d, paymentMethod: "cash" }))}
-            />
-          </div>
-        </div>
-
-        {draft.paymentMethod === "credit" ? (
-          <Input
-            label="Платёж в месяц, ₽"
-            type="number"
-            min={15000}
-            step={1000}
-            value={draft.monthlyBudget}
-            onChange={(e) => setDraft((d) => ({ ...d, monthlyBudget: Number(e.target.value) }))}
-          />
-        ) : null}
-
-        <Input
-          label="Макс. цена авто, ₽ (точное значение)"
-          type="number"
-          min={700000}
-          step={50000}
-          value={draft.maxPriceRub}
-          onChange={(e) => setDraft((d) => ({ ...d, maxPriceRub: Number(e.target.value) }))}
-        />
 
         <div className="flex flex-col gap-2 text-sm text-slate-700">
           <span className="font-medium">Город</span>
@@ -229,23 +209,54 @@ export function FilterSidebar({
           </select>
         </div>
 
-        <Input
-          label="Год от"
-          type="number"
-          min={2005}
-          max={new Date().getFullYear()}
-          step={1}
-          value={draft.yearFrom}
-          onChange={(e) => setDraft((d) => ({ ...d, yearFrom: Number(e.target.value) }))}
-        />
-        <Input
-          label="Пробег до, км"
-          type="number"
-          min={30000}
-          step={5000}
-          value={draft.maxMileageKm}
-          onChange={(e) => setDraft((d) => ({ ...d, maxMileageKm: Number(e.target.value) }))}
-        />
+        <div className="space-y-2 text-sm text-slate-700">
+          <span className="font-medium">Год</span>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              type="number"
+              min={2005}
+              max={new Date().getFullYear()}
+              step={1}
+              value={draft.yearFrom}
+              placeholder="от"
+              onChange={(e) => setDraft((d) => ({ ...d, yearFrom: Number(e.target.value) }))}
+            />
+            <input
+              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              type="number"
+              min={2005}
+              max={new Date().getFullYear()}
+              step={1}
+              value={draft.yearTo}
+              placeholder="до"
+              onChange={(e) => setDraft((d) => ({ ...d, yearTo: Number(e.target.value) }))}
+            />
+          </div>
+        </div>
+        <div className="space-y-2 text-sm text-slate-700">
+          <span className="font-medium">Пробег, км</span>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              type="number"
+              min={0}
+              step={5000}
+              value={draft.mileageFromKm}
+              placeholder="от"
+              onChange={(e) => setDraft((d) => ({ ...d, mileageFromKm: Number(e.target.value) }))}
+            />
+            <input
+              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              type="number"
+              min={30000}
+              step={5000}
+              value={draft.maxMileageKm}
+              placeholder="до"
+              onChange={(e) => setDraft((d) => ({ ...d, maxMileageKm: Number(e.target.value) }))}
+            />
+          </div>
+        </div>
 
         <fieldset className="space-y-2 text-sm text-slate-700">
           <legend className="font-medium">Владельцы по ПТС</legend>
@@ -269,9 +280,8 @@ export function FilterSidebar({
           <div className="flex flex-col gap-2">
             {(
               [
-                ["any", "Любые"],
                 ["none", "Без ДТП"],
-                ["yes", "С ДТП"],
+                ["any", "Любые"],
               ] as const
             ).map(([value, label]) => (
               <label key={value} className="flex cursor-pointer items-center gap-2">
@@ -280,6 +290,30 @@ export function FilterSidebar({
                   name="accident"
                   checked={draft.accident === value}
                   onChange={() => setDraft((d) => ({ ...d, accident: value }))}
+                  className="h-4 w-4 border-slate-300 text-[color:var(--color-brand-accent)]"
+                />
+                <span>{label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="space-y-2 text-sm text-slate-700">
+          <legend className="font-medium">ПТС</legend>
+          <div className="flex flex-col gap-2">
+            {(
+              [
+                ["original", "Оригинал"],
+                ["duplicate", "Дубликат"],
+                ["any", "Любой"],
+              ] as const
+            ).map(([value, label]) => (
+              <label key={value} className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="radio"
+                  name="ptsStatus"
+                  checked={draft.pts === value}
+                  onChange={() => setDraft((d) => ({ ...d, pts: value }))}
                   className="h-4 w-4 border-slate-300 text-[color:var(--color-brand-accent)]"
                 />
                 <span>{label}</span>
@@ -314,21 +348,27 @@ export function FilterSidebar({
           />
           <span>Только с видеообзором</span>
         </label>
+
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+          <input
+            type="checkbox"
+            checked={draft.withoutPaintOnly}
+            onChange={(e) => setDraft((d) => ({ ...d, withoutPaintOnly: e.target.checked }))}
+            className="h-4 w-4 rounded border-slate-300 text-[color:var(--color-brand-accent)]"
+          />
+          <span>Без окраса</span>
+        </label>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-        <Button type="button" onClick={applyWithPriceRules}>
-          Применить
-        </Button>
-        <Button type="button" variant="secondary" onClick={onReset}>
-          Сбросить
-        </Button>
-        <a
-          href="#catalog-lead"
-          className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button)] px-5 text-sm font-semibold text-[color:var(--color-brand-accent)] underline-offset-4 hover:underline"
-        >
-          Заявка без подбора
-        </a>
+      <div className="sticky bottom-0 z-20 -mx-4 mt-5 border-t border-slate-200 bg-white px-4 pt-3 pb-1 md:-mx-5 md:px-5">
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+          <Button type="button" variant="secondary" onClick={onReset} disabled={!canReset}>
+            Сбросить фильтры
+          </Button>
+          <Button type="button" onClick={handleApply} disabled={!canApply}>
+            Применить
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BookingModal } from "@/components/catalog/booking-modal";
 import { CatalogCarCard } from "@/components/catalog/catalog-car-card";
@@ -90,6 +91,7 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
   const sp = useSearchParams();
   const router = useRouter();
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
+  const [isPending, startTransition] = useTransition();
 
   const [leadModalState, setLeadModalState] = useState<{
     car: Car;
@@ -191,6 +193,15 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
     [sortedList, visibleCount],
   );
 
+  const strictResultsCount = filtered.length;
+  const resultsMotionKey = useMemo(() => JSON.stringify(filters), [filters]);
+
+  const scrollCatalogToTop = () => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const apply = (f: CarListingFilters) => {
     const params = carListingFiltersToSearchParams(f);
     for (const [key, value] of Object.entries(utm)) {
@@ -205,8 +216,11 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
       bodyType: f.bodyType,
       transmission: f.transmission,
     });
-    router.push(`/cars?${params.toString()}`);
+    startTransition(() => {
+      router.push(`/cars?${params.toString()}`);
+    });
     setFiltersOpen(false);
+    scrollCatalogToTop();
   };
 
   const reset = () => {
@@ -218,8 +232,11 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
       action: "reset",
     });
     const query = params.toString();
-    router.push(query ? `/cars?${query}` : "/cars");
+    startTransition(() => {
+      router.push(query ? `/cars?${query}` : "/cars");
+    });
     setFiltersOpen(false);
+    scrollCatalogToTop();
   };
 
   useEffect(() => {
@@ -313,29 +330,9 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
       </div>
 
       <div className="flex items-center justify-between gap-3 lg:hidden">
-        <Button type="button" className="flex-1" onClick={() => setFiltersOpen(true)}>
+        <Button type="button" className="w-full" onClick={() => setFiltersOpen(true)}>
           Фильтры
         </Button>
-        <label className="flex min-w-0 flex-1 flex-col gap-1 text-xs text-slate-600">
-          <span className="sr-only">Сортировка</span>
-          <select
-            className="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900"
-            value={filters.sort}
-            onChange={(e) =>
-              apply({
-                ...filters,
-                sort: e.target.value as CarListingFilters["sort"],
-              })
-            }
-            aria-label="Сортировка"
-          >
-            {SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </select>
-        </label>
       </div>
 
       <div className="lg:grid lg:grid-cols-[minmax(280px,320px)_minmax(0,1fr)] lg:items-start lg:gap-8">
@@ -349,34 +346,49 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
           />
         </aside>
 
-        <div className="min-w-0 space-y-4">
-          <div className="hidden items-center justify-between gap-4 lg:flex">
-            <p className="text-sm text-slate-600">
-              В наличии в {filters.city}:{" "}
-              <strong>{isRelaxed ? showList.length : filtered.length}</strong>{" "}
-              {carsCountLabel(isRelaxed ? showList.length : filtered.length)}
-            </p>
-            <label className="flex items-center gap-2 text-sm text-slate-600">
-              <span className="shrink-0 font-medium">Сортировка</span>
-              <select
-                className="h-11 min-w-[220px] rounded-xl border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900"
-                value={filters.sort}
-                onChange={(e) =>
-                  apply({
-                    ...filters,
-                    sort: e.target.value as CarListingFilters["sort"],
-                  })
-                }
-                aria-label="Сортировка"
-              >
-                {SORT_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+        <div className="relative min-w-0 space-y-4">
+          {isPending ? (
+            <div
+              className="pointer-events-none absolute inset-0 z-20 rounded-[var(--radius-card)] bg-white/55 backdrop-blur-[1px] transition-opacity duration-200"
+              aria-hidden
+            />
+          ) : null}
+          <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-3 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="min-w-0">
+                <p className="text-sm text-slate-700 md:text-base">
+                  Найдено <strong>{strictResultsCount}</strong> {carsCountLabel(strictResultsCount)}
+                </p>
+                {isRelaxed ? (
+                  <p className="text-xs text-amber-700">
+                    По строгим фильтрам результатов нет, показано ближайших: <strong>{showList.length}</strong>
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex flex-wrap items-center gap-2 md:justify-end">
+                <label className="flex items-center gap-2 text-sm text-slate-600">
+                  <span className="shrink-0 font-medium">Сортировка</span>
+                  <select
+                    className="h-10 min-w-[190px] rounded-xl border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900"
+                    value={filters.sort}
+                    onChange={(e) =>
+                      apply({
+                        ...filters,
+                        sort: e.target.value as CarListingFilters["sort"],
+                      })
+                    }
+                    aria-label="Сортировка"
+                  >
+                    {SORT_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
+          </section>
 
           {showList.length > 0 ? (
             <section className="space-y-4" aria-label="Список автомобилей">
@@ -389,45 +401,67 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
                 </div>
               ) : null}
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 xl:grid-cols-3">
-                {visibleCars.map((car, index) => (
-                  <CatalogCarCard
-                    key={car.id}
-                    car={car}
-                    animationIndex={index}
-                    imagePriority={index < 4}
-                    isBooked={bookedIds.has(car.id)}
-                    bookedUntilMs={bookedUntilMap[car.id] ?? null}
-                    isBookingSubmitting={bookingSubmittingId === car.id}
-                    isCreditSubmitting={creditSubmittingId === car.id}
-                    onRequestBooking={(nextCar) => openLeadPopup(nextCar, "reservation")}
-                    onRequestCredit={(nextCar) => openLeadPopup(nextCar, "credit")}
-                    compare={{
-                      checked: compareIds.includes(car.id),
-                      disabled: !compareIds.includes(car.id) && compareIds.length >= 3,
-                      onToggle: () => {
-                        const willAdd = !compareIds.includes(car.id);
-                        toggle(car.id);
-                        trackGoal(
-                          metrikaId,
-                          willAdd ? METRIKA_GOALS.compareAdd : METRIKA_GOALS.compareRemove,
-                          {
-                            carId: car.id,
-                            paymentMethod: filters.paymentMethod,
-                            city: filters.city,
-                            ...(filters.paymentMethod === "credit"
-                              ? { monthlyBudget: filters.monthlyBudget }
-                              : {}),
-                            maxPriceRub: filters.maxPriceRub,
-                            bodyType: filters.bodyType,
-                            transmission: filters.transmission,
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={resultsMotionKey}
+                  layout
+                  className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 xl:grid-cols-3"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  {visibleCars.map((car, index) => (
+                    <motion.div
+                      key={car.id}
+                      layout
+                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                      transition={{
+                        duration: 0.22,
+                        ease: "easeOut",
+                        delay: Math.min(index * 0.05, 0.35),
+                      }}
+                    >
+                      <CatalogCarCard
+                        car={car}
+                        animationIndex={index}
+                        imagePriority={index < 4}
+                        isBooked={bookedIds.has(car.id)}
+                        bookedUntilMs={bookedUntilMap[car.id] ?? null}
+                        isBookingSubmitting={bookingSubmittingId === car.id}
+                        isCreditSubmitting={creditSubmittingId === car.id}
+                        onRequestBooking={(nextCar) => openLeadPopup(nextCar, "reservation")}
+                        onRequestCredit={(nextCar) => openLeadPopup(nextCar, "credit")}
+                        compare={{
+                          checked: compareIds.includes(car.id),
+                          disabled: !compareIds.includes(car.id) && compareIds.length >= 3,
+                          onToggle: () => {
+                            const willAdd = !compareIds.includes(car.id);
+                            toggle(car.id);
+                            trackGoal(
+                              metrikaId,
+                              willAdd ? METRIKA_GOALS.compareAdd : METRIKA_GOALS.compareRemove,
+                              {
+                                carId: car.id,
+                                paymentMethod: filters.paymentMethod,
+                                city: filters.city,
+                                ...(filters.paymentMethod === "credit"
+                                  ? { monthlyBudget: filters.monthlyBudget }
+                                  : {}),
+                                maxPriceRub: filters.maxPriceRub,
+                                bodyType: filters.bodyType,
+                                transmission: filters.transmission,
+                              },
+                            );
                           },
-                        );
-                      },
-                    }}
-                  />
-                ))}
-              </div>
+                        }}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
 
               {visibleCount < sortedList.length ? (
                 <div ref={sentinelRef} className="flex h-16 items-center justify-center text-sm text-slate-500">
@@ -488,14 +522,6 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
                   ✕
                 </button>
               </div>
-              <Button
-                type="button"
-                variant="secondary"
-                className="h-10 w-full text-sm"
-                onClick={() => reset()}
-              >
-                Сбросить все фильтры
-              </Button>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto p-3">
               <FilterSidebar
