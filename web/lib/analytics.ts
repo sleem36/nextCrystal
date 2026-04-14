@@ -15,6 +15,22 @@ export const METRIKA_GOALS = {
   /** Открыта модалка заявки с карточки авто (не отправка формы) */
   leadModalOpen: "lead_modal_open",
   leadSubmitted: "lead_submitted",
+  clickCreditFromCard: "click_credit_from_card",
+  clickWantToBuy: "click_want_to_buy",
+  selectBuyOptionCredit: "select_buy_option_credit",
+  selectBuyOptionCash: "select_buy_option_cash",
+  openCreditCalculator: "open_credit_calculator",
+  changeDownPayment: "change_down_payment",
+  changeCreditTerm: "change_credit_term",
+  submitCreditFromCalculator: "submit_credit_from_calculator",
+  submitCreditSuccess: "submit_credit_success",
+  submitCreditError: "submit_credit_error",
+  openFormCredit: "open_form_credit",
+  openFormCash: "open_form_cash",
+  openLeadPopup: "open_lead_popup",
+  submitLeadForm: "submit_lead_form",
+  submitLeadSuccess: "submit_lead_success",
+  submitLeadError: "submit_lead_error",
 } as const;
 
 declare global {

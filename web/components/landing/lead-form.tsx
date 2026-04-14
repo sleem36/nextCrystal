@@ -21,6 +21,8 @@ type LeadFormProps = {
   onSuccess?: () => void;
   /** Для спиннера на кнопке в каталоге во время отправки из модалки */
   onSubmittingChange?: (submitting: boolean) => void;
+  leadType?: "reservation" | "credit" | "cash" | "credit_calculator" | "generic";
+  submitLabel?: string;
   context: {
     city: string;
     /** Единый id авто для всех экранов (если выбрано конкретное авто) */
@@ -36,6 +38,12 @@ type LeadFormProps = {
     maxMileageKm: number;
     /** Источник потребности (если есть в сценарии) */
     purchaseGoal?: string;
+    leadSource?: string;
+    carTitle?: string;
+    carUrl?: string;
+    downPayment?: number;
+    creditTermMonths?: number;
+    estimatedMonthlyPayment?: number;
     utm: Record<string, string>;
   };
 };
@@ -46,6 +54,8 @@ export function LeadForm({
   hideTitle = false,
   onSuccess,
   onSubmittingChange,
+  leadType = "generic",
+  submitLabel = "Отправить заявку",
 }: LeadFormProps) {
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
   const prepaymentTermsUrl = process.env.NEXT_PUBLIC_PREPAYMENT_TERMS_URL;
@@ -90,6 +100,19 @@ export function LeadForm({
     }
 
     setIsSubmitting(true);
+    if (leadType === "credit_calculator") {
+      trackGoal(metrikaId, METRIKA_GOALS.submitCreditFromCalculator, {
+        carId: context.carId ?? "",
+        city: context.city,
+        maxPriceRub: context.maxPriceRub,
+      });
+    }
+    trackGoal(metrikaId, METRIKA_GOALS.submitLeadForm, {
+      leadType,
+      paymentMethod: context.paymentMethod,
+      city: context.city,
+      ...(context.carId ? { carId: context.carId } : {}),
+    });
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 12000);
 
@@ -122,6 +145,18 @@ export function LeadForm({
         city: context.city,
         fuel: context.fuel,
       });
+      trackGoal(metrikaId, METRIKA_GOALS.submitLeadSuccess, {
+        leadType,
+        paymentMethod: context.paymentMethod,
+        city: context.city,
+        ...(context.carId ? { carId: context.carId } : {}),
+      });
+      if (leadType === "credit_calculator") {
+        trackGoal(metrikaId, METRIKA_GOALS.submitCreditSuccess, {
+          carId: context.carId ?? "",
+          city: context.city,
+        });
+      }
       setStatus("success");
       setName("");
       setPhone("");
@@ -131,6 +166,18 @@ export function LeadForm({
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
         setErrorMessage("Сервер отвечает слишком долго. Повторите попытку.");
+      }
+      trackGoal(metrikaId, METRIKA_GOALS.submitLeadError, {
+        leadType,
+        paymentMethod: context.paymentMethod,
+        city: context.city,
+        ...(context.carId ? { carId: context.carId } : {}),
+      });
+      if (leadType === "credit_calculator") {
+        trackGoal(metrikaId, METRIKA_GOALS.submitCreditError, {
+          carId: context.carId ?? "",
+          city: context.city,
+        });
       }
       setStatus("error");
     } finally {
@@ -212,7 +259,7 @@ export function LeadForm({
         />
         <div className="md:col-span-2">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Отправка..." : "Отправить заявку"}
+            {isSubmitting ? "Отправка..." : submitLabel}
           </Button>
         </div>
       </form>

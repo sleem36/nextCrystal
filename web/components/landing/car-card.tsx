@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { Heart } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
+import { useWishlistStore } from "@/stores/wishlist-store";
 import { Car } from "@/types/car";
 
 const btnPrimaryClass =
@@ -47,6 +49,8 @@ function getGalleryImages(car: Car) {
 }
 
 export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProps) {
+  const toggleWishlist = useWishlistStore((state) => state.toggle);
+  const isWishlisted = useWishlistStore((state) => state.has(car.id));
   const quickFacts = car.trustPoints.slice(0, 2);
   const gallery = useMemo(() => getGalleryImages(car), [car]);
   const previewGallery = useMemo(() => gallery.slice(0, 5), [gallery]);
@@ -185,6 +189,23 @@ export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProp
         onMouseMove={onHoverZoneMove}
         onMouseLeave={onHoverZoneLeave}
       >
+        <button
+          type="button"
+          className="absolute right-2 top-2 z-[8] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            toggleWishlist(car.id);
+          }}
+          onPointerDown={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
+          aria-label={isWishlisted ? "Удалить из избранного" : "Добавить в избранное"}
+          aria-pressed={isWishlisted}
+        >
+          <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
+        </button>
         {compare ? (
           <label
             className="absolute left-2 top-2 z-[6] flex cursor-pointer select-none items-center gap-2 rounded-md bg-black/50 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm backdrop-blur-[2px]"

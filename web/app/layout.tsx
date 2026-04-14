@@ -11,9 +11,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app"),
   title: "Crystal Motors — подбор автомобиля с пробегом",
   description:
     "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Crystal Motors.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Crystal Motors — подбор автомобиля с пробегом",
+    description:
+      "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Crystal Motors.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -22,10 +30,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "Crystal Motors",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app",
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+7-3852-55-45-45",
+      contactType: "sales",
+      areaServed: "RU",
+      availableLanguage: ["Russian"],
+    },
+  };
 
   return (
     <html lang="ru" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col overflow-x-hidden bg-[color:var(--background)]">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
         <SiteHeader />
         {children}
         <SiteFooter />

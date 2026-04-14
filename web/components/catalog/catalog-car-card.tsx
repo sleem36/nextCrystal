@@ -2,11 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+  type PointerEvent,
+} from "react";
+import { Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
 import useEmblaCarousel from "embla-carousel-react";
 import { formatCurrency, formatMileage } from "@/lib/format";
 import { getListingDerived, hashString } from "@/lib/car-listing-enrichment";
 import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
+import { useWishlistStore } from "@/stores/wishlist-store";
 import { Button } from "@/components/ui/button";
 import type { Car } from "@/types/car";
 
@@ -64,6 +75,9 @@ function useBookingCountdown(untilMs: number | null) {
   return Math.max(0, untilMs - now);
 }
 
+const CARD_INTERACTIVE_SELECTOR =
+  "a, button, input, select, textarea, label, [role='button'], [data-no-card-nav]";
+
 export type CatalogCarCardProps = {
   car: Car;
   animationIndex: number;
@@ -76,8 +90,9 @@ export type CatalogCarCardProps = {
   isBooked: boolean;
   bookedUntilMs: number | null;
   isBookingSubmitting?: boolean;
-  onQuickView: (car: Car) => void;
+  isCreditSubmitting?: boolean;
   onRequestBooking: (car: Car) => void;
+  onRequestCredit: (car: Car) => void;
 };
 
 export function CatalogCarCard({
@@ -88,9 +103,13 @@ export function CatalogCarCard({
   isBooked,
   bookedUntilMs,
   isBookingSubmitting = false,
-  onQuickView,
+  isCreditSubmitting = false,
   onRequestBooking,
+  onRequestCredit,
 }: CatalogCarCardProps) {
+  const router = useRouter();
+  const wishlistIds = useWishlistStore((state) => state.ids);
+  const toggleWishlist = useWishlistStore((state) => state.toggle);
   const gallery = useMemo(() => getGalleryImages(car), [car]);
   const previewGallery = useMemo(() => gallery.slice(0, 5), [gallery]);
   const totalPhotos = gallery.length;
@@ -101,6 +120,8 @@ export function CatalogCarCard({
   const [activeIndex, setActiveIndex] = useState(0);
   const hoverRafRef = useRef<number | null>(null);
   const hoverSegmentRef = useRef<number | null>(null);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const suppressClickRef = useRef(false);
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     dragFree: false,
@@ -162,6 +183,55 @@ export function CatalogCarCard({
     hoverSegmentRef.current = null;
   };
 
+  const onCardPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+    suppressClickRef.current = false;
+  };
+
+  const onCardPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!pointerStartRef.current) return;
+    const dx = Math.abs(event.clientX - pointerStartRef.current.x);
+    const dy = Math.abs(event.clientY - pointerStartRef.current.y);
+    if (dx > 8 || dy > 8) {
+      suppressClickRef.current = true;
+    }
+  };
+
+  const onCardPointerUp = () => {
+    pointerStartRef.current = null;
+  };
+
+  const navigateToDetails = () => {
+    router.push(`/cars/${car.id}`);
+  };
+
+  const shouldIgnoreCardClick = (target: EventTarget | null) => {
+    if (!(target instanceof Element)) return false;
+    return target.closest(CARD_INTERACTIVE_SELECTOR) != null;
+  };
+
+  const onCardClick = (event: MouseEvent<HTMLElement>) => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    if (shouldIgnoreCardClick(event.target)) {
+      return;
+    }
+    navigateToDetails();
+  };
+
+  const onCardKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+    if (shouldIgnoreCardClick(event.target)) {
+      return;
+    }
+    event.preventDefault();
+    navigateToDetails();
+  };
+
   const derived = useMemo(() => getListingDerived(car), [car]);
   const passport = useMemo(() => resolvePassport(car), [car]);
   const hasVideo = Boolean(car.videoReviewUrl);
@@ -195,18 +265,27 @@ export function CatalogCarCard({
   }, [isBooked, bookedUntilMs, countdownMs]);
 
   const hasApiMetrics = car.viewCount != null || car.bookingCount != null;
+  const isWishlisted = wishlistIds.includes(car.id);
 
   return (
     <article
-      className={`group/card relative flex h-full flex-col overflow-hidden rounded-[16px] border border-slate-200/80 bg-white shadow-[0_4px_18px_rgba(0,0,0,0.07)] transition-[transform,box-shadow] duration-300 ease-out hover:z-[1] hover:shadow-[0_14px_36px_rgba(0,0,0,0.14)] motion-safe:hover:-translate-y-0.5 ${
+      className={`group/card relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[16px] border border-slate-200/80 bg-white shadow-[0_4px_18px_rgba(0,0,0,0.07)] transition-[transform,box-shadow] duration-300 ease-out hover:z-[1] hover:shadow-[0_14px_36px_rgba(0,0,0,0.14)] motion-safe:hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 ${
         isBooked ? "opacity-55 grayscale-[0.35]" : ""
       } catalog-card-enter`}
       style={{ animationDelay: `${delayMs}ms` }}
+      role="link"
+      tabIndex={0}
+      aria-label={`Открыть карточку автомобиля ${car.brand} ${car.model}, ${car.year}`}
+      onClick={onCardClick}
+      onKeyDown={onCardKeyDown}
     >
       <div
-        className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100"
+        className="relative aspect-[16/10] w-full cursor-pointer overflow-hidden bg-slate-100"
         onMouseMove={onHoverZoneMove}
         onMouseLeave={onHoverZoneLeave}
+        onPointerDown={onCardPointerDown}
+        onPointerMove={onCardPointerMove}
+        onPointerUp={onCardPointerUp}
       >
         {hasSlider ? (
           <>
@@ -225,24 +304,21 @@ export function CatalogCarCard({
                       alt={`${car.brand} ${car.model} — фото ${index + 1}`}
                       fill
                       unoptimized={imageUnoptimized}
-                      className="cursor-zoom-in object-cover object-center transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.02]"
+                      className="cursor-pointer object-cover object-center transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.02]"
                       sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       placeholder={imageUnoptimized ? "empty" : "blur"}
                       blurDataURL={imageUnoptimized ? undefined : BLUR}
                       priority={imagePriority && index === 0}
                       loading={imagePriority && index === 0 ? "eager" : "lazy"}
                       draggable={false}
-                      onClick={() => onQuickView(car)}
                     />
                     {hiddenCount > 0 && index === previewGallery.length - 1 ? (
-                      <button
-                        type="button"
-                        onClick={() => onQuickView(car)}
+                      <span
                         className="absolute inset-0 z-[1] flex items-center justify-center bg-black/45 text-sm font-semibold text-white"
-                        aria-label={`Ещё ${hiddenCount} фото в галерее — быстрый просмотр`}
+                        aria-hidden
                       >
                         Еще {hiddenCount} фото
-                      </button>
+                      </span>
                     ) : null}
                   </div>
                   );
@@ -270,14 +346,13 @@ export function CatalogCarCard({
               alt={`${car.brand} ${car.model}, ${car.year}`}
               fill
               unoptimized={singleCoverUnoptimized}
-              className="cursor-zoom-in object-cover object-center transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.02]"
+              className="cursor-pointer object-cover object-center transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.02]"
               sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
               placeholder={singleCoverUnoptimized ? "empty" : "blur"}
               blurDataURL={singleCoverUnoptimized ? undefined : BLUR}
               priority={imagePriority}
               loading={imagePriority ? "eager" : "lazy"}
               draggable={false}
-              onClick={() => onQuickView(car)}
             />
           </div>
         )}
@@ -300,9 +375,24 @@ export function CatalogCarCard({
           </label>
         ) : null}
 
+        <button
+          type="button"
+          data-no-card-nav
+          className="absolute right-2 top-2 z-[7] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white"
+          onClick={(event) => {
+            event.stopPropagation();
+            toggleWishlist(car.id);
+          }}
+          onPointerDown={(event) => event.stopPropagation()}
+          aria-label={isWishlisted ? "Удалить из избранного" : "Добавить в избранное"}
+          aria-pressed={isWishlisted}
+        >
+          <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
+        </button>
+
         {hasVideo ? (
           <span
-            className="pointer-events-none absolute right-2 top-2 z-[5] rounded-md bg-black/55 px-2 py-1 text-sm shadow-md backdrop-blur-sm"
+            className="pointer-events-none absolute right-2 top-[3.35rem] z-[5] rounded-md bg-black/55 px-2 py-1 text-sm shadow-md backdrop-blur-sm"
             role="img"
             aria-label="Есть видеообзор этого автомобиля"
           >
@@ -318,14 +408,6 @@ export function CatalogCarCard({
           ) : null}
         </div>
 
-        <button
-          type="button"
-          onClick={() => onQuickView(car)}
-          className="absolute bottom-2 right-2 z-[6] rounded-md bg-white/90 px-2 py-1 text-[11px] font-semibold text-slate-800 shadow-sm backdrop-blur-sm transition hover:bg-white"
-          aria-label={`Быстрый просмотр: ${car.brand} ${car.model}, ${car.year}`}
-        >
-          Быстрый просмотр
-        </button>
       </div>
 
       <div className="flex flex-1 flex-col gap-2.5 px-4 pb-4 pt-3 md:px-5 md:pb-5">
@@ -412,12 +494,15 @@ export function CatalogCarCard({
                 "Забронировать"
               )}
             </Button>
-            <Link
-              href={`/cars/${car.id}`}
-              className="inline-flex box-border h-11 min-h-[44px] w-full min-w-0 items-center justify-center rounded-[var(--radius-button)] border border-slate-300 bg-white px-3 text-[13px] font-semibold leading-tight text-[color:var(--color-brand-primary)] transition-colors duration-150 hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-primary)] focus-visible:ring-offset-2 sm:px-2 lg:px-3 lg:text-sm"
+            <Button
+              type="button"
+              variant="secondary"
+              className="box-border h-11 min-h-[44px] w-full min-w-0 px-3 text-[13px] font-semibold leading-tight sm:px-2 lg:px-3 lg:text-sm"
+              disabled={isCreditSubmitting}
+              onClick={() => onRequestCredit(car)}
             >
-              Подробнее
-            </Link>
+              {isCreditSubmitting ? "Отправка..." : "В кредит"}
+            </Button>
           </div>
           {isBooked && bookedUntilMs != null && countdownMs > 0 ? (
             <p

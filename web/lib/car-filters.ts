@@ -37,6 +37,7 @@ export type CarListingFilters = {
   /** Пустая строка = любой цвет */
   color: string;
   hasVideoOnly: boolean;
+  search: string;
   sort: CatalogSort;
 };
 
@@ -56,6 +57,7 @@ export const DEFAULT_CAR_LISTING_FILTERS: CarListingFilters = {
   accident: "any",
   color: "",
   hasVideoOnly: false,
+  search: "",
   sort: "default",
 };
 
@@ -161,6 +163,7 @@ export function parseCarListingSearchParams(
     accident: parseAccident(get("accident")),
     color: get("color")?.trim() ?? "",
     hasVideoOnly: get("hasVideo") === "1",
+    search: get("search")?.trim() ?? "",
     sort: parseSort(get("sort")),
   };
 }
@@ -182,6 +185,7 @@ export const CATALOG_FILTER_PARAM_KEYS = [
   "accident",
   "color",
   "hasVideo",
+  "search",
   "sort",
 ] as const;
 
@@ -217,6 +221,9 @@ export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearch
   }
   if (f.hasVideoOnly) {
     p.set("hasVideo", "1");
+  }
+  if (f.search.trim()) {
+    p.set("search", f.search.trim());
   }
   if (f.sort !== "default") {
     p.set("sort", f.sort);
@@ -273,6 +280,13 @@ function matchesVideo(car: Car, f: CarListingFilters): boolean {
   return Boolean(car.videoReviewUrl);
 }
 
+function matchesSearch(car: Car, f: CarListingFilters): boolean {
+  const q = f.search.trim().toLowerCase();
+  if (!q) return true;
+  const haystack = `${car.brand} ${car.model} ${car.city} ${car.id}`.toLowerCase();
+  return haystack.includes(q);
+}
+
 /**
  * Авто, подходящие под фильтры **кроме** диапазона цены — для подписей min/max у слайдера.
  */
@@ -284,7 +298,8 @@ export function filterCarsForPriceBounds(cars: Car[], f: CarListingFilters): Car
       matchesOwners(car, f) &&
       matchesAccident(car, f) &&
       matchesColor(car, f) &&
-      matchesVideo(car, f),
+      matchesVideo(car, f) &&
+      matchesSearch(car, f),
   );
 }
 
@@ -323,6 +338,7 @@ export function getRelaxedSuggestions(cars: Car[], f: CarListingFilters): Car[] 
     accident: "any",
     color: "",
     hasVideoOnly: false,
+    search: "",
     sort: "default",
   };
 

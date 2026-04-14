@@ -12,16 +12,18 @@ type BookingModalProps = {
   car: Car | null;
   open: boolean;
   onClose: () => void;
+  type: "reservation" | "credit";
   filters: CarListingFilters;
   utm: Record<string, string>;
   onBooked?: () => void;
-  onSubmittingChange?: (submitting: boolean, carId: string) => void;
+  onSubmittingChange?: (submitting: boolean, carId: string, type: "reservation" | "credit") => void;
 };
 
 export function BookingModal({
   car,
   open,
   onClose,
+  type,
   filters,
   utm,
   onBooked,
@@ -34,8 +36,13 @@ export function BookingModal({
     return {
       city: car.city,
       carId: car.id,
-      paymentMethod: filters.paymentMethod,
-      monthlyBudget: filters.paymentMethod === "credit" ? filters.monthlyBudget : undefined,
+      paymentMethod: type === "credit" ? "credit" : filters.paymentMethod,
+      monthlyBudget:
+        type === "credit"
+          ? car.monthlyPaymentRub
+          : filters.paymentMethod === "credit"
+            ? filters.monthlyBudget
+            : undefined,
       maxPriceRub: car.priceRub,
       bodyType: car.bodyType as CarBodyType | "any",
       transmission: car.transmission,
@@ -43,10 +50,10 @@ export function BookingModal({
       fuel: car.fuel,
       yearFrom: car.year,
       maxMileageKm: car.mileageKm,
-      purchaseGoal: undefined as string | undefined,
+      purchaseGoal: type,
       utm,
     };
-  }, [car, filters, utm]);
+  }, [car, filters, type, utm]);
 
   if (!car || !context) {
     return null;
@@ -56,18 +63,25 @@ export function BookingModal({
     <Modal
       open={open}
       onClose={onClose}
-      title="Забронировать авто"
-      description={`${car.brand} ${car.model}, ${car.year} — оставьте телефон, менеджер подтвердит бронь.`}
+      title={type === "credit" ? "Оформить заявку в кредит" : "Забронировать авто"}
+      description={
+        type === "credit"
+          ? `${car.brand} ${car.model}, ${car.year} — оставьте телефон, менеджер рассчитает одобрение и платеж.`
+          : `${car.brand} ${car.model}, ${car.year} — оставьте телефон, менеджер подтвердит бронь.`
+      }
     >
       {/* LeadForm: телефон, имя, опционально предоплата — поля «комментарий» нет */}
       <LeadForm
         context={context}
         variant="plain"
         hideTitle
-        onSubmittingChange={(submitting) => onSubmittingChange?.(submitting, car.id)}
+        leadType={type}
+        onSubmittingChange={(submitting) => onSubmittingChange?.(submitting, car.id, type)}
         onSuccess={() => {
-          addBookedCarId(car.id);
-          onBooked?.();
+          if (type === "reservation") {
+            addBookedCarId(car.id);
+            onBooked?.();
+          }
           onClose();
         }}
       />

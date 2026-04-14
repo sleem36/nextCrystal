@@ -57,10 +57,7 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
     emblaApi.reInit();
   }, [emblaApi, previewGallery]);
 
-  useEffect(() => {
-    if (activeIndex <= Math.max(0, previewGallery.length - 1)) return;
-    setActiveIndex(Math.max(0, previewGallery.length - 1));
-  }, [activeIndex, previewGallery.length]);
+  const safeActiveIndex = Math.min(activeIndex, Math.max(0, previewGallery.length - 1));
 
   useEffect(() => {
     return () => {
@@ -206,7 +203,7 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
                     <span
                       key={`slide-dot-${index}`}
                       className={`h-1.5 flex-1 rounded-full transition-colors duration-150 ${
-                        index === activeIndex ? "bg-white" : "bg-white/40"
+                        index === safeActiveIndex ? "bg-white" : "bg-white/40"
                       }`}
                       aria-hidden
                     />
@@ -240,7 +237,7 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
                   setActiveIndex(index);
                 }}
                 className={`relative h-full min-h-[62px] w-full overflow-hidden rounded-md border transition ${
-                  activeIndex === index
+                  safeActiveIndex === index
                     ? "border-[color:var(--color-brand-accent)]"
                     : "border-slate-300 hover:border-slate-400"
                 }`}
@@ -260,7 +257,7 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
             {hiddenCount > 0 ? (
               <button
                 type="button"
-                onClick={() => openLightbox(activeIndex)}
+                onClick={() => openLightbox(safeActiveIndex)}
                 className="group relative inline-flex h-full min-h-[62px] w-full items-center justify-center overflow-hidden rounded-md border border-slate-300"
                 aria-label={`Показать все фото (${gallery.length})`}
               >

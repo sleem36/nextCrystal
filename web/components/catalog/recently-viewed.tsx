@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { Heart } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { readRecentlyViewedIds } from "@/lib/recently-viewed";
+import { useWishlistStore } from "@/stores/wishlist-store";
 import type { Car } from "@/types/car";
 
 function fallbackImageSrc(car: Car) {
@@ -21,6 +23,8 @@ type RecentlyViewedProps = {
 
 export function RecentlyViewed({ cars }: RecentlyViewedProps) {
   const [ids, setIds] = useState<string[]>([]);
+  const toggleWishlist = useWishlistStore((state) => state.toggle);
+  const isWishlisted = useWishlistStore((state) => state.has);
 
   useEffect(() => {
     const sync = () => setIds(readRecentlyViewedIds());
@@ -48,8 +52,26 @@ export function RecentlyViewed({ cars }: RecentlyViewedProps) {
       <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {list.map((car) => {
           const src = primaryImageSrc(car);
+          const wished = isWishlisted(car.id);
           return (
-            <li key={car.id}>
+            <li key={car.id} className="relative">
+              <button
+                type="button"
+                className="absolute right-2 top-2 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  toggleWishlist(car.id);
+                }}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                aria-label={wished ? "Удалить из избранного" : "Добавить в избранное"}
+                aria-pressed={wished}
+              >
+                <Heart className={`h-5 w-5 ${wished ? "fill-current" : ""}`} />
+              </button>
               <Link
                 href={`/cars/${car.id}`}
                 className="group block overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition hover:border-[color:var(--color-brand-accent)] hover:shadow-md"

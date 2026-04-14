@@ -12,6 +12,18 @@ export function SiteFooter() {
           <p className="text-slate-600">© {new Date().getFullYear()} Crystal Motors</p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-4">
+          <Link className="text-slate-400 transition-colors hover:text-white" href="/about">
+            О компании
+          </Link>
+          <Link className="text-slate-400 transition-colors hover:text-white" href="/reviews">
+            Отзывы
+          </Link>
+          <Link className="text-slate-400 transition-colors hover:text-white" href="/contacts">
+            Контакты
+          </Link>
+          <Link className="text-slate-400 transition-colors hover:text-white" href="/faq">
+            FAQ
+          </Link>
           <Link className="text-slate-400 transition-colors hover:text-white" href="/legal/privacy">
             Политика конфиденциальности
           </Link>

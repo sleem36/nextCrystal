@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CarCreditPanel } from "@/components/catalog/car-credit-panel";
+import { CarBuyIntentControls } from "@/components/catalog/car-buy-intent-controls";
 import { CarDetailLeadClient } from "@/components/catalog/car-detail-lead-client";
 import { CarFactsGrid } from "@/components/catalog/car-facts-grid";
 import { CarPhoneReveal } from "@/components/catalog/car-phone-reveal";
@@ -9,6 +10,7 @@ import { CarOptionsChips } from "@/components/catalog/car-options-chips";
 import { MobileStickyBookingBar } from "@/components/catalog/mobile-sticky-booking-bar";
 import { CarOpenedTracker } from "@/components/catalog/car-opened-tracker";
 import { RecentlyViewedTracker } from "@/components/catalog/recently-viewed-tracker";
+import { CarWishlistToggle } from "@/components/catalog/car-wishlist-toggle";
 import { CarPassportBlock } from "@/components/catalog/car-passport-block";
 import { CarVideoSection } from "@/components/catalog/car-video-section";
 import { TradeInCtaPanel } from "@/components/catalog/trade-in-cta-panel";
@@ -17,9 +19,6 @@ import { driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
 import { getCarById } from "@/lib/cars-source";
 import { utmFromSearchParams } from "@/lib/utm";
-
-const ctaPrimaryClass =
-  "inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-6 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] transition-colors hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2";
 
 type CarExtraFields = {
   powerHp?: number;
@@ -49,9 +48,18 @@ export async function generateMetadata({
   if (!car) {
     return { title: "Автомобиль не найден" };
   }
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app";
+  const canonical = `${siteUrl}/cars/${car.id}`;
   return {
     title: `${car.brand} ${car.model} ${car.year} — Crystal Motors`,
     description: `Пробег ${formatMileage(car.mileageKm)} км, ${formatCurrency(car.priceRub)}. ${car.city}.`,
+    alternates: { canonical },
+    openGraph: {
+      title: `${car.brand} ${car.model} ${car.year} — Crystal Motors`,
+      description: `Пробег ${formatMileage(car.mileageKm)} км, ${formatCurrency(car.priceRub)}. ${car.city}.`,
+      type: "website",
+      url: canonical,
+    },
   };
 }
 
@@ -94,17 +102,41 @@ export default async function CarDetailPage({
     car.passport.ptsStatus === "original" ? "Оригинал ПТС" : null,
     !car.passport.accident.has ? "Без ДТП по отчёту" : null,
   ].filter((item): item is string => Boolean(item));
-  const whatsappHref = `https://wa.me/73852554545?text=${encodeURIComponent(
-    `Здравствуйте! Интересует ${car.brand} ${car.model} ${car.year} (${car.id}).`,
-  )}`;
-  const telegramHref = `https://t.me/share/url?url=${encodeURIComponent(
-    "https://crystal-motors.ru/",
-  )}&text=${encodeURIComponent(
-    `Здравствуйте! Интересует ${car.brand} ${car.model} ${car.year} (${car.id}).`,
-  )}`;
+  const vkHref = "https://vk.com/crystal_motors";
+  const telegramHref = "https://t.me/+GKMqd1w1BcdhOTEy";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app";
+  const carUrl = `${siteUrl}/cars/${car.id}`;
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `${car.brand} ${car.model} ${car.year}`,
+    image: car.images,
+    description: `${car.brand} ${car.model}, ${car.year}, пробег ${formatMileage(car.mileageKm)} км`,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "RUB",
+      price: car.priceRub,
+      availability: "https://schema.org/InStock",
+      url: carUrl,
+    },
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Главная", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Каталог", item: `${siteUrl}/cars` },
+      { "@type": "ListItem", position: 3, name: `${car.brand} ${car.model}`, item: carUrl },
+    ],
+  };
 
   return (
     <article className="container-wide mx-auto max-w-[1280px] space-y-8 pb-24 pt-4 md:pb-16 md:pt-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <RecentlyViewedTracker carId={car.id} />
       <CarOpenedTracker
         carId={car.id}
@@ -135,9 +167,12 @@ export default async function CarDetailPage({
         </div>
         <div className="space-y-4 lg:h-full">
           <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5">
-            <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--color-brand-primary)] md:text-3xl">
-              {car.brand} {car.model}, {car.year}
-            </h1>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--color-brand-primary)] md:text-3xl">
+                {car.brand} {car.model}, {car.year}
+              </h1>
+              <CarWishlistToggle carId={car.id} />
+            </div>
             <p className="mt-2 text-sm text-slate-600">
               {car.color} · {transmissionLabel(car.transmission)} · {driveLabel(car.drive)} ·{" "}
               {fuelLabel(car.fuel)}
@@ -160,9 +195,7 @@ export default async function CarDetailPage({
               ))}
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-              <a href="#lead-form" className={ctaPrimaryClass}>
-                Оставить заявку
-              </a>
+              <CarBuyIntentControls car={car} utm={utm} />
               <CarPhoneReveal className="mt-0" carId={car.id} city={car.city} paymentMethod={paymentMethod} />
             </div>
             <p className="mt-2 text-xs text-slate-500">Свяжемся в ближайшее время</p>
@@ -208,12 +241,12 @@ export default async function CarDetailPage({
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <a
-                href={whatsappHref}
+                href={vkHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
               >
-                Написать в WhatsApp
+                Написать в ВКонтакте
               </a>
               <a
                 href={telegramHref}

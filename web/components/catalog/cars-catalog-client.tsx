@@ -6,7 +6,6 @@ import { BookingModal } from "@/components/catalog/booking-modal";
 import { CatalogCarCard } from "@/components/catalog/catalog-car-card";
 import { ComparePanel } from "@/components/catalog/compare-panel";
 import { FilterSidebar } from "@/components/catalog/filter-sidebar";
-import { QuickViewModal } from "@/components/catalog/quick-view-modal";
 import { QuizCatalogBanner } from "@/components/catalog/quiz-catalog-banner";
 import { RecentlyViewed } from "@/components/catalog/recently-viewed";
 import { LeadForm } from "@/components/landing/lead-form";
@@ -92,9 +91,12 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
   const router = useRouter();
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
 
-  const [bookingCar, setBookingCar] = useState<Car | null>(null);
+  const [leadModalState, setLeadModalState] = useState<{
+    car: Car;
+    type: "reservation" | "credit";
+  } | null>(null);
   const [bookingSubmittingId, setBookingSubmittingId] = useState<string | null>(null);
-  const [quickCar, setQuickCar] = useState<Car | null>(null);
+  const [creditSubmittingId, setCreditSubmittingId] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
@@ -240,6 +242,26 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
 
   const compareBarActive = compareIds.length >= 2;
 
+  const openLeadPopup = (car: Car, type: "reservation" | "credit") => {
+    setLeadModalState({ car, type });
+    trackGoal(metrikaId, METRIKA_GOALS.leadModalOpen, {
+      type,
+      carId: car.id,
+    });
+    trackGoal(metrikaId, METRIKA_GOALS.openLeadPopup, {
+      type,
+      carId: car.id,
+      city: filters.city,
+      paymentMethod: filters.paymentMethod,
+    });
+    if (type === "credit") {
+      trackGoal(metrikaId, METRIKA_GOALS.clickCreditFromCard, {
+        carId: car.id,
+        city: filters.city,
+      });
+    }
+  };
+
   return (
     <div className={`space-y-6 ${compareBarActive ? "pb-28 md:pb-32" : ""}`}>
       <QuizCatalogBanner />
@@ -368,8 +390,9 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
                     isBooked={bookedIds.has(car.id)}
                     bookedUntilMs={bookedUntilMap[car.id] ?? null}
                     isBookingSubmitting={bookingSubmittingId === car.id}
-                    onQuickView={setQuickCar}
-                    onRequestBooking={setBookingCar}
+                    isCreditSubmitting={creditSubmittingId === car.id}
+                    onRequestBooking={(nextCar) => openLeadPopup(nextCar, "reservation")}
+                    onRequestCredit={(nextCar) => openLeadPopup(nextCar, "credit")}
                     compare={{
                       checked: compareIds.includes(car.id),
                       disabled: !compareIds.includes(car.id) && compareIds.length >= 3,
@@ -483,27 +506,23 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
       <CatalogLeadBlock filters={filters} utm={utm} />
 
       <BookingModal
-        car={bookingCar}
-        open={bookingCar != null}
+        car={leadModalState?.car ?? null}
+        type={leadModalState?.type ?? "reservation"}
+        open={leadModalState != null}
         onClose={() => {
-          setBookingCar(null);
+          setLeadModalState(null);
           setBookingSubmittingId(null);
+          setCreditSubmittingId(null);
         }}
         filters={filters}
         utm={utm}
         onBooked={refresh}
-        onSubmittingChange={(submitting, carId) => {
-          setBookingSubmittingId(submitting ? carId : null);
-        }}
-      />
-
-      <QuickViewModal
-        car={quickCar}
-        open={quickCar != null}
-        onClose={() => setQuickCar(null)}
-        onBook={(car) => {
-          setQuickCar(null);
-          setBookingCar(car);
+        onSubmittingChange={(submitting, carId, type) => {
+          if (type === "reservation") {
+            setBookingSubmittingId(submitting ? carId : null);
+            return;
+          }
+          setCreditSubmittingId(submitting ? carId : null);
         }}
       />
 

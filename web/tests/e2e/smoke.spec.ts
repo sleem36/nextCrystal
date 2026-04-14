@@ -19,7 +19,7 @@ test("smoke: /cars принимает фильтры через query (путь 
 
 test("smoke: /cars -> /cars/[id], есть блок заявки", async ({ page }) => {
   await page.goto("/cars");
-  await page.getByRole("link", { name: "Смотреть авто" }).first().click();
+  await page.locator('article[role="link"]').first().click();
   await expect(page).toHaveURL(/\/cars\/[^/?#]+/);
   await expect(page.locator("#lead-form").first()).toBeVisible();
   const phoneButton = page.getByRole("button", { name: "Показать номер" });
