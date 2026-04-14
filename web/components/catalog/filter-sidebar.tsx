@@ -88,12 +88,19 @@ export function FilterSidebar({
     [filters, nextFilters],
   );
   const canReset = useMemo(
-    () => JSON.stringify(filters) !== JSON.stringify(DEFAULT_CAR_LISTING_FILTERS),
-    [filters],
+    () =>
+      JSON.stringify(nextFilters) !== JSON.stringify(DEFAULT_CAR_LISTING_FILTERS) ||
+      JSON.stringify(filters) !== JSON.stringify(DEFAULT_CAR_LISTING_FILTERS),
+    [filters, nextFilters],
   );
 
   const handleApply = () => {
     onApply(nextFilters);
+  };
+
+  const handleReset = () => {
+    setDraft(DEFAULT_CAR_LISTING_FILTERS);
+    onReset();
   };
 
   return (
@@ -362,10 +369,10 @@ export function FilterSidebar({
 
       <div className="sticky bottom-0 z-20 -mx-4 mt-5 border-t border-slate-200 bg-white px-4 pt-3 pb-1 md:-mx-5 md:px-5">
         <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-          <Button type="button" variant="secondary" onClick={onReset} disabled={!canReset}>
+          <Button type="button" variant="secondary" onClick={handleReset} disabled={!canReset}>
             Сбросить фильтры
           </Button>
-          <Button type="button" onClick={handleApply} disabled={!canApply}>
+          <Button type="button" onClick={handleApply} aria-disabled={!canApply}>
             Применить
           </Button>
         </div>

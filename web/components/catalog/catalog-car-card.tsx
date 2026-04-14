@@ -271,7 +271,7 @@ export function CatalogCarCard({
 
   return (
     <article
-      className={`group/card relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[16px] border border-slate-200/80 bg-white shadow-[0_4px_18px_rgba(0,0,0,0.07)] transition-[transform,box-shadow] duration-300 ease-out hover:z-[1] hover:shadow-[0_14px_36px_rgba(0,0,0,0.14)] motion-safe:hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 ${
+      className={`group/card relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[16px] border border-slate-200/80 bg-white shadow-[0_4px_18px_rgba(0,0,0,0.07)] transition-[transform,box-shadow,border-color] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:z-[1] hover:border-slate-300 hover:shadow-[0_16px_38px_rgba(0,0,0,0.14)] motion-safe:hover:-translate-y-[2px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 ${
         isBooked ? "opacity-55 grayscale-[0.35]" : ""
       } catalog-card-enter`}
       style={{ animationDelay: `${delayMs}ms` }}
@@ -306,7 +306,7 @@ export function CatalogCarCard({
                       alt={`${car.brand} ${car.model} — фото ${index + 1}`}
                       fill
                       unoptimized={imageUnoptimized}
-                      className="cursor-pointer object-cover object-center transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.02]"
+                      className="cursor-pointer object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover/card:scale-[1.035]"
                       sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       placeholder={imageUnoptimized ? "empty" : "blur"}
                       blurDataURL={imageUnoptimized ? undefined : BLUR}
@@ -348,7 +348,7 @@ export function CatalogCarCard({
               alt={`${car.brand} ${car.model}, ${car.year}`}
               fill
               unoptimized={singleCoverUnoptimized}
-              className="cursor-pointer object-cover object-center transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.02]"
+              className="cursor-pointer object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover/card:scale-[1.035]"
               sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
               placeholder={singleCoverUnoptimized ? "empty" : "blur"}
               blurDataURL={singleCoverUnoptimized ? undefined : BLUR}
