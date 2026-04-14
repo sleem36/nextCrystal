@@ -4,11 +4,11 @@ import { AboutPageContent } from "@/components/about/about-page-content";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://crystal-motors.ru";
 
 export const metadata: Metadata = {
-  title: "О компании Crystal Motors — сеть, стандарты проверки и команда",
+  title: "О компании Aurora Auto — сеть, стандарты проверки и команда",
   description:
-    "Crystal Motors: история сети, миссия, ключевые цифры, преимущества (trade-in, кредит, гарантия проверки), команда, сертификаты и отзывы. Контакты и реквизиты.",
+    "Aurora Auto: история сети, миссия, ключевые цифры, преимущества (trade-in, кредит, гарантия проверки), команда, сертификаты и отзывы. Контакты и реквизиты.",
   openGraph: {
-    title: "О компании — Crystal Motors",
+    title: "О компании — Aurora Auto",
     description:
       "Сеть автомобилей с пробегом: прозрачная диагностика, юридическая чистота сделки и сервис без сюрпризов.",
     url: `${siteUrl}/about`,
@@ -25,7 +25,7 @@ const jsonLd = {
     {
       "@type": "Organization",
       "@id": `${siteUrl}/#organization`,
-      name: "Crystal Motors",
+      name: "Aurora Auto",
       url: siteUrl,
       logo: `${siteUrl}/favicon.ico`,
       description:
@@ -35,7 +35,7 @@ const jsonLd = {
     {
       "@type": ["LocalBusiness", "AutoDealer"],
       "@id": `${siteUrl}/about#local`,
-      name: "Crystal Motors — Барнаул",
+      name: "Aurora Auto — Барнаул",
       image: `${siteUrl}/hero/poster.svg`,
       telephone: "+73852554545",
       email: "sales@crystal-motors.ru",

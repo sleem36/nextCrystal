@@ -9,7 +9,7 @@ export function SiteHeader() {
             href="/"
             className="block truncate font-bold tracking-tight text-[color:var(--color-brand-primary)] transition-colors hover:text-[color:var(--color-brand-accent)] md:text-lg"
           >
-            Crystal Motors
+            Aurora Auto
           </Link>
           <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500 md:text-xs">
             Федеральная сеть · автомобили с пробегом

@@ -4,7 +4,7 @@ import { FavoritesClient } from "@/components/favorites/favorites-client";
 import { getCars } from "@/lib/cars-source";
 
 export const metadata: Metadata = {
-  title: "Избранные автомобили — Crystal Motors",
+  title: "Избранные автомобили — Aurora Auto",
   description: "Список автомобилей, добавленных в избранное.",
 };
 

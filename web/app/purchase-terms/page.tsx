@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Условия покупки — Crystal Motors",
-  description: "Условия покупки, оплаты и передачи автомобиля в Crystal Motors.",
+  title: "Условия покупки — Aurora Auto",
+  description: "Условия покупки, оплаты и передачи автомобиля в Aurora Auto.",
 };
 
 export default function PurchaseTermsPage() {

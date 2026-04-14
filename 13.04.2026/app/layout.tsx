@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Crystal Motors — подбор автомобиля с пробегом",
+  title: "Aurora Auto — подбор автомобиля с пробегом",
   description:
-    "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Crystal Motors.",
+    "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Aurora Auto.",
 };
 
 export default function RootLayout({

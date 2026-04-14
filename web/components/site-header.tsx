@@ -199,7 +199,7 @@ export function SiteHeader() {
 
           <Link href="/" className="min-w-0 shrink-0">
             <span className="block truncate text-base font-bold tracking-tight text-[color:var(--color-brand-primary)] md:text-lg">
-              Crystal Motors
+              Aurora Auto
             </span>
             <span className="hidden text-[11px] font-medium uppercase tracking-wide text-slate-500 md:block">
               Автомобили с пробегом

@@ -10,7 +10,7 @@ import { parseCompareIdsFromSearchParam } from "@/lib/compare-selection";
 import { getCars } from "@/lib/cars-source";
 
 export const metadata: Metadata = {
-  title: "Сравнение автомобилей — Crystal Motors",
+  title: "Сравнение автомобилей — Aurora Auto",
   description: "Сравните до трёх подержанных автомобилей по цене, пробегу и характеристикам.",
 };
 

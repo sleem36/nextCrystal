@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Акции и спецпредложения — Crystal Motors",
+  title: "Акции и спецпредложения — Aurora Auto",
   description: "Актуальные акции и специальные предложения на автомобили с пробегом.",
 };
 

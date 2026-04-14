@@ -12,14 +12,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app"),
-  title: "Crystal Motors — подбор автомобиля с пробегом",
+  title: "Aurora Auto — подбор автомобиля с пробегом",
   description:
-    "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Crystal Motors.",
+    "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Aurora Auto.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Crystal Motors — подбор автомобиля с пробегом",
+    title: "Aurora Auto — подбор автомобиля с пробегом",
     description:
-      "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Crystal Motors.",
+      "Подбор проверенных подержанных автомобилей, понятный платёж и сопровождение сделки. Федеральная сеть Aurora Auto.",
     type: "website",
   },
 };
@@ -33,7 +33,7 @@ export default function RootLayout({
   const orgJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Crystal Motors",
+    name: "Aurora Auto",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app",
     contactPoint: {
       "@type": "ContactPoint",

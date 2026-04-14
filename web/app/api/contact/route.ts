@@ -84,7 +84,7 @@ export async function POST(request: Request) {
     await transporter().sendMail({
       from: process.env.SMTP_FROM || process.env.SMTP_USER,
       to,
-      subject: "Сообщение со страницы «Контакты» — Crystal Motors",
+      subject: "Сообщение со страницы «Контакты» — Aurora Auto",
       text: [
         `Имя: ${name}`,
         `Телефон: ${phone}`,

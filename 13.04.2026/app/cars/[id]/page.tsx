@@ -50,7 +50,7 @@ export async function generateMetadata({
     return { title: "Автомобиль не найден" };
   }
   return {
-    title: `${car.brand} ${car.model} ${car.year} — Crystal Motors`,
+    title: `${car.brand} ${car.model} ${car.year} — Aurora Auto`,
     description: `Пробег ${formatMileage(car.mileageKm)} км, ${formatCurrency(car.priceRub)}. ${car.city}.`,
   };
 }

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Авто в кредит — Crystal Motors",
-  description: "Условия автокредита, примерные ставки и порядок подачи заявки в Crystal Motors.",
+  title: "Авто в кредит — Aurora Auto",
+  description: "Условия автокредита, примерные ставки и порядок подачи заявки в Aurora Auto.",
 };
 
 export default function CreditPage() {

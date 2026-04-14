@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "FAQ — Crystal Motors",
+  title: "FAQ — Aurora Auto",
   description: "Ответы на частые вопросы о покупке, кредитовании и проверке автомобилей.",
 };
 

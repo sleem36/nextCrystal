@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Спасибо за заявку — Crystal Motors",
-  description: "Заявка принята. Менеджер Crystal Motors свяжется с вами в ближайшее время.",
+  title: "Спасибо за заявку — Aurora Auto",
+  description: "Заявка принята. Менеджер Aurora Auto свяжется с вами в ближайшее время.",
 };
 
 export default function ThankYouPage() {

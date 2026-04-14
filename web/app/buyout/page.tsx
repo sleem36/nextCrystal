@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Выкуп авто — Crystal Motors",
-  description: "Оставьте заявку на выкуп автомобиля в Crystal Motors.",
+  title: "Выкуп авто — Aurora Auto",
+  description: "Оставьте заявку на выкуп автомобиля в Aurora Auto.",
 };
 
 export default function BuyoutPage() {

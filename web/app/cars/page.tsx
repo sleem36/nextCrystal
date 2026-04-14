@@ -4,7 +4,7 @@ import { CarsCatalogClient } from "@/components/catalog/cars-catalog-client";
 import { getCars } from "@/lib/cars-source";
 
 export const metadata: Metadata = {
-  title: "Каталог автомобилей с пробегом — Crystal Motors",
+  title: "Каталог автомобилей с пробегом — Aurora Auto",
   description:
     "Подержанные авто в Барнауле и регионах: цены, фото, фильтры по платежу и бюджету. Заявка на уточнение.",
 };

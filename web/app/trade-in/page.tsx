@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Trade-in — Crystal Motors",
-  description: "Оценка вашего автомобиля и обмен по программе Trade-in в Crystal Motors.",
+  title: "Trade-in — Aurora Auto",
+  description: "Оценка вашего автомобиля и обмен по программе Trade-in в Aurora Auto.",
 };
 
 export default function TradeInPage() {

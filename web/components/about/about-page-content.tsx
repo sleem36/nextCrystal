@@ -151,7 +151,7 @@ export function AboutPageContent() {
           <div className="hero-grain absolute inset-0" aria-hidden />
         </div>
         <div className="container-wide relative flex min-h-[280px] flex-col justify-end gap-3 py-10 md:min-h-[380px] md:py-14">
-          <p className="text-xs font-medium uppercase tracking-wider text-white/80">Crystal Motors</p>
+          <p className="text-xs font-medium uppercase tracking-wider text-white/80">Aurora Auto</p>
           <h1 className="hero-text-shadow max-w-3xl text-3xl font-semibold tracking-tight text-white md:text-4xl lg:text-5xl">
             О компании
           </h1>
@@ -188,7 +188,7 @@ export function AboutPageContent() {
               История и развитие
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-slate-600">
-              Crystal Motors вырос из небольшого отдела подбора автомобилей с пробегом. Мы накопили экспертизу в
+              Aurora Auto вырос из небольшого отдела подбора автомобилей с пробегом. Мы накопили экспертизу в
               диагностике, оценке рисков и сопровождении сделок — и масштабировали процессы на несколько регионов,
               сохраняя единый стандарт проверки и общения с клиентом.
             </p>
@@ -217,7 +217,7 @@ export function AboutPageContent() {
               Почему клиенты выбирают нас
             </h2>
             <p className="mt-2 text-sm text-slate-600">
-              Шесть опорных преимуществ, которые отражают реальный опыт сделок и сервиса в сети Crystal Motors.
+              Шесть опорных преимуществ, которые отражают реальный опыт сделок и сервиса в сети Aurora Auto.
             </p>
           </div>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

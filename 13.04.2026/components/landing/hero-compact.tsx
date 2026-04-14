@@ -170,7 +170,7 @@ export function HeroCompact({ onPrimaryClick }: HeroCompactProps) {
       <div className="relative z-[4] mx-auto flex min-h-[88svh] max-w-3xl flex-col justify-end px-5 pb-10 pt-16 sm:px-6 sm:pb-12 md:min-h-[min(92svh,920px)] md:pb-14 md:pt-20">
         <div className="max-w-xl">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80 hero-text-shadow">
-            Crystal Motors · Барнаул
+            Aurora Auto · Барнаул
           </p>
 
           <h1 className="hero-text-shadow mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-[1.85rem] md:leading-tight">

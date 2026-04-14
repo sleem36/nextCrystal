@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Отзывы клиентов — Crystal Motors",
-  description: "Реальные отзывы клиентов о покупке автомобилей с пробегом в Crystal Motors.",
+  title: "Отзывы клиентов — Aurora Auto",
+  description: "Реальные отзывы клиентов о покупке автомобилей с пробегом в Aurora Auto.",
 };
 
 const reviews = [

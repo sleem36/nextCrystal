@@ -51,11 +51,11 @@ export async function generateMetadata({
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app";
   const canonical = `${siteUrl}/cars/${car.id}`;
   return {
-    title: `${car.brand} ${car.model} ${car.year} — Crystal Motors`,
+    title: `${car.brand} ${car.model} ${car.year} — Aurora Auto`,
     description: `Пробег ${formatMileage(car.mileageKm)} км, ${formatCurrency(car.priceRub)}. ${car.city}.`,
     alternates: { canonical },
     openGraph: {
-      title: `${car.brand} ${car.model} ${car.year} — Crystal Motors`,
+      title: `${car.brand} ${car.model} ${car.year} — Aurora Auto`,
       description: `Пробег ${formatMileage(car.mileageKm)} км, ${formatCurrency(car.priceRub)}. ${car.city}.`,
       type: "website",
       url: canonical,
