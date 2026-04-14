@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   verification: {
     yandex: "ea87bbaee9d4f1b4",
   },
+  robots: {
+    index: false,
+    follow: false,
+  },
   alternates: { canonical: "/" },
   openGraph: {
     title: "Aurora Auto — подбор автомобиля с пробегом",
