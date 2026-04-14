@@ -23,7 +23,7 @@ const baseRemotePatterns: NonNullable<NonNullable<NextConfig["images"]>["remoteP
   { protocol: "https", hostname: "plus.unsplash.com", pathname: "/**" },
   { protocol: "https", hostname: "placehold.co", pathname: "/**" },
   { protocol: "https", hostname: "i.ytimg.com", pathname: "/**" },
-  { protocol: "https", hostname: "orenburg.crystal-motors.ru", pathname: "/media/**" },
+  { protocol: "https", hostname: "orenburg.aurora-auto.ru", pathname: "/media/**" },
 ];
 
 const extraRemotePatterns = extraImageHosts.map((hostname) => ({

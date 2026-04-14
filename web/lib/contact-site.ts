@@ -7,7 +7,7 @@ export const contactSite = {
   phoneDisplay: trim(process.env.NEXT_PUBLIC_CONTACT_PHONE_DISPLAY) || "+7 (3852) 55-45-45",
   /** Цифры для tel: без пробелов и скобок, с ведущей 7 */
   phoneDigits: trim(process.env.NEXT_PUBLIC_CONTACT_PHONE_DIGITS) || "73852554545",
-  email: trim(process.env.NEXT_PUBLIC_CONTACT_EMAIL) || "sales@crystal-motors.ru",
+  email: trim(process.env.NEXT_PUBLIC_CONTACT_EMAIL) || "sales@aurora-auto.ru",
   addressFull:
     trim(process.env.NEXT_PUBLIC_CONTACT_ADDRESS) ||
     "Россия, Алтайский край, г. Барнаул, Павловский тракт, д. 251В",

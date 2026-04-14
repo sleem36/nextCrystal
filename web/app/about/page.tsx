@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AboutPageContent } from "@/components/about/about-page-content";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://crystal-motors.ru";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aurora-auto.ru";
 
 export const metadata: Metadata = {
   title: "О компании Aurora Auto — сеть, стандарты проверки и команда",
@@ -38,7 +38,7 @@ const jsonLd = {
       name: "Aurora Auto — Барнаул",
       image: `${siteUrl}/hero/poster.svg`,
       telephone: "+73852554545",
-      email: "sales@crystal-motors.ru",
+      email: "sales@aurora-auto.ru",
       address: {
         "@type": "PostalAddress",
         streetAddress: "Павловский тракт, 251В",

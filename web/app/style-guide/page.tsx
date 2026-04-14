@@ -12,8 +12,8 @@ export default function StyleGuidePage() {
         </h1>
         <p className="text-sm text-slate-600">
           Токены в духе{" "}
-          <a className="font-medium text-[color:var(--color-link)] underline-offset-2 hover:underline" href="https://crystal-motors.ru/" target="_blank" rel="noopener noreferrer">
-            crystal-motors.ru
+          <a className="font-medium text-[color:var(--color-link)] underline-offset-2 hover:underline" href="https://aurora-auto.ru/" target="_blank" rel="noopener noreferrer">
+            aurora-auto.ru
           </a>
           : светлый фон, тёмная типографика, красный акцент для действий, нейтральные карточки.
         </p>

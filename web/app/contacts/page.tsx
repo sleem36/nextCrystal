@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ContactsPageContent } from "@/components/contacts/contacts-page-content";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://crystal-motors.ru";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://aurora-auto.ru";
 
 export const metadata: Metadata = {
   title: "Контакты Aurora Auto — телефон, email, мессенджеры, карта, заявка",

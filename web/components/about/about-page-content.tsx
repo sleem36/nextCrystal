@@ -393,7 +393,7 @@ export function AboutPageContent() {
             </div>
             <div>
               <dt className="font-medium text-slate-900">Email</dt>
-              <dd className="mt-1 text-slate-600">sales@crystal-motors.ru</dd>
+              <dd className="mt-1 text-slate-600">sales@aurora-auto.ru</dd>
             </div>
             <div>
               <dt className="font-medium text-slate-900">Режим</dt>

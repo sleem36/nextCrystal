@@ -35,11 +35,11 @@ export function SiteFooter() {
           </Link>
           <a
             className="text-slate-400 transition-colors hover:text-white"
-            href="https://crystal-motors.ru/"
+            href="https://aurora-auto.ru/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            crystal-motors.ru
+            aurora-auto.ru
           </a>
         </div>
       </div>

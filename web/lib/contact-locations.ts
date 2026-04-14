@@ -1,5 +1,5 @@
 /**
- * Филиалы сети (координаты и контакты по данным публичной витрины crystal-motors.ru/contacts, блок CONTACTS).
+ * Филиалы сети (координаты и контакты по данным публичной витрины aurora-auto.ru/contacts, блок CONTACTS).
  * При необходимости обновите адреса/телефоны у себя в CRM и здесь.
  */
 export type ContactBranch = {
@@ -12,12 +12,12 @@ export type ContactBranch = {
   /** WGS84 */
   lat: number;
   lng: number;
-  /** Фото салона с публичной витрины crystal-motors.ru (media/stores/{id}_{n}.png) */
+  /** Фото салона с публичной витрины aurora-auto.ru (media/stores/{id}_{n}.png) */
   images: string[];
 };
 
 /** База для фото филиалов (как в блоке CONTACTS на странице контактов CM) */
-const CM_STORES = "https://orenburg.crystal-motors.ru/media/stores";
+const CM_STORES = "https://orenburg.aurora-auto.ru/media/stores";
 
 function cmPhotos(storeNumericId: number, indices: number[]) {
   return indices.map((n) => `${CM_STORES}/${storeNumericId}_${n}.png`);
@@ -36,7 +36,7 @@ export function yandexMapsSearchUrl(branch: Pick<ContactBranch, "city" | "addres
 }
 
 /** Общий ящик юротдела, как на витрине CM */
-export const CONTACT_LEGAL_EMAIL = "legaldepartment@crystal-motors.ru";
+export const CONTACT_LEGAL_EMAIL = "legaldepartment@aurora-auto.ru";
 
 /**
  * Порядок — как в сети CM (крупные города); по умолчанию Барнаул под каталог MVP.
@@ -80,7 +80,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Томск",
     address: "ул. Смирнова, 5И",
     phone: "+7 (382) 299-01-03",
-    email: "tomsk@crystal-motors.ru",
+    email: "tomsk@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 56.525792,
     lng: 84.98845,
@@ -91,7 +91,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Омск",
     address: "Енисейская ул., 18/1",
     phone: "+7 (381) 221-90-23",
-    email: "omsk@crystal-motors.ru",
+    email: "omsk@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 54.97658819853188,
     lng: 73.33811667594908,
@@ -102,7 +102,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Красноярск",
     address: "Караульная ул., 47",
     phone: "+7 (391) 986-55-96",
-    email: "krasnoyarsk@crystal-motors.ru",
+    email: "krasnoyarsk@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 56.047208,
     lng: 92.885423,
@@ -113,7 +113,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Сургут",
     address: "Производственная ул., 6",
     phone: "+7 (346) 250-02-79",
-    email: "surgut@crystal-motors.ru",
+    email: "surgut@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 61.271545,
     lng: 73.428354,
@@ -124,7 +124,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Новосибирск",
     address: "Большевистская ул., 276",
     phone: "+7 (383) 388-51-38",
-    email: "novosib@crystal-motors.ru",
+    email: "novosib@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 54.983696,
     lng: 82.999077,
@@ -135,7 +135,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Новокузнецк",
     address: "Байдаевское шоссе, 22",
     phone: "+7 (384) 334-80-07",
-    email: "novokuznetsk@crystal-motors.ru",
+    email: "novokuznetsk@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 53.774382,
     lng: 87.276603,
@@ -146,7 +146,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Кемерово",
     address: "ул. Тухачевского, 64",
     phone: "+7 (384) 221-59-80",
-    email: "kemerovo@crystal-motors.ru",
+    email: "kemerovo@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 55.30663,
     lng: 86.14107,
@@ -157,7 +157,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Барнаул",
     address: "Правобережный тракт, 26",
     phone: "+7 (385) 259-03-06",
-    email: "barnaul@crystal-motors.ru",
+    email: "barnaul@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 53.314767,
     lng: 83.833334,
@@ -168,7 +168,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Пермь",
     address: "ул. Спешилова, 101А",
     phone: "+7 (342) 248-28-50",
-    email: "perm@crystal-motors.ru",
+    email: "perm@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 58.034077,
     lng: 56.200976,
@@ -179,7 +179,7 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
     city: "Оренбург",
     address: "Загородное шоссе, 13/7",
     phone: "+7 (353) 250-57-15",
-    email: "orenburg@crystal-motors.ru",
+    email: "orenburg@aurora-auto.ru",
     hours: "Ежедневно с 9:00 до 20:00",
     lat: 51.841058,
     lng: 55.162631,
