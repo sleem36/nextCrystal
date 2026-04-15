@@ -18,9 +18,6 @@ export function SiteFooter() {
           <Link className="text-slate-400 transition-colors hover:text-white" href="/about">
             О компании
           </Link>
-          <Link className="text-slate-400 transition-colors hover:text-white" href="/reviews">
-            Отзывы
-          </Link>
           <Link className="text-slate-400 transition-colors hover:text-white" href="/contacts">
             Контакты
           </Link>
@@ -36,14 +33,6 @@ export function SiteFooter() {
           <Link className="text-slate-400 transition-colors hover:text-white" href="/legal/consent">
             Согласие на обработку ПДн
           </Link>
-          <a
-            className="text-slate-400 transition-colors hover:text-white"
-            href="https://aurora-auto.ru/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            aurora-auto.ru
-          </a>
         </div>
       </div>
       <div className="container-wide border-t border-slate-800/70 pb-8 pt-4">

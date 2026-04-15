@@ -187,7 +187,7 @@ export function HeroCompact({ onPrimaryClick }: HeroCompactProps) {
 
           <div className="mt-6">
             <Button
-              className="w-full shadow-[0_4px_20px_rgba(220,38,38,0.35)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(220,38,38,0.42)] active:translate-y-0 sm:w-auto"
+              className="w-full shadow-[0_4px_20px_rgba(0,118,234,0.35)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-px hover:shadow-[0_8px_28px_rgba(0,118,234,0.42)] active:translate-y-0 sm:w-auto"
               onClick={onPrimaryClick}
             >
               Подобрать авто под мой бюджет

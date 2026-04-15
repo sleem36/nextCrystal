@@ -15,9 +15,9 @@ export function CompareInsufficient({
       <h1 className="text-2xl font-semibold text-[color:var(--color-brand-primary)] md:text-3xl">
         Сравнение не удалось
       </h1>
-      <div className="rounded-[var(--radius-card)] border border-rose-200 bg-rose-50 px-4 py-4 text-sm text-rose-950">
+      <div className="rounded-[var(--radius-card)] border border-blue-200 bg-blue-50 px-4 py-4 text-sm text-blue-950">
         <p className="font-medium">Недостаточно объявлений для сравнения</p>
-        <p className="mt-2 text-rose-900/90">
+        <p className="mt-2 text-blue-900/90">
           По ссылке указано {requestedIds.length}{" "}
           {requestedIds.length === 1 ? "объявление" : "объявления"}, но в каталоге найдено только{" "}
           {foundCars.length}.{" "}
@@ -31,7 +31,7 @@ export function CompareInsufficient({
       </div>
       <Link
         href="/cars"
-        className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button)] bg-[color:var(--color-brand-accent)] px-6 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] hover:bg-[color:var(--color-brand-accent-hover)]"
+        className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button)] bg-[color:var(--color-brand-accent)] px-6 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] hover:bg-[color:var(--color-brand-accent-hover)]"
       >
         В каталог
       </Link>

@@ -478,7 +478,7 @@ export function SiteHeader() {
               onClick={() => selectCity(option)}
               className={`rounded-lg border px-3 py-2 text-left text-sm font-medium transition ${
                 city === option
-                  ? "border-[color:var(--color-brand-accent)] bg-red-50 text-[color:var(--color-brand-accent)]"
+                  ? "border-[color:var(--color-brand-accent)] bg-blue-50 text-[color:var(--color-brand-accent)]"
                   : "border-slate-300 text-slate-700 hover:bg-slate-50"
               }`}
             >

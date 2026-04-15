@@ -374,7 +374,7 @@ export function CatalogCarCard({
           <button
             type="button"
             data-no-card-nav
-            className="absolute right-2 top-2 z-[7] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white"
+            className="absolute right-2 top-2 z-[7] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-[color:var(--color-brand-accent)] shadow-md backdrop-blur-sm transition hover:bg-white"
             onClick={(event) => {
               event.stopPropagation();
               toggleWishlist(car.id);
@@ -399,7 +399,7 @@ export function CatalogCarCard({
 
         <div className="pointer-events-none absolute left-2 top-12 z-[4] flex flex-col gap-1.5">
           {showDiscount ? (
-            <span className="rounded-md bg-rose-600 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white shadow">
+            <span className="rounded-md bg-[color:var(--color-brand-accent-dark)] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white shadow">
               Скидка −{formatCurrency(discountRub)}
             </span>
           ) : null}

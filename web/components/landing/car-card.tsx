@@ -11,7 +11,7 @@ import { getResolvedCarImages } from "@/lib/car-images-map";
 import { Car } from "@/types/car";
 
 const btnPrimaryClass =
-  "inline-flex h-11 flex-1 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] transition-colors duration-150 ease-out hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 text-center";
+  "inline-flex h-11 flex-1 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] transition-colors duration-150 ease-out hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 text-center";
 const btnSecondaryClass =
   "inline-flex h-11 flex-1 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-[color:var(--color-brand-primary)] transition-colors duration-150 hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-primary)] focus-visible:ring-offset-2 text-center";
 
@@ -176,7 +176,7 @@ export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProp
       >
         <button
           type="button"
-          className="absolute right-2 top-2 z-[8] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white"
+          className="absolute right-2 top-2 z-[8] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-[color:var(--color-brand-accent)] shadow-md backdrop-blur-sm transition hover:bg-white"
           onClick={(event) => {
             event.preventDefault();
             event.stopPropagation();

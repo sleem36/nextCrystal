@@ -50,7 +50,7 @@ export function FavoritesClient({ cars }: FavoritesClientProps) {
         <p className="mt-2 text-sm text-slate-600">У вас пока нет избранных авто</p>
         <Link
           href="/cars"
-          className="mt-4 inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] transition-colors hover:bg-[color:var(--color-brand-accent-hover)]"
+          className="mt-4 inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] transition-colors hover:bg-[color:var(--color-brand-accent-hover)]"
         >
           Перейти в каталог
         </Link>
@@ -83,7 +83,7 @@ export function FavoritesClient({ cars }: FavoritesClientProps) {
                   event.preventDefault();
                   event.stopPropagation();
                 }}
-                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center gap-1 rounded-lg border border-rose-200 bg-white/95 px-2 text-xs font-semibold text-rose-600 shadow-sm transition hover:bg-rose-50"
+                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center gap-1 rounded-lg border border-blue-200 bg-white/95 px-2 text-xs font-semibold text-[color:var(--color-brand-accent)] shadow-sm transition hover:bg-blue-50"
                 aria-label={`Удалить ${car.brand} ${car.model} из избранного`}
               >
                 <Heart className="h-4 w-4 fill-current" />

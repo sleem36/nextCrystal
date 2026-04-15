@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { AdvantagesSection } from "@/components/home/advantages-section";
 import { CarResults } from "@/components/landing/car-results";
 import { HeroCompact } from "@/components/landing/hero-compact";
 import { LeadForm } from "@/components/landing/lead-form";
@@ -266,6 +267,7 @@ export function LandingMvp() {
           window.setTimeout(focusQuickSelector, 80);
         }}
       />
+      <AdvantagesSection />
 
       <div
         className={`grid transition-[grid-template-rows] duration-[var(--motion-panel)] ease-[var(--easing-standard)] motion-reduce:transition-none ${
@@ -317,7 +319,7 @@ export function LandingMvp() {
                           monthlyBudget: selector.monthlyBudget,
                         })
                       }
-                      className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] transition-colors hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+                      className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] transition-colors hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
                     >
                       Смотреть подборку в каталоге
                     </Link>
@@ -427,7 +429,7 @@ export function LandingMvp() {
                     </div>
                   ) : null}
                   {carsError ? (
-                    <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-700">
                       {carsError}
                     </div>
                   ) : null}

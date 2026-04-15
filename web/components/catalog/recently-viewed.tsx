@@ -53,7 +53,7 @@ export function RecentlyViewed({ cars }: RecentlyViewedProps) {
             <li key={car.id} className="relative">
               <button
                 type="button"
-                className="absolute right-2 top-2 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-rose-600 shadow-md backdrop-blur-sm transition hover:bg-white"
+                className="absolute right-2 top-2 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-[color:var(--color-brand-accent)] shadow-md backdrop-blur-sm transition hover:bg-white"
                 onClick={(event) => {
                   event.preventDefault();
                   event.stopPropagation();

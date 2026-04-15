@@ -18,7 +18,7 @@ function Stars({ rating }: { rating: 5 | 4 | 3 }) {
   );
 }
 
-export function ReviewsSection() {
+export function ReviewsSection({ className = "" }: { className?: string }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: "start",
@@ -49,16 +49,18 @@ export function ReviewsSection() {
   }, [emblaApi]);
 
   return (
-    <section className="container-wide mt-10 md:mt-14" aria-labelledby="reviews-heading">
+    <section className={`container-wide mt-10 md:mt-14 ${className}`.trim()} aria-labelledby="reviews-heading">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-3 md:mb-7">
         <div>
-        <h2
-          id="reviews-heading"
-          className="text-2xl font-semibold tracking-tight text-[color:var(--color-brand-primary)] md:text-3xl"
-        >
-          Отзывы наших клиентов
-        </h2>
-        <p className="mt-2 text-sm text-slate-600 md:text-base">Реальные отзывы о покупке автомобилей.</p>
+          <h2
+            id="reviews-heading"
+            className="text-2xl font-semibold tracking-tight text-[color:var(--color-brand-primary)] md:text-3xl"
+          >
+            Отзывы наших клиентов
+          </h2>
+          <p className="mt-2 text-sm text-slate-600 md:text-base">
+            Реальные отзывы о покупке автомобилей.
+          </p>
         </div>
         <div className="hidden items-center gap-2 md:flex">
           <button
@@ -90,39 +92,38 @@ export function ReviewsSection() {
               className="min-w-0 flex-[0_0_88%] pl-3 sm:flex-[0_0_70%] md:flex-[0_0_50%] md:pl-4 xl:flex-[0_0_33.333%]"
             >
               <Card className="h-full p-4 md:p-5">
-              <div className="flex items-start gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={review.avatar} alt={review.name} className="h-20 w-20 rounded-full object-cover" />
-                <div className="min-w-0 flex-1">
+                <div className="mt-3 min-w-0">
                   <p className="truncate text-sm font-semibold text-slate-900 md:text-base">{review.name}</p>
                   <p className="text-xs text-slate-500">{review.date}</p>
                   <div className="mt-2">
                     <Stars rating={review.rating} />
                   </div>
                 </div>
-              </div>
 
-              <p className="mt-4 text-sm leading-relaxed text-slate-700">{review.text}</p>
+                <p className="mt-4 text-sm leading-relaxed text-slate-700">{review.text}</p>
 
-              {review.carModel ? (
-                <p className="mt-3 text-xs font-medium text-slate-500">Купили: {review.carModel}</p>
-              ) : null}
+                {review.carModel ? (
+                  <p className="mt-3 text-xs font-medium text-slate-500">Купили: {review.carModel}</p>
+                ) : null}
 
-              {review.fullReviewUrl ? (
-                <a
-                  href={review.fullReviewUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex text-xs font-semibold text-[color:var(--color-brand-accent)] underline-offset-4 hover:underline"
-                >
-                  Полный отзыв
-                </a>
-              ) : null}
+                {review.fullReviewUrl ? (
+                  <a
+                    href={review.fullReviewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex text-xs font-semibold text-[color:var(--color-brand-accent)] underline-offset-4 hover:underline"
+                  >
+                    Полный отзыв
+                  </a>
+                ) : null}
               </Card>
             </div>
           ))}
         </div>
       </div>
+
       {snapCount > 1 ? (
         <div className="mt-4 flex items-center justify-center gap-1.5 md:hidden">
           {Array.from({ length: snapCount }).map((_, idx) => (

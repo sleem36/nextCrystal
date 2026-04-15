@@ -60,7 +60,7 @@ export function ComparePanel({ compareIds, carsById, onRemove, onClear }: Compar
           </button>
           <Link
             href={href}
-            className="inline-flex h-10 items-center justify-center rounded-[var(--radius-button)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(220,38,38,0.35)] hover:bg-[color:var(--color-brand-accent-hover)]"
+            className="inline-flex h-10 items-center justify-center rounded-[var(--radius-button)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] hover:bg-[color:var(--color-brand-accent-hover)]"
           >
             Сравнить
           </Link>

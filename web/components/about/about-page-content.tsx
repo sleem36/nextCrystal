@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ReviewsSection } from "@/components/landing/reviews-section";
 
 const STATS = [
   { value: "12+", label: "лет на рынке подборов и продаж" },
@@ -54,27 +55,6 @@ const CERTS = [
   "Благодарность от ассоциации автодилеров",
   "Партнёр страховой программы КАСКО",
   "Диплом за клиентский сервис 2024",
-] as const;
-
-const REVIEWS = [
-  {
-    name: "Марина К.",
-    city: "Барнаул",
-    text: "Купила кроссовер через trade‑in: оценка честная, документы собрали за один день, на связи были до постановки на учёт.",
-    date: "март 2025",
-  },
-  {
-    name: "Сергей Н.",
-    city: "Новосибирск",
-    text: "Искал авто с «чистой» историей — показали отчёты, пустили на подъёмник. Без навязанных допов, всё по делу.",
-    date: "январь 2025",
-  },
-  {
-    name: "Ольга Т.",
-    city: "Омск",
-    text: "Оформили кредит и страховку удалённо, приехала только на выдачу. Менеджер сопровождал на каждом шаге.",
-    date: "декабрь 2024",
-  },
 ] as const;
 
 const BRANCHES = [
@@ -286,49 +266,7 @@ export function AboutPageContent() {
         </section>
 
         {/* Reviews */}
-        <section aria-labelledby="about-reviews-heading">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 id="about-reviews-heading" className="text-xl font-semibold text-[color:var(--color-brand-primary)] md:text-2xl">
-                Отзывы клиентов
-              </h2>
-              <p className="mt-2 max-w-xl text-sm text-slate-600">
-                Короткие истории покупателей. Имена и города — примеры для вёрстки; перед публикацией замените на
-                согласованные отзывы с разрешением.
-              </p>
-            </div>
-            <Link
-              href="/reviews"
-              className="inline-flex w-fit items-center justify-center rounded-[var(--radius-button)] bg-[color:var(--color-brand-accent)] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[color:var(--color-brand-accent-hover)]"
-            >
-              Все отзывы
-            </Link>
-          </div>
-          <ul className="mt-6 grid gap-4 md:grid-cols-3">
-            {REVIEWS.map((r) => (
-              <li
-                key={r.name + r.date}
-                className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-slate-200 text-sm font-semibold text-slate-600"
-                    aria-hidden
-                  >
-                    {r.name.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-900">{r.name}</p>
-                    <p className="text-xs text-slate-500">
-                      {r.city} · {r.date}
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-4 text-sm leading-relaxed text-slate-600">{r.text}</p>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <ReviewsSection className="mt-0 px-0 md:mt-0" />
 
         {/* Branches accordion */}
         <section aria-labelledby="about-branches-heading">

@@ -21,7 +21,7 @@ export function CarWishlistToggle({ carId, className = "" }: CarWishlistTogglePr
       aria-label={isWishlisted ? "Удалить из избранного" : "Добавить в избранное"}
       aria-pressed={isWishlisted}
     >
-      <Heart className={`h-5 w-5 text-rose-600 ${isWishlisted ? "fill-current" : ""}`} />
+      <Heart className={`h-5 w-5 text-[color:var(--color-brand-accent)] ${isWishlisted ? "fill-current" : ""}`} />
       <span>{isWishlisted ? "В избранном" : "В избранное"}</span>
     </button>
   );

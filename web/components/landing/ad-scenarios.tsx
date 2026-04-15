@@ -68,7 +68,7 @@ export function AdScenarios({ activeScenario, onSelect }: AdScenariosProps) {
               onClick={() => onSelect(scenario)}
             >
               <p className="text-sm font-semibold">{scenario.title}</p>
-              <p className={`mt-1 text-xs ${isActive ? "text-red-50/90" : "text-slate-600"}`}>
+              <p className={`mt-1 text-xs ${isActive ? "text-blue-50/90" : "text-slate-600"}`}>
                 {scenario.subtitle}
               </p>
             </button>

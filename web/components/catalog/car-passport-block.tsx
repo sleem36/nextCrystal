@@ -5,7 +5,7 @@ function StatusPill({ tone, children }: { tone: "ok" | "warn" | "bad" | "neutral
   const map = {
     ok: "bg-emerald-50 text-emerald-900 ring-emerald-200",
     warn: "bg-amber-50 text-amber-900 ring-amber-200",
-    bad: "bg-rose-50 text-rose-900 ring-rose-200",
+    bad: "bg-blue-50 text-blue-900 ring-blue-200",
     neutral: "bg-slate-50 text-slate-800 ring-slate-200",
   };
   return (
