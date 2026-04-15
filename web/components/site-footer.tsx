@@ -21,9 +21,6 @@ export function SiteFooter() {
           <Link className="text-slate-400 transition-colors hover:text-white" href="/contacts">
             Контакты
           </Link>
-          <Link className="text-slate-400 transition-colors hover:text-white" href="/faq">
-            FAQ
-          </Link>
           <Link className="text-slate-400 transition-colors hover:text-white" href="/legal/privacy">
             Политика конфиденциальности
           </Link>

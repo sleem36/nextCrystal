@@ -101,9 +101,6 @@ export function PriceRangeSlider({
           onChange={(e) => setHigh(Number(e.target.value))}
         />
       </div>
-      <p className="text-xs text-slate-500">
-        Вилка по текущей выдаче: {formatValue(minBound)} — {formatValue(maxBound)}
-      </p>
     </div>
   );
 }

@@ -121,10 +121,7 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
               <th className={th()}>Параметр</th>
               {cars.map((car) => (
                 <th key={car.id} className={`${th()} min-w-[160px]`}>
-                  <Link
-                    href={`/cars/${car.id}`}
-                    className="relative mb-2 inline-flex overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
-                  >
+                  <div className="relative mb-2 inline-flex overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
                     <button
                       type="button"
                       onClick={(event) => {
@@ -132,7 +129,7 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
                         event.stopPropagation();
                         handleRemoveCar(car.id);
                       }}
-                      className="absolute right-1.5 top-1.5 z-[1] inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/60 bg-white/90 text-sm font-semibold leading-none text-slate-700 shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+                      className="absolute right-1.5 top-1.5 z-[1] inline-flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border border-white/60 bg-white/90 text-sm font-semibold leading-none text-slate-700 shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
                       aria-label={`Удалить ${car.brand} ${car.model} из сравнения`}
                     >
                       ×
@@ -147,7 +144,7 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
                       loading="lazy"
                       decoding="async"
                     />
-                  </Link>
+                  </div>
                   <Link
                     href={`/cars/${car.id}`}
                     className="block font-semibold text-[color:var(--color-brand-primary)] hover:text-[color:var(--color-brand-accent)] hover:underline"

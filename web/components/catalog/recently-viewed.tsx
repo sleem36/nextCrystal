@@ -20,7 +20,7 @@ type RecentlyViewedProps = {
 export function RecentlyViewed({ cars }: RecentlyViewedProps) {
   const [ids, setIds] = useState<string[]>([]);
   const toggleWishlist = useWishlistStore((state) => state.toggle);
-  const isWishlisted = useWishlistStore((state) => state.has);
+  const wishlistIds = useWishlistStore((state) => state.ids);
 
   useEffect(() => {
     const sync = () => setIds(readRecentlyViewedIds());
@@ -48,7 +48,7 @@ export function RecentlyViewed({ cars }: RecentlyViewedProps) {
       <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {list.map((car) => {
           const src = primaryImageSrc(car);
-          const wished = isWishlisted(car.id);
+          const wished = wishlistIds.includes(car.id);
           return (
             <li key={car.id} className="relative">
               <button

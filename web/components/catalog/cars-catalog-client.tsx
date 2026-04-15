@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { BookingModal } from "@/components/catalog/booking-modal";
 import { CatalogCarCard } from "@/components/catalog/catalog-car-card";
-import { ComparePanel } from "@/components/catalog/compare-panel";
 import { FilterSidebar } from "@/components/catalog/filter-sidebar";
 import { QuizCatalogBanner } from "@/components/catalog/quiz-catalog-banner";
 import { RecentlyViewed } from "@/components/catalog/recently-viewed";
@@ -39,6 +38,21 @@ const SORT_OPTIONS: Array<{ value: CarListingFilters["sort"]; label: string }> =
   { value: "mileage_desc", label: "Пробег: больше" },
   { value: "popular_desc", label: "Популярность" },
 ];
+
+const FAQ_ITEMS = [
+  {
+    q: "Можно ли купить автомобиль без первого взноса?",
+    a: "Да, в кредитном калькуляторе можно выбрать первоначальный взнос от 0 ₽. Финальные условия зависят от банка.",
+  },
+  {
+    q: "Как проверить юридическую чистоту авто?",
+    a: "Перед продажей мы проверяем VIN, ограничения и историю владения. Ключевые данные показываем в карточке авто.",
+  },
+  {
+    q: "Сколько времени занимает оформление?",
+    a: "Обычно от одного дня. Точный срок зависит от выбранного способа покупки и банка.",
+  },
+] as const;
 
 function carsCountLabel(count: number) {
   if (count % 10 === 1 && count % 100 !== 11) return "автомобиль";
@@ -85,8 +99,32 @@ function CatalogLeadBlock({
   );
 }
 
+function CatalogFaqBlock() {
+  return (
+    <section
+      className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+      aria-labelledby="catalog-faq-heading"
+    >
+      <h2
+        id="catalog-faq-heading"
+        className="text-xl font-semibold text-[color:var(--color-brand-primary)]"
+      >
+        Частые вопросы
+      </h2>
+      <div className="mt-4 space-y-2">
+        {FAQ_ITEMS.map((item) => (
+          <details key={item.q} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <summary className="cursor-pointer text-sm font-semibold text-slate-900">{item.q}</summary>
+            <p className="mt-2 text-sm text-slate-700">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function CarsCatalogClient({ cars }: { cars: Car[] }) {
-  const { compareIds, toggle, setCompareIds } = useCompareSelection();
+  const { compareIds, toggle } = useCompareSelection();
   const { bookedIds, bookedUntilMap, refresh } = useBookedCars();
   const sp = useSearchParams();
   const router = useRouter();
@@ -101,9 +139,11 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
   const [creditSubmittingId, setCreditSubmittingId] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [canStickyFilters, setCanStickyFilters] = useState(false);
 
   const listLenRef = useRef(0);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const filtersAsideRef = useRef<HTMLElement | null>(null);
 
   const utm = useMemo(
     () => utmFromSearchParams(Object.fromEntries(sp.entries())),
@@ -114,8 +154,6 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
     () => parseCarListingSearchParams(Object.fromEntries(sp.entries())),
     [sp],
   );
-
-  const carsById = useMemo(() => new Map(cars.map((c) => [c.id, c])), [cars]);
 
   const strictPriceBounds = useMemo(() => {
     const pool = filterCarsForPriceBounds(cars, filters);
@@ -252,6 +290,34 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
   }, []);
 
   useEffect(() => {
+    const topOffsetPx = 96; // соответствует top-24
+    const marginPx = 16;
+
+    const updateStickyState = () => {
+      const el = filtersAsideRef.current;
+      if (!el || typeof window === "undefined") return;
+      const requiredHeight = el.scrollHeight + topOffsetPx + marginPx;
+      setCanStickyFilters(requiredHeight <= window.innerHeight);
+    };
+
+    updateStickyState();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateStickyState();
+    });
+    const el = filtersAsideRef.current;
+    if (el) {
+      resizeObserver.observe(el);
+    }
+    window.addEventListener("resize", updateStickyState);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateStickyState);
+    };
+  }, [filters]);
+
+  useEffect(() => {
     if (showList.length > 0) return;
     trackGoal(metrikaId, METRIKA_GOALS.noResultsShown, {
       paymentMethod: filters.paymentMethod,
@@ -265,8 +331,6 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
 
   const chipClass =
     "inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-sm transition hover:border-[color:var(--color-brand-accent)] hover:text-[color:var(--color-brand-accent)]";
-
-  const compareBarActive = compareIds.length >= 2;
 
   const openLeadPopup = (car: Car, type: "reservation" | "credit") => {
     setLeadModalState({ car, type });
@@ -289,7 +353,7 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
   };
 
   return (
-    <div className={`space-y-6 ${compareBarActive ? "pb-28 md:pb-32" : ""}`}>
+    <div className="space-y-6">
       <QuizCatalogBanner />
 
       <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
@@ -336,7 +400,10 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
       </div>
 
       <div className="lg:grid lg:grid-cols-[minmax(280px,320px)_minmax(0,1fr)] lg:items-start lg:gap-8">
-        <aside className="hidden lg:block lg:sticky lg:top-24">
+        <aside
+          ref={filtersAsideRef}
+          className={`hidden lg:block ${canStickyFilters ? "lg:sticky lg:top-24" : "lg:static"}`}
+        >
           <FilterSidebar
             filters={filters}
             priceBounds={priceBounds}
@@ -538,6 +605,8 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
 
       <RecentlyViewed cars={cars} />
 
+      <CatalogFaqBlock />
+
       <CatalogLeadBlock filters={filters} utm={utm} />
 
       <BookingModal
@@ -559,13 +628,6 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
           }
           setCreditSubmittingId(submitting ? carId : null);
         }}
-      />
-
-      <ComparePanel
-        compareIds={compareIds}
-        carsById={carsById}
-        onRemove={(id) => setCompareIds(compareIds.filter((x) => x !== id))}
-        onClear={() => setCompareIds([])}
       />
     </div>
   );
