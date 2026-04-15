@@ -168,9 +168,9 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
 
   return (
     <>
-      <div className={`space-y-2 lg:grid lg:h-full lg:grid-rows-[minmax(0,1fr)_5rem] lg:gap-2 lg:space-y-0 ${className}`}>
+      <div className={`space-y-2 lg:space-y-2 ${className}`}>
         <div
-          className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100 lg:aspect-auto lg:h-full lg:min-h-[280px]"
+          className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100 lg:aspect-[4/3]"
           onMouseMove={onHoverZoneMove}
           onMouseLeave={onHoverZoneLeave}
         >
@@ -226,8 +226,8 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
             </div>
           )}
         </div>
-        <div className="overflow-hidden lg:h-20">
-          <div className="grid h-full grid-cols-5 gap-1.5">
+        <div className="overflow-x-auto">
+          <div className="flex gap-1.5 pb-1">
             {thumbPreview.map((src, index) => (
               <button
                 key={`thumb-preview-${index}`}
@@ -236,7 +236,7 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
                   emblaApi?.scrollTo(index);
                   setActiveIndex(index);
                 }}
-                className={`relative h-full min-h-[62px] w-full overflow-hidden rounded-md border transition ${
+                className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-md border transition ${
                   safeActiveIndex === index
                     ? "border-[color:var(--color-brand-accent)]"
                     : "border-slate-300 hover:border-slate-400"
@@ -258,7 +258,7 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
               <button
                 type="button"
                 onClick={() => openLightbox(safeActiveIndex)}
-                className="group relative inline-flex h-full min-h-[62px] w-full items-center justify-center overflow-hidden rounded-md border border-slate-300"
+                className="group relative inline-flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-300"
                 aria-label={`Показать все фото (${gallery.length})`}
               >
                 {/* Фон как у соседних превью: последний видимый кадр + затемнение */}

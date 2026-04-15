@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { bodyTypeLabel, driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
+import { getResolvedCarImages } from "@/lib/car-images-map";
 import type { Car } from "@/types/car";
 
 function th() {
@@ -13,12 +14,8 @@ function td() {
   return "border-b border-slate-200 px-3 py-2.5 text-sm text-slate-800";
 }
 
-function fallbackImageSrc(car: Car) {
-  return `https://picsum.photos/seed/${car.id}-compare/480/300`;
-}
-
 function primaryImageSrc(car: Car) {
-  return car.images[0] || fallbackImageSrc(car);
+  return getResolvedCarImages(car)[0];
 }
 
 export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: string[] }) {

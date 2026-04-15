@@ -18,7 +18,6 @@ const extraImageHosts = Array.from(
 );
 
 const baseRemotePatterns: NonNullable<NonNullable<NextConfig["images"]>["remotePatterns"]> = [
-  { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
   { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
   { protocol: "https", hostname: "plus.unsplash.com", pathname: "/**" },
   { protocol: "https", hostname: "placehold.co", pathname: "/**" },

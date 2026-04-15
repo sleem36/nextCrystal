@@ -1,386 +1,762 @@
 [
   {
-    "id": "toyota-camry-2021-ru234",
-    "brand": "Toyota",
-    "model": "Camry",
-    "year": 2021,
-    "mileageKm": 62000,
-    "priceRub": 2590000,
-    "monthlyPaymentRub": 48900,
+    "id": "kia-rio-2015-cm111840",
+    "brand": "Kia",
+    "model": "Rio",
+    "year": 2015,
+    "mileageKm": 187000,
+    "priceRub": 749000,
+    "monthlyPaymentRub": 11000,
+    "bodyType": "hatchback",
+    "transmission": "manual",
+    "drive": "fwd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/kia-rio-2015-cm111840-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "first-car",
+      "city"
+    ],
+    "passport": {
+      "owners": 1,
+      "ptsStatus": "duplicate",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "hyundai-solaris-2018-cm111817",
+    "brand": "Hyundai",
+    "model": "Solaris",
+    "year": 2018,
+    "mileageKm": 138200,
+    "priceRub": 1079000,
+    "monthlyPaymentRub": 14000,
     "bodyType": "sedan",
     "transmission": "automatic",
     "drive": "fwd",
     "fuel": "petrol",
-    "color": "Белый перламутр",
-    "cities": ["Барнаул", "Новосибирск"],
-    "images": [
-      "https://picsum.photos/seed/toyota-camry-2021-ru234-a/960/600",
-      "https://picsum.photos/seed/toyota-camry-2021-ru234-b/960/600",
-      "https://picsum.photos/seed/toyota-camry-2021-ru234-c/960/600",
-      "https://picsum.photos/seed/toyota-camry-2021-ru234-d/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Проверка по 120 пунктам", "Оригинал ПТС"],
-    "tags": ["family", "comfort"],
+    "images": [
+      "/images/cars/hyundai-solaris-2018-cm111817-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
     "passport": {
       "owners": 2,
       "ptsStatus": "original",
       "mileageVerified": true,
-      "accident": { "has": false },
-      "warrantyWork": "30 дней на юридическую чистоту"
-    },
-    "videoReviewUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "accident": {
+        "has": false
+      }
+    }
   },
   {
-    "id": "kia-rio-2022-ru112",
-    "brand": "Kia",
-    "model": "Rio",
-    "year": 2022,
-    "mileageKm": 31000,
-    "priceRub": 1720000,
-    "monthlyPaymentRub": 32900,
+    "id": "chevrolet-aveo-2008-cm111784",
+    "brand": "Chevrolet",
+    "model": "Aveo",
+    "year": 2008,
+    "mileageKm": 310400,
+    "priceRub": 269000,
+    "monthlyPaymentRub": 4000,
     "bodyType": "hatchback",
-    "transmission": "automatic",
+    "transmission": "manual",
     "drive": "fwd",
     "fuel": "petrol",
-    "color": "Серый металлик",
-    "cities": ["Барнаул", "Кемерово"],
-    "images": [
-      "https://picsum.photos/seed/kia-rio-2022-ru112-a/960/600",
-      "https://picsum.photos/seed/kia-rio-2022-ru112-b/960/600",
-      "https://picsum.photos/seed/kia-rio-2022-ru112-c/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["1 владелец", "Прозрачная история"],
-    "tags": ["first-car", "city"],
+    "images": [
+      "/images/cars/chevrolet-aveo-2008-cm111784-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "first-car",
+      "city"
+    ],
+    "passport": {
+      "owners": 3,
+      "ptsStatus": "original",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "chery-tiggo-4-pro-2025-cm111782",
+    "brand": "Chery",
+    "model": "Tiggo 4 Pro",
+    "year": 2025,
+    "mileageKm": 23600,
+    "priceRub": 1659000,
+    "monthlyPaymentRub": 21000,
+    "bodyType": "suv",
+    "transmission": "manual",
+    "drive": "awd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/chery-tiggo-4-pro-2025-cm111782-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "family",
+      "comfort"
+    ],
     "passport": {
       "owners": 1,
       "ptsStatus": "original",
       "mileageVerified": true,
-      "accident": { "has": false }
+      "accident": {
+        "has": false
+      }
     }
   },
   {
-    "id": "skoda-octavia-2020-ru908",
-    "brand": "Skoda",
-    "model": "Octavia",
-    "year": 2020,
-    "mileageKm": 74000,
-    "priceRub": 2140000,
-    "monthlyPaymentRub": 41900,
-    "bodyType": "liftback",
-    "transmission": "automatic",
-    "drive": "fwd",
-    "fuel": "petrol",
-    "color": "Синий",
-    "cities": ["Новосибирск", "Томск"],
-    "images": [
-      "https://picsum.photos/seed/skoda-octavia-2020-ru908-a/960/600",
-      "https://picsum.photos/seed/skoda-octavia-2020-ru908-b/960/600",
-      "https://picsum.photos/seed/skoda-octavia-2020-ru908-c/960/600",
-      "https://picsum.photos/seed/skoda-octavia-2020-ru908-d/960/600",
-      "https://picsum.photos/seed/skoda-octavia-2020-ru908-e/960/600"
-    ],
-    "trustPoints": ["Юридическая гарантия", "Подтвержденный пробег"],
-    "tags": ["family", "city"],
-    "passport": {
-      "owners": 2,
-      "ptsStatus": "original",
-      "mileageVerified": true,
-      "accident": { "has": true, "note": "Лёгкое касание заднего бампера, ремонт по страховке" },
-      "paintedParts": ["Задний бампер"]
-    }
-  },
-  {
-    "id": "lada-vesta-2023-ru901",
-    "brand": "Lada",
-    "model": "Vesta",
-    "year": 2023,
-    "mileageKm": 18000,
-    "priceRub": 1390000,
-    "monthlyPaymentRub": 26900,
+    "id": "toyota-corolla-2007-cm111781",
+    "brand": "Toyota",
+    "model": "Corolla",
+    "year": 2007,
+    "mileageKm": 331800,
+    "priceRub": 679000,
+    "monthlyPaymentRub": 9000,
     "bodyType": "sedan",
     "transmission": "manual",
     "drive": "fwd",
     "fuel": "petrol",
-    "color": "Коричневый",
-    "cities": ["Барнаул", "Кемерово", "Томск"],
-    "images": [
-      "https://picsum.photos/seed/lada-vesta-2023-ru901-a/960/600",
-      "https://picsum.photos/seed/lada-vesta-2023-ru901-b/960/600",
-      "https://picsum.photos/seed/lada-vesta-2023-ru901-c/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Гарантия дилера", "Официальное обслуживание"],
-    "tags": ["first-car", "city"],
-    "passport": {
-      "owners": 1,
-      "ptsStatus": "original",
-      "mileageVerified": true,
-      "accident": { "has": false }
-    }
-  },
-  {
-    "id": "renault-arkana-2021-ru551",
-    "brand": "Renault",
-    "model": "Arkana",
-    "year": 2021,
-    "mileageKm": 52000,
-    "priceRub": 2090000,
-    "monthlyPaymentRub": 39900,
-    "bodyType": "suv",
-    "transmission": "automatic",
-    "drive": "fwd",
-    "fuel": "petrol",
-    "color": "Красный",
-    "cities": ["Барнаул", "Новосибирск"],
     "images": [
-      "https://picsum.photos/seed/renault-arkana-2021-ru551-a/960/600",
-      "https://picsum.photos/seed/renault-arkana-2021-ru551-b/960/600",
-      "https://picsum.photos/seed/renault-arkana-2021-ru551-c/960/600",
-      "https://picsum.photos/seed/renault-arkana-2021-ru551-d/960/600"
+      "/images/cars/toyota-corolla-2007-cm111781-0.webp"
     ],
-    "trustPoints": ["Проверка толщиномером", "Оригинальный ПТС"],
-    "tags": ["family", "comfort"],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
     "passport": {
       "owners": 2,
       "ptsStatus": "duplicate",
       "mileageVerified": true,
-      "accident": { "has": false },
-      "paintedParts": ["Капот", "Передние крылья"]
+      "accident": {
+        "has": false
+      }
     }
   },
   {
-    "id": "vw-polo-2021-ru332",
+    "id": "volkswagen-touran-2010-cm111780",
     "brand": "Volkswagen",
-    "model": "Polo",
-    "year": 2021,
-    "mileageKm": 47000,
-    "priceRub": 1670000,
-    "monthlyPaymentRub": 31900,
-    "bodyType": "liftback",
-    "transmission": "automatic",
+    "model": "Touran",
+    "year": 2010,
+    "mileageKm": 283000,
+    "priceRub": 899000,
+    "monthlyPaymentRub": 11000,
+    "bodyType": "sedan",
+    "transmission": "manual",
     "drive": "fwd",
     "fuel": "petrol",
-    "color": "Белый",
-    "cities": ["Барнаул", "Новосибирск", "Кемерово"],
-    "images": [
-      "https://picsum.photos/seed/vw-polo-2021-ru332-a/960/600",
-      "https://picsum.photos/seed/vw-polo-2021-ru332-b/960/600",
-      "https://picsum.photos/seed/vw-polo-2021-ru332-c/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Прозрачная история", "1 владелец"],
-    "tags": ["first-car", "city"],
+    "images": [
+      "/images/cars/volkswagen-touran-2010-cm111780-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
     "passport": {
-      "owners": 1,
+      "owners": 3,
       "ptsStatus": "original",
       "mileageVerified": true,
-      "accident": { "has": false }
+      "accident": {
+        "has": false
+      }
     }
   },
   {
-    "id": "haval-jolion-2022-ru804",
-    "brand": "Haval",
-    "model": "Jolion",
-    "year": 2022,
-    "mileageKm": 27000,
-    "priceRub": 2450000,
-    "monthlyPaymentRub": 46900,
-    "bodyType": "suv",
+    "id": "kia-rio-2015-cm111664",
+    "brand": "Kia",
+    "model": "Rio",
+    "year": 2015,
+    "mileageKm": 200200,
+    "priceRub": 1099000,
+    "monthlyPaymentRub": 14000,
+    "bodyType": "hatchback",
     "transmission": "automatic",
     "drive": "fwd",
     "fuel": "petrol",
-    "color": "Чёрный",
-    "cities": ["Барнаул", "Томск"],
-    "images": [
-      "https://picsum.photos/seed/haval-jolion-2022-ru804-a/960/600",
-      "https://picsum.photos/seed/haval-jolion-2022-ru804-b/960/600",
-      "https://picsum.photos/seed/haval-jolion-2022-ru804-c/960/600",
-      "https://picsum.photos/seed/haval-jolion-2022-ru804-d/960/600",
-      "https://picsum.photos/seed/haval-jolion-2022-ru804-e/960/600",
-      "https://picsum.photos/seed/haval-jolion-2022-ru804-f/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Дилерская гарантия", "Без залогов"],
-    "tags": ["family", "comfort"],
+    "images": [
+      "/images/cars/kia-rio-2015-cm111664-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "first-car",
+      "city"
+    ],
     "passport": {
       "owners": 1,
       "ptsStatus": "original",
       "mileageVerified": true,
-      "accident": { "has": false }
-    },
-    "videoReviewUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      "accident": {
+        "has": false
+      }
+    }
   },
   {
-    "id": "hyundai-creta-2020-ru119",
-    "brand": "Hyundai",
-    "model": "Creta",
-    "year": 2020,
-    "mileageKm": 69000,
-    "priceRub": 1980000,
-    "monthlyPaymentRub": 37900,
+    "id": "ford-kuga-2013-cm111663",
+    "brand": "Ford",
+    "model": "Kuga",
+    "year": 2013,
+    "mileageKm": 221000,
+    "priceRub": 1329000,
+    "monthlyPaymentRub": 17000,
     "bodyType": "suv",
     "transmission": "automatic",
     "drive": "awd",
     "fuel": "petrol",
     "color": "Серебристый",
-    "cities": ["Барнаул", "Новосибирск", "Томск"],
-    "images": [
-      "https://picsum.photos/seed/hyundai-creta-2020-ru119-a/960/600",
-      "https://picsum.photos/seed/hyundai-creta-2020-ru119-b/960/600",
-      "https://picsum.photos/seed/hyundai-creta-2020-ru119-c/960/600",
-      "https://picsum.photos/seed/hyundai-creta-2020-ru119-d/960/600"
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Проверенный пробег", "Юридическая чистота"],
-    "tags": ["family", "city"],
+    "images": [
+      "/images/cars/ford-kuga-2013-cm111663-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "family",
+      "comfort"
+    ],
     "passport": {
       "owners": 2,
       "ptsStatus": "original",
       "mileageVerified": true,
-      "accident": { "has": false }
+      "accident": {
+        "has": false
+      }
     }
   },
   {
-    "id": "skoda-rapid-2021-ru442",
-    "brand": "Skoda",
-    "model": "Rapid",
-    "year": 2021,
-    "mileageKm": 41000,
-    "priceRub": 1590000,
-    "monthlyPaymentRub": 29900,
-    "bodyType": "liftback",
-    "transmission": "automatic",
+    "id": "vaz-lada-4x4-niva-2006-cm111652",
+    "brand": "Lada",
+    "model": "4x4 Niva",
+    "year": 2006,
+    "mileageKm": 342200,
+    "priceRub": 399000,
+    "monthlyPaymentRub": 5000,
+    "bodyType": "suv",
+    "transmission": "manual",
+    "drive": "awd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/vaz-lada-4x4-niva-2006-cm111652-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "family",
+      "comfort"
+    ],
+    "passport": {
+      "owners": 3,
+      "ptsStatus": "duplicate",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "chevrolet-lacetti-2012-cm111594",
+    "brand": "Chevrolet",
+    "model": "Lacetti",
+    "year": 2012,
+    "mileageKm": 242400,
+    "priceRub": 549000,
+    "monthlyPaymentRub": 7000,
+    "bodyType": "sedan",
+    "transmission": "manual",
     "drive": "fwd",
     "fuel": "petrol",
-    "color": "Бежевый",
-    "cities": ["Барнаул", "Кемерово"],
-    "images": [
-      "https://picsum.photos/seed/skoda-rapid-2021-ru442-a/960/600",
-      "https://picsum.photos/seed/skoda-rapid-2021-ru442-b/960/600",
-      "https://picsum.photos/seed/skoda-rapid-2021-ru442-c/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Оригинальные документы", "Диагностика перед продажей"],
-    "tags": ["first-car", "city"],
+    "images": [
+      "/images/cars/chevrolet-lacetti-2012-cm111594-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
     "passport": {
-      "owners": 2,
+      "owners": 1,
       "ptsStatus": "original",
-      "mileageVerified": false,
-      "accident": { "has": false }
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
     }
   },
   {
-    "id": "toyota-rav4-2019-ru673",
-    "brand": "Toyota",
-    "model": "RAV4",
-    "year": 2019,
-    "mileageKm": 88000,
-    "priceRub": 2920000,
-    "monthlyPaymentRub": 55900,
+    "id": "opel-antara-2013-cm111584",
+    "brand": "Opel",
+    "model": "Antara",
+    "year": 2013,
+    "mileageKm": 227600,
+    "priceRub": 1099000,
+    "monthlyPaymentRub": 14000,
     "bodyType": "suv",
     "transmission": "automatic",
     "drive": "awd",
     "fuel": "petrol",
-    "color": "Графит",
-    "cities": ["Новосибирск", "Томск"],
-    "images": [
-      "https://picsum.photos/seed/toyota-rav4-2019-ru673-a/960/600",
-      "https://picsum.photos/seed/toyota-rav4-2019-ru673-b/960/600",
-      "https://picsum.photos/seed/toyota-rav4-2019-ru673-c/960/600",
-      "https://picsum.photos/seed/toyota-rav4-2019-ru673-d/960/600",
-      "https://picsum.photos/seed/toyota-rav4-2019-ru673-e/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Надежная история обслуживания", "Техническая гарантия"],
-    "tags": ["family", "comfort"],
+    "images": [
+      "/images/cars/opel-antara-2013-cm111584-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "family",
+      "comfort"
+    ],
+    "passport": {
+      "owners": 2,
+      "ptsStatus": "original",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "vaz-lada-4x4-niva-2012-cm111576",
+    "brand": "Lada",
+    "model": "4x4 Niva",
+    "year": 2012,
+    "mileageKm": 246800,
+    "priceRub": 449000,
+    "monthlyPaymentRub": 6000,
+    "bodyType": "suv",
+    "transmission": "manual",
+    "drive": "awd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/vaz-lada-4x4-niva-2012-cm111576-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "family",
+      "comfort"
+    ],
     "passport": {
       "owners": 3,
       "ptsStatus": "original",
       "mileageVerified": true,
-      "accident": { "has": false },
-      "warrantyWork": "14 дней на проверку в сервисе партнёра"
+      "accident": {
+        "has": false
+      }
     }
   },
   {
-    "id": "kia-ceed-2020-ru285",
-    "brand": "Kia",
-    "model": "Ceed",
-    "year": 2020,
-    "mileageKm": 64000,
-    "priceRub": 1860000,
-    "monthlyPaymentRub": 34900,
-    "bodyType": "hatchback",
-    "transmission": "automatic",
+    "id": "chevrolet-lacetti-2010-cm111563",
+    "brand": "Chevrolet",
+    "model": "Lacetti",
+    "year": 2010,
+    "mileageKm": 283000,
+    "priceRub": 449000,
+    "monthlyPaymentRub": 6000,
+    "bodyType": "sedan",
+    "transmission": "manual",
     "drive": "fwd",
     "fuel": "petrol",
-    "color": "Оранжевый",
-    "cities": ["Барнаул", "Новосибирск", "Кемерово"],
-    "images": [
-      "https://picsum.photos/seed/kia-ceed-2020-ru285-a/960/600",
-      "https://picsum.photos/seed/kia-ceed-2020-ru285-b/960/600",
-      "https://picsum.photos/seed/kia-ceed-2020-ru285-c/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Сервисная история", "Без серьезных ДТП"],
-    "tags": ["city", "comfort"],
+    "images": [
+      "/images/cars/chevrolet-lacetti-2010-cm111563-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
     "passport": {
-      "owners": 2,
-      "ptsStatus": "original",
+      "owners": 1,
+      "ptsStatus": "duplicate",
       "mileageVerified": true,
-      "accident": { "has": false }
+      "accident": {
+        "has": false
+      }
     }
   },
   {
-    "id": "mazda-6-2019-ru740",
-    "brand": "Mazda",
-    "model": "6",
-    "year": 2019,
-    "mileageKm": 93000,
-    "priceRub": 2280000,
-    "monthlyPaymentRub": 42900,
+    "id": "toyota-wish-2013-cm111562",
+    "brand": "Toyota",
+    "model": "Wish",
+    "year": 2013,
+    "mileageKm": 234200,
+    "priceRub": 1579000,
+    "monthlyPaymentRub": 20000,
     "bodyType": "sedan",
     "transmission": "automatic",
     "drive": "fwd",
     "fuel": "petrol",
-    "color": "Красный металлик",
-    "cities": ["Барнаул", "Томск"],
-    "images": [
-      "https://picsum.photos/seed/mazda-6-2019-ru740-a/960/600",
-      "https://picsum.photos/seed/mazda-6-2019-ru740-b/960/600",
-      "https://picsum.photos/seed/mazda-6-2019-ru740-c/960/600",
-      "https://picsum.photos/seed/mazda-6-2019-ru740-d/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Премиум-комплектация", "Комплексная диагностика"],
-    "tags": ["comfort", "family"],
+    "images": [
+      "/images/cars/toyota-wish-2013-cm111562-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
     "passport": {
       "owners": 2,
       "ptsStatus": "original",
       "mileageVerified": true,
-      "accident": { "has": false },
-      "paintedParts": ["Крыша"]
+      "accident": {
+        "has": false
+      }
     }
   },
   {
-    "id": "nissan-xtrail-2019-ru721",
+    "id": "vaz-lada-largus-cross-2021-cm111522",
+    "brand": "Lada",
+    "model": "Largus Cross",
+    "year": 2021,
+    "mileageKm": 85000,
+    "priceRub": 1479000,
+    "monthlyPaymentRub": 18000,
+    "bodyType": "liftback",
+    "transmission": "manual",
+    "drive": "fwd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/vaz-lada-largus-cross-2021-cm111522-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
+    "passport": {
+      "owners": 3,
+      "ptsStatus": "original",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "honda-civic-2009-cm111477",
+    "brand": "Honda",
+    "model": "Civic",
+    "year": 2009,
+    "mileageKm": 291200,
+    "priceRub": 749000,
+    "monthlyPaymentRub": 10000,
+    "bodyType": "sedan",
+    "transmission": "manual",
+    "drive": "fwd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/honda-civic-2009-cm111477-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
+    "passport": {
+      "owners": 1,
+      "ptsStatus": "original",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "nissan-patrol-2009-cm111471",
     "brand": "Nissan",
-    "model": "X-Trail",
-    "year": 2019,
-    "mileageKm": 86000,
-    "priceRub": 2360000,
-    "monthlyPaymentRub": 44900,
+    "model": "Patrol",
+    "year": 2009,
+    "mileageKm": 293400,
+    "priceRub": 2289000,
+    "monthlyPaymentRub": 28000,
     "bodyType": "suv",
     "transmission": "automatic",
     "drive": "awd",
     "fuel": "petrol",
-    "color": "Белый",
-    "cities": ["Барнаул", "Томск"],
-    "images": [
-      "https://picsum.photos/seed/nissan-xtrail-2019-ru721-a/960/600",
-      "https://picsum.photos/seed/nissan-xtrail-2019-ru721-b/960/600",
-      "https://picsum.photos/seed/nissan-xtrail-2019-ru721-c/960/600",
-      "https://picsum.photos/seed/nissan-xtrail-2019-ru721-d/960/600"
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
     ],
-    "trustPoints": ["Полная диагностика", "Без ограничений и залогов"],
-    "tags": ["family", "comfort"],
+    "images": [
+      "/images/cars/nissan-patrol-2009-cm111471-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "family",
+      "comfort"
+    ],
+    "passport": {
+      "owners": 2,
+      "ptsStatus": "duplicate",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "kia-ceed-2008-cm111436",
+    "brand": "Kia",
+    "model": "Ceed",
+    "year": 2008,
+    "mileageKm": 312600,
+    "priceRub": 569000,
+    "monthlyPaymentRub": 7000,
+    "bodyType": "hatchback",
+    "transmission": "manual",
+    "drive": "fwd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/kia-ceed-2008-cm111436-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "first-car",
+      "city"
+    ],
+    "passport": {
+      "owners": 3,
+      "ptsStatus": "original",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "citroen-berlingo-2008-cm111433",
+    "brand": "Citroen",
+    "model": "Berlingo",
+    "year": 2008,
+    "mileageKm": 314800,
+    "priceRub": 549000,
+    "monthlyPaymentRub": 7000,
+    "bodyType": "hatchback",
+    "transmission": "manual",
+    "drive": "fwd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/citroen-berlingo-2008-cm111433-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "first-car",
+      "city"
+    ],
+    "passport": {
+      "owners": 1,
+      "ptsStatus": "original",
+      "mileageVerified": true,
+      "accident": {
+        "has": false
+      }
+    }
+  },
+  {
+    "id": "vaz-lada-granta-2013-cm111379",
+    "brand": "Lada",
+    "model": "Granta",
+    "year": 2013,
+    "mileageKm": 232000,
+    "priceRub": 339000,
+    "monthlyPaymentRub": 5000,
+    "bodyType": "sedan",
+    "transmission": "manual",
+    "drive": "fwd",
+    "fuel": "petrol",
+    "color": "Серебристый",
+    "cities": [
+      "Оренбург",
+      "Барнаул",
+      "Новосибирск"
+    ],
+    "images": [
+      "/images/cars/vaz-lada-granta-2013-cm111379-0.webp"
+    ],
+    "trustPoints": [
+      "Проверка по 120 пунктам",
+      "Юридическая чистота"
+    ],
+    "tags": [
+      "city",
+      "comfort"
+    ],
     "passport": {
       "owners": 2,
       "ptsStatus": "original",
       "mileageVerified": true,
-      "accident": { "has": true, "note": "Косметический ремонт переднего крыла" },
-      "paintedParts": ["Переднее правое крыло"]
+      "accident": {
+        "has": false
+      }
     }
   }
 ]

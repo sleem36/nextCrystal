@@ -1,9 +1,7 @@
 /**
- * Next Image Optimization запрашивает удалённые URL с сервера. Часть CDN (в т.ч. picsum.photos)
+ * Next Image Optimization запрашивает удалённые URL с сервера. Часть CDN
  * отвечает 403 на такие запросы — для них нужен прямой показ в браузере (`unoptimized`).
  */
-const HOSTS_BLOCKING_NEXT_OPTIMIZER = new Set(["picsum.photos"]);
-
 const REMOTE_HOSTS_OK_FOR_OPTIMIZER = new Set([
   "images.unsplash.com",
   "plus.unsplash.com",
@@ -29,9 +27,6 @@ export function shouldUnoptimizeRemoteImage(src: string): boolean {
   }
   try {
     const host = new URL(src).hostname;
-    if (HOSTS_BLOCKING_NEXT_OPTIMIZER.has(host)) {
-      return true;
-    }
     const allowed = new Set([...REMOTE_HOSTS_OK_FOR_OPTIMIZER, ...extraHostsFromEnv()]);
     return !allowed.has(host);
   } catch {

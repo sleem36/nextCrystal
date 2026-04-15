@@ -46,19 +46,19 @@ export type CarListingFilters = {
 };
 
 export const DEFAULT_CAR_LISTING_FILTERS: CarListingFilters = {
-  paymentMethod: "credit",
+  paymentMethod: "cash",
   monthlyBudget: 35000,
   maxPriceRub: 2500000,
   priceMinRub: 0,
   bodyType: "any",
   transmission: "any",
-  city: "Барнаул",
+  city: "Оренбург",
   drive: "any",
   fuel: "any",
-  yearFrom: 2018,
+  yearFrom: 2005,
   yearTo: new Date().getFullYear(),
   mileageFromKm: 0,
-  maxMileageKm: 90000,
+  maxMileageKm: 1000000,
   ownerBuckets: [],
   accident: "any",
   pts: "any",

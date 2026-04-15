@@ -32,8 +32,11 @@ export function CarDetailLeadClient({
   );
 
   return (
-    <section id="lead-form" className="scroll-mt-28">
-      <LeadForm context={context} variant="card" />
+    <section id="lead-form" className="scroll-mt-28 space-y-3">
+      <h2 className="text-2xl font-semibold tracking-tight text-[color:var(--color-brand-primary)]">
+        Остались вопросы ?
+      </h2>
+      <LeadForm context={context} variant="card" hideTitle submitLabel="Отправить заявку" />
     </section>
   );
 }

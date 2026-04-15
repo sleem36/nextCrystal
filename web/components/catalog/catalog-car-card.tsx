@@ -15,7 +15,8 @@ import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useEmblaCarousel from "embla-carousel-react";
 import { formatCurrency, formatMileage } from "@/lib/format";
-import { getListingDerived, hashString } from "@/lib/car-listing-enrichment";
+import { getListingDerived } from "@/lib/car-listing-enrichment";
+import { getResolvedCarImages } from "@/lib/car-images-map";
 import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { Button } from "@/components/ui/button";
@@ -24,16 +25,8 @@ import type { Car } from "@/types/car";
 const BLUR =
   "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
 
-function getFallbackGallery(car: Car) {
-  const total = 1 + (hashString(car.id) % 12);
-  return Array.from({ length: total }, (_, idx) => {
-    const seed = `${car.id}-${idx + 1}`;
-    return `https://picsum.photos/seed/${seed}/960/600`;
-  });
-}
-
 function getGalleryImages(car: Car) {
-  return car.images.length > 0 ? car.images : getFallbackGallery(car);
+  return getResolvedCarImages(car);
 }
 
 function resolvePassport(car: Car) {

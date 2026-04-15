@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
 import { useWishlistStore } from "@/stores/wishlist-store";
+import { getResolvedCarImages } from "@/lib/car-images-map";
 import { Car } from "@/types/car";
 
 const btnPrimaryClass =
@@ -28,24 +29,8 @@ type CarCardProps = {
   };
 };
 
-function hashString(value: string) {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-  return hash;
-}
-
-function getFallbackGallery(car: Car) {
-  const total = 1 + (hashString(car.id) % 12); // 1-12 фото
-  return Array.from({ length: total }, (_, idx) => {
-    const seed = `${car.id}-${idx + 1}`;
-    return `https://picsum.photos/seed/${seed}/960/600`;
-  });
-}
-
 function getGalleryImages(car: Car) {
-  return car.images.length > 0 ? car.images : getFallbackGallery(car);
+  return getResolvedCarImages(car);
 }
 
 export function CarCard({ car, onSelect, catalog = false, compare }: CarCardProps) {

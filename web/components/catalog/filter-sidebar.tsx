@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { PriceRangeSlider } from "@/components/catalog/price-range-slider";
 import { DEFAULT_CAR_LISTING_FILTERS } from "@/lib/car-filters";
 import { formatCurrency } from "@/lib/format";
@@ -87,12 +86,7 @@ export function FilterSidebar({
     () => JSON.stringify(nextFilters) !== JSON.stringify(filters),
     [filters, nextFilters],
   );
-  const canReset = useMemo(
-    () =>
-      JSON.stringify(nextFilters) !== JSON.stringify(DEFAULT_CAR_LISTING_FILTERS) ||
-      JSON.stringify(filters) !== JSON.stringify(DEFAULT_CAR_LISTING_FILTERS),
-    [filters, nextFilters],
-  );
+  const canReset = true;
 
   const handleApply = () => {
     onApply(nextFilters);

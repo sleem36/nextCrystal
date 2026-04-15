@@ -1,6 +1,9 @@
 import Link from "next/link";
 
 export function SiteFooter() {
+  const vkHref = "https://vk.com/crystal_motors";
+  const telegramHref = "https://t.me/+GKMqd1w1BcdhOTEy";
+
   return (
     <footer className="mt-auto border-t border-slate-800/80 bg-[#1a1a1a] text-slate-400">
       <div className="container-wide flex w-full flex-col gap-4 py-8 text-xs md:flex-row md:items-start md:justify-between md:text-sm">
@@ -40,6 +43,27 @@ export function SiteFooter() {
             rel="noopener noreferrer"
           >
             aurora-auto.ru
+          </a>
+        </div>
+      </div>
+      <div className="container-wide border-t border-slate-800/70 pb-8 pt-4">
+        <p className="text-sm font-semibold text-white">Мы в соцсетях</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <a
+            href={vkHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-10 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-600 bg-transparent px-4 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1a1a]"
+          >
+            ВКонтакте
+          </a>
+          <a
+            href={telegramHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-10 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-600 bg-transparent px-4 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1a1a]"
+          >
+            Telegram
           </a>
         </div>
       </div>

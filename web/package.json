@@ -3,11 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/validate-package-json.mjs",
+    "prebuild": "node scripts/validate-package-json.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "e2e:smoke": "playwright test tests/e2e/smoke.spec.ts"
+    "e2e:smoke": "playwright test tests/e2e/smoke.spec.ts",
+    "download:images": "tsx scripts/download-car-images.ts",
+    "download:images:offline": "node scripts/write-offline-manifest.mjs",
+    "scrape:car-images": "tsx scripts/scrape-crystal-motors-images.ts",
+    "generate:cars:crystal": "tsx scripts/generate-cars-from-crystal.ts"
   },
   "dependencies": {
     "embla-carousel-react": "^8.6.0",
@@ -21,6 +27,7 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "cheerio": "^1.2.0",
     "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -31,6 +38,7 @@
     "eslint-config-next": "16.2.2",
     "playwright": "^1.59.1",
     "tailwindcss": "^4",
+    "tsx": "^4.19.4",
     "typescript": "^5"
   }
 }

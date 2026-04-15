@@ -33,7 +33,17 @@ export const carSchema = z.object({
   color: z.string(),
   city: z.string().optional(),
   cities: z.array(z.string()).optional(),
-  images: z.array(z.string().url()).min(1),
+  images: z
+    .array(
+      z
+        .string()
+        .min(1)
+        .refine(
+          (s) => s.startsWith("/") || /^https?:\/\//i.test(s),
+          "Ожидается абсолютный URL или путь от корня сайта",
+        ),
+    )
+    .min(1),
   trustPoints: z.array(z.string()),
   tags: z.array(z.enum(["family", "first-car", "city", "comfort"])),
   passport: carPassportSchema,

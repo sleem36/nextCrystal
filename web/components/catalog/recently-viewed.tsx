@@ -6,15 +6,11 @@ import { Heart } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { readRecentlyViewedIds } from "@/lib/recently-viewed";
 import { useWishlistStore } from "@/stores/wishlist-store";
+import { getResolvedCarImages } from "@/lib/car-images-map";
 import type { Car } from "@/types/car";
 
-function fallbackImageSrc(car: Car) {
-  const seed = `${car.id}-1`;
-  return `https://picsum.photos/seed/${seed}/480/300`;
-}
-
 function primaryImageSrc(car: Car) {
-  return car.images.length > 0 ? car.images[0] : fallbackImageSrc(car);
+  return getResolvedCarImages(car)[0];
 }
 
 type RecentlyViewedProps = {

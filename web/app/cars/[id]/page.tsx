@@ -17,6 +17,7 @@ import { TradeInCtaPanel } from "@/components/catalog/trade-in-cta-panel";
 import { VehicleGallery } from "@/components/catalog/vehicle-gallery";
 import { driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
+import { getResolvedCarImages } from "@/lib/car-images-map";
 import { getCarById } from "@/lib/cars-source";
 import { utmFromSearchParams } from "@/lib/utm";
 
@@ -79,6 +80,11 @@ export default async function CarDetailPage({
   if (!car) {
     notFound();
   }
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app";
+  const galleryImages = getResolvedCarImages(car);
+  const galleryAbsolute = galleryImages.map((src) =>
+    src.startsWith("/") ? `${siteUrl}${src}` : src,
+  );
   const extra = car as typeof car & CarExtraFields;
   const options = [
     ...(extra.options ?? []),
@@ -102,15 +108,12 @@ export default async function CarDetailPage({
     car.passport.ptsStatus === "original" ? "Оригинал ПТС" : null,
     !car.passport.accident.has ? "Без ДТП по отчёту" : null,
   ].filter((item): item is string => Boolean(item));
-  const vkHref = "https://vk.com/crystal_motors";
-  const telegramHref = "https://t.me/+GKMqd1w1BcdhOTEy";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://next-crystal.vercel.app";
   const carUrl = `${siteUrl}/cars/${car.id}`;
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: `${car.brand} ${car.model} ${car.year}`,
-    image: car.images,
+    image: galleryAbsolute,
     description: `${car.brand} ${car.model}, ${car.year}, пробег ${formatMileage(car.mileageKm)} км`,
     offers: {
       "@type": "Offer",
@@ -158,7 +161,7 @@ export default async function CarDetailPage({
       <section className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(340px,1fr)] lg:items-stretch">
         <div className="w-full lg:h-full">
           <VehicleGallery
-            images={car.images}
+            images={galleryImages}
             brand={car.brand}
             model={car.model}
             year={car.year}
@@ -201,22 +204,18 @@ export default async function CarDetailPage({
             <p className="mt-2 text-xs text-slate-500">Свяжемся в ближайшее время</p>
           </div>
           <CarFactsGrid facts={facts} />
-          {paymentMethod === "credit" ? (
-            <CarCreditPanel
-              monthlyPaymentRub={car.monthlyPaymentRub}
-              downPaymentRange={extra.downPaymentRangeRub}
-              leadHref="#lead-form"
-            />
-          ) : null}
         </div>
       </section>
 
-      <CarDetailLeadClient car={car} utm={utm} />
-
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
-        <p className="text-xs text-slate-500">Город</p>
-        <p className="mt-1 text-sm font-semibold text-slate-900">{car.city}</p>
-      </div>
+      {paymentMethod === "credit" ? (
+        <CarCreditPanel
+          priceRub={car.priceRub}
+          monthlyPaymentRub={car.monthlyPaymentRub}
+          downPaymentRange={extra.downPaymentRangeRub}
+          car={car}
+          utm={utm}
+        />
+      ) : null}
 
       <CarOptionsChips options={options} />
 
@@ -232,35 +231,11 @@ export default async function CarDetailPage({
           />
         </div>
         <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-          <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5">
-            <h2 className="text-base font-semibold text-[color:var(--color-brand-primary)] md:text-lg">
-              Нужна консультация прямо сейчас?
-            </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              Напишите в удобный канал, а заявку в форме можно оставить позже.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <a
-                href={vkHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
-              >
-                Написать в ВКонтакте
-              </a>
-              <a
-                href={telegramHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
-              >
-                Написать в Telegram
-              </a>
-            </div>
-          </section>
           <TradeInCtaPanel leadHref="#lead-form" />
         </div>
       </section>
+
+      <CarDetailLeadClient car={car} utm={utm} />
 
       <MobileStickyBookingBar priceRub={car.priceRub} />
     </article>
