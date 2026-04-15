@@ -1,6 +1,12 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { LeadForm } from "@/components/landing/lead-form";
+import { Modal } from "@/components/ui/modal";
+import { useCompareStore } from "@/stores/compare-store";
+import { buildCompareHref } from "@/lib/compare-selection";
 import { bodyTypeLabel, driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
 import { getResolvedCarImages } from "@/lib/car-images-map";
@@ -19,7 +25,40 @@ function primaryImageSrc(car: Car) {
 }
 
 export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: string[] }) {
-  const compareIdsParam = cars.map((car) => car.id).join(",");
+  const router = useRouter();
+  const setCompareIds = useCompareStore((state) => state.setIds);
+  const compareIds = cars.map((car) => car.id);
+  const [consultationOpen, setConsultationOpen] = useState(false);
+  const leadContext = useMemo(
+    () => ({
+      city: cars[0]?.city ?? "Оренбург",
+      paymentMethod: "cash" as const,
+      maxPriceRub: Math.max(...cars.map((car) => car.priceRub)),
+      bodyType: "any" as const,
+      transmission: "any" as const,
+      drive: "any" as const,
+      fuel: "any" as const,
+      yearFrom: Math.min(...cars.map((car) => car.year)),
+      maxMileageKm: Math.max(...cars.map((car) => car.mileageKm)),
+      purchaseGoal: "compare_consultation",
+      leadSource: "compare_page",
+      carTitle: cars.map((car) => `${car.brand} ${car.model}`).join(", "),
+      utm: {},
+    }),
+    [cars],
+  );
+
+  const handleRemoveCar = (carId: string) => {
+    const nextIds = compareIds.filter((id) => id !== carId);
+    setCompareIds(nextIds);
+    router.push(buildCompareHref(nextIds));
+  };
+
+  const handleClearCompare = () => {
+    setCompareIds([]);
+    router.push("/compare");
+  };
+
   return (
     <div className="container-wide space-y-6 py-8 md:py-10">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -33,12 +72,21 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
             таблице
           </p>
         </div>
-        <Link
-          href="/cars"
-          className="text-sm font-medium text-[color:var(--color-brand-accent)] underline-offset-4 hover:underline"
-        >
-          ← В каталог
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleClearCompare}
+            className="inline-flex h-10 items-center justify-center rounded-[var(--radius-button)] border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+          >
+            Очистить сравнение
+          </button>
+          <Link
+            href="/cars"
+            className="text-sm font-medium text-[color:var(--color-brand-accent)] underline-offset-4 hover:underline"
+          >
+            ← В каталог
+          </Link>
+        </div>
       </div>
 
       <div className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5">
@@ -49,12 +97,13 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
           Оставьте заявку, и менеджер поможет выбрать лучший вариант из текущего сравнения.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <Link
-            href={`/cars?fromCompare=1&compareIds=${encodeURIComponent(compareIdsParam)}#catalog-lead`}
+          <button
+            type="button"
+            onClick={() => setConsultationOpen(true)}
             className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] transition-colors duration-150 ease-out hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
           >
             Оставить заявку на консультацию
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -74,13 +123,25 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
                 <th key={car.id} className={`${th()} min-w-[160px]`}>
                   <Link
                     href={`/cars/${car.id}`}
-                    className="mb-2 block overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
+                    className="relative mb-2 inline-flex overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
                   >
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        handleRemoveCar(car.id);
+                      }}
+                      className="absolute right-1.5 top-1.5 z-[1] inline-flex h-6 w-6 items-center justify-center rounded-full border border-white/60 bg-white/90 text-sm font-semibold leading-none text-slate-700 shadow-sm backdrop-blur-sm transition-colors hover:bg-white"
+                      aria-label={`Удалить ${car.brand} ${car.model} из сравнения`}
+                    >
+                      ×
+                    </button>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={primaryImageSrc(car)}
                       alt={`${car.brand} ${car.model}`}
-                      className="h-24 w-full object-cover object-center transition duration-300 hover:scale-[1.02]"
+                      className="h-24 w-auto max-w-full object-contain object-left"
                       width={320}
                       height={180}
                       loading="lazy"
@@ -89,7 +150,7 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
                   </Link>
                   <Link
                     href={`/cars/${car.id}`}
-                    className="font-semibold text-[color:var(--color-brand-primary)] hover:text-[color:var(--color-brand-accent)] hover:underline"
+                    className="block font-semibold text-[color:var(--color-brand-primary)] hover:text-[color:var(--color-brand-accent)] hover:underline"
                   >
                     {car.brand} {car.model}
                   </Link>
@@ -141,6 +202,22 @@ export function CompareTable({ cars, missingIds }: { cars: Car[]; missingIds: st
           </tbody>
         </table>
       </div>
+
+      <Modal
+        open={consultationOpen}
+        onClose={() => setConsultationOpen(false)}
+        title="Заявка на консультацию"
+        description="Оставьте телефон, и менеджер поможет выбрать лучший вариант из автомобилей в сравнении."
+      >
+        <LeadForm
+          variant="plain"
+          hideTitle
+          leadType="generic"
+          submitLabel="Отправить заявку"
+          context={leadContext}
+          onSuccess={() => setConsultationOpen(false)}
+        />
+      </Modal>
     </div>
   );
 }

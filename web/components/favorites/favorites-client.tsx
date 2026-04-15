@@ -18,6 +18,7 @@ type FavoritesClientProps = {
 export function FavoritesClient({ cars }: FavoritesClientProps) {
   const wishlistIds = useWishlistStore((state) => state.ids);
   const removeFromWishlist = useWishlistStore((state) => state.remove);
+  const clearWishlist = useWishlistStore((state) => state.clear);
   const { compareIds, toggle } = useCompareSelection();
   const { bookedIds, bookedUntilMap, refresh } = useBookedCars();
 
@@ -61,13 +62,22 @@ export function FavoritesClient({ cars }: FavoritesClientProps) {
   return (
     <>
       <section className="space-y-4" aria-label="Избранные автомобили">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)] md:text-2xl">
-            Избранные автомобили
-          </h2>
-          <span className="text-sm text-slate-600">
-            {favoriteCars.length} {favoriteCars.length === 1 ? "вариант" : "вариантов"}
-          </span>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)] md:text-2xl">
+              Избранные автомобили
+            </h2>
+            <span className="text-sm text-slate-600">
+              {favoriteCars.length} {favoriteCars.length === 1 ? "вариант" : "вариантов"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={clearWishlist}
+            className="inline-flex h-10 items-center justify-center rounded-[var(--radius-button)] border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50"
+          >
+            Очистить избранное
+          </button>
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-3">
