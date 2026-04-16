@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 const VIDEO_SRC = "/hero/hero-loop.mp4";
 const POSTER_SRC = "/hero/poster.jpg";
 const FALLBACK_IMG = "/hero/poster.jpg";
+const HERO_BLUR =
+  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
 const HERO_BG_MODE_KEY = "heroBgMode";
 
 type HeroBgMode = "video" | "image";
@@ -90,6 +92,8 @@ export function HeroCompact({ onPrimaryClick }: HeroCompactProps) {
             fill
             priority
             sizes="100vw"
+            placeholder="blur"
+            blurDataURL={HERO_BLUR}
           />
         ) : (
           <>
@@ -100,6 +104,8 @@ export function HeroCompact({ onPrimaryClick }: HeroCompactProps) {
               fill
               priority
               sizes="100vw"
+              placeholder="blur"
+              blurDataURL={HERO_BLUR}
             />
             {showVideo ? (
               <video

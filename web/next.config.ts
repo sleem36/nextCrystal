@@ -33,6 +33,9 @@ const extraRemotePatterns = extraImageHosts.map((hostname) => ({
 
 const nextConfig: NextConfig = {
   ...(allowedDevOrigins?.length ? { allowedDevOrigins } : {}),
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion", "swiper"],
+  },
   images: {
     remotePatterns: [...baseRemotePatterns, ...extraRemotePatterns],
   },

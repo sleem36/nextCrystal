@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { CarsCatalogClient } from "@/components/catalog/cars-catalog-client";
 import { getCars } from "@/lib/cars-source";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Каталог автомобилей с пробегом — Aurora Auto",
   description:

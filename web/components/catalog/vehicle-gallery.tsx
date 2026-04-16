@@ -1,7 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
+
+const BLUR =
+  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
 
 type VehicleGalleryProps = {
   images: string[];
@@ -28,6 +33,8 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
   const hoverRafRef = useRef<number | null>(null);
   const hoverSegmentRef = useRef<number | null>(null);
   const hasSlider = previewGallery.length > 1;
+  const firstGallerySrc = previewGallery[0];
+  const firstGalleryUnoptimized = firstGallerySrc ? shouldUnoptimizeRemoteImage(firstGallerySrc) : false;
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     dragFree: false,
@@ -178,23 +185,30 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
             <>
               <div className="absolute inset-0 overflow-hidden" ref={emblaRef}>
                 <div className="flex h-full">
-                  {previewGallery.map((src, index) => (
-                    <div
-                      key={`img-${index}`}
-                      className="relative h-full min-h-0 min-w-0 flex-[0_0_100%] shrink-0"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={src}
-                        alt={`${title} — фото ${index + 1}`}
-                        className="h-full w-full cursor-zoom-in object-cover object-center"
-                        loading={index === 0 ? "eager" : "lazy"}
-                        decoding="async"
-                        draggable={false}
-                        onClick={() => openLightbox(index)}
-                      />
-                    </div>
-                  ))}
+                  {previewGallery.map((src, index) => {
+                    const imageUnoptimized = shouldUnoptimizeRemoteImage(src);
+                    return (
+                      <div
+                        key={`img-${index}`}
+                        className="relative h-full min-h-0 min-w-0 flex-[0_0_100%] shrink-0"
+                      >
+                        <Image
+                          src={src}
+                          alt={`${title} — фото ${index + 1}`}
+                          fill
+                          unoptimized={imageUnoptimized}
+                          className="cursor-zoom-in object-cover object-center"
+                          sizes="(max-width: 1024px) 100vw, min(920px, 66vw)"
+                          placeholder={imageUnoptimized ? "empty" : "blur"}
+                          blurDataURL={imageUnoptimized ? undefined : BLUR}
+                          priority={index === 0}
+                          loading={index === 0 ? "eager" : "lazy"}
+                          draggable={false}
+                          onClick={() => openLightbox(index)}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
               <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/55 via-black/20 to-transparent px-2 pb-2 pt-5">
@@ -213,13 +227,17 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
             </>
           ) : (
             <div className="absolute inset-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={previewGallery[0]}
                 alt={title}
-                className="h-full w-full cursor-zoom-in object-cover object-center"
+                fill
+                unoptimized={firstGalleryUnoptimized}
+                className="cursor-zoom-in object-cover object-center"
+                sizes="(max-width: 1024px) 100vw, min(920px, 66vw)"
+                placeholder={firstGalleryUnoptimized ? "empty" : "blur"}
+                blurDataURL={firstGalleryUnoptimized ? undefined : BLUR}
+                priority
                 loading="eager"
-                decoding="async"
                 draggable={false}
                 onClick={() => openLightbox(0)}
               />

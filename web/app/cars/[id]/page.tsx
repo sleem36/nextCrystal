@@ -18,8 +18,15 @@ import { VehicleGallery } from "@/components/catalog/vehicle-gallery";
 import { driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
 import { getResolvedCarImages } from "@/lib/car-images-map";
-import { getCarById } from "@/lib/cars-source";
+import { getCarById, getCars } from "@/lib/cars-source";
 import { utmFromSearchParams } from "@/lib/utm";
+
+export const revalidate = 86400;
+
+export async function generateStaticParams() {
+  const cars = await getCars();
+  return cars.map((car) => ({ id: car.id }));
+}
 
 type CarExtraFields = {
   powerHp?: number;

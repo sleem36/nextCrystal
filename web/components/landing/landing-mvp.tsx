@@ -15,7 +15,11 @@ import { Car } from "@/types/car";
 
 const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
 
-export function LandingMvp() {
+type LandingMvpProps = {
+  initialCars: Car[];
+};
+
+export function LandingMvp({ initialCars }: LandingMvpProps) {
   const [selectedCar, setSelectedCar] = useState<Car | undefined>();
   const [leadOpen, setLeadOpen] = useState(false);
   const [funnelOpen, setFunnelOpen] = useState(false);
@@ -23,9 +27,7 @@ export function LandingMvp() {
   const quickSelectorRef = useRef<HTMLDivElement | null>(null);
   const highlightTimeoutRef = useRef<number | null>(null);
 
-  const [cars, setCars] = useState<Car[]>([]);
-  const [carsLoading, setCarsLoading] = useState(true);
-  const [carsError, setCarsError] = useState("");
+  const [cars] = useState<Car[]>(initialCars);
   const [selector, setSelector] = useState<SelectorState>({
     paymentMethod: "credit",
     monthlyBudget: 35000,
@@ -38,38 +40,6 @@ export function LandingMvp() {
     yearFrom: 2018,
     maxMileageKm: 90000,
   });
-
-  useEffect(() => {
-    let active = true;
-
-    const loadCars = async () => {
-      try {
-        setCarsLoading(true);
-        setCarsError("");
-        const response = await fetch("/api/cars", { cache: "no-store" });
-        if (!response.ok) {
-          throw new Error("Cars request failed");
-        }
-        const payload = (await response.json()) as { cars: Car[] };
-        if (active) {
-          setCars(payload.cars);
-        }
-      } catch {
-        if (active) {
-          setCarsError("Не удалось загрузить автомобили. Попробуйте обновить страницу.");
-        }
-      } finally {
-        if (active) {
-          setCarsLoading(false);
-        }
-      }
-    };
-
-    loadCars();
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const utm = useMemo(() => {
     const keys = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
@@ -423,18 +393,8 @@ export function LandingMvp() {
                       </div>
                     </div>
                   </details>
-                  {carsLoading ? (
-                    <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-                      Загружаем актуальные автомобили...
-                    </div>
-                  ) : null}
-                  {carsError ? (
-                    <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-700">
-                      {carsError}
-                    </div>
-                  ) : null}
                   <CarResults
-                    cars={carsLoading || carsError ? [] : expandedCars}
+                    cars={expandedCars}
                     isExpanded={isExpandedResults}
                     onSelect={(car) => {
                       setSelectedCar(car);
