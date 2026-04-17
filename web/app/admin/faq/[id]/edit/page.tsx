@@ -15,7 +15,7 @@ export default async function AdminFaqEditPage({
   await requireAdminAuth();
   const { id } = await params;
   const faqId = Number(id);
-  const faq = getFaqById(faqId);
+  const faq = await getFaqById(faqId);
   if (!faq) notFound();
   const currentFaqId = faq.id;
 

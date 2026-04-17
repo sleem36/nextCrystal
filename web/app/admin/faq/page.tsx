@@ -25,7 +25,7 @@ async function deleteFromForm(formData: FormData) {
 
 export default async function AdminFaqListPage() {
   await requireAdminAuth();
-  const faqs = getAllFaqs(false);
+  const faqs = await getAllFaqs(false);
 
   return (
     <div className="container-wide space-y-4 py-8">

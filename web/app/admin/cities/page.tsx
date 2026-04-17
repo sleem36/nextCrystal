@@ -14,7 +14,7 @@ async function deleteCityFromForm(formData: FormData) {
 
 export default async function AdminCitiesPage() {
   await requireAdminAuth();
-  const cities = getAllCities(false);
+  const cities = await getAllCities(false);
 
   return (
     <div className="container-wide space-y-4 py-8">

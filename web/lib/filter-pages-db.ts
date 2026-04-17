@@ -3,6 +3,7 @@ import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { unstable_cache } from "next/cache";
+import { getPgSql, usePostgres } from "@/lib/db-runtime";
 
 const DB_FILE_PATH = process.env.SQLITE_DB_PATH ?? join(process.cwd(), "data", "app.db");
 
@@ -96,6 +97,26 @@ function normalizeNullableText(value: string | null | undefined) {
 
 const getAllFilterPagesCached = unstable_cache(
   async (): Promise<FilterPageRecord[]> => {
+    if (usePostgres()) {
+      const sql = await getPgSql();
+      const rows = await sql<FilterPageRecord[]>`
+        SELECT
+          slug,
+          name,
+          filter_json,
+          title,
+          description,
+          h1,
+          bottom_title,
+          bottom_text,
+          created_at::text as created_at,
+          updated_at::text as updated_at
+        FROM filter_pages
+        ORDER BY updated_at DESC, created_at DESC
+      `;
+      return rows;
+    }
+
     const db = getDb();
     return db
       .prepare(
@@ -116,6 +137,27 @@ export async function getAllFilterPages() {
 }
 
 export async function getFilterPageBySlug(slug: string): Promise<FilterPageRecord | null> {
+  if (usePostgres()) {
+    const sql = await getPgSql();
+    const rows = await sql<FilterPageRecord[]>`
+      SELECT
+        slug,
+        name,
+        filter_json,
+        title,
+        description,
+        h1,
+        bottom_title,
+        bottom_text,
+        created_at::text as created_at,
+        updated_at::text as updated_at
+      FROM filter_pages
+      WHERE slug = ${slug}
+      LIMIT 1
+    `;
+    return rows[0] ?? null;
+  }
+
   const db = getDb();
   const row = db
     .prepare(
@@ -131,6 +173,27 @@ export async function getFilterPageBySlug(slug: string): Promise<FilterPageRecor
 }
 
 export async function createFilterPage(data: FilterPageUpsertInput) {
+  if (usePostgres()) {
+    const sql = await getPgSql();
+    await sql`
+      INSERT INTO filter_pages (
+        slug, name, filter_json, title, description, h1, bottom_title, bottom_text, created_at, updated_at
+      ) VALUES (
+        ${data.slug},
+        ${data.name.trim()},
+        ${data.filter_json},
+        ${normalizeNullableText(data.title)},
+        ${normalizeNullableText(data.description)},
+        ${normalizeNullableText(data.h1)},
+        ${normalizeNullableText(data.bottom_title)},
+        ${normalizeNullableText(data.bottom_text)},
+        NOW(),
+        NOW()
+      )
+    `;
+    return;
+  }
+
   const db = getDb();
   db.prepare(
     `
@@ -153,6 +216,24 @@ export async function createFilterPage(data: FilterPageUpsertInput) {
 }
 
 export async function updateFilterPage(slug: string, data: Omit<FilterPageUpsertInput, "slug">) {
+  if (usePostgres()) {
+    const sql = await getPgSql();
+    await sql`
+      UPDATE filter_pages
+      SET
+        name = ${data.name.trim()},
+        filter_json = ${data.filter_json},
+        title = ${normalizeNullableText(data.title)},
+        description = ${normalizeNullableText(data.description)},
+        h1 = ${normalizeNullableText(data.h1)},
+        bottom_title = ${normalizeNullableText(data.bottom_title)},
+        bottom_text = ${normalizeNullableText(data.bottom_text)},
+        updated_at = NOW()
+      WHERE slug = ${slug}
+    `;
+    return;
+  }
+
   const db = getDb();
   db.prepare(
     `
@@ -181,6 +262,12 @@ export async function updateFilterPage(slug: string, data: Omit<FilterPageUpsert
 }
 
 export async function deleteFilterPage(slug: string) {
+  if (usePostgres()) {
+    const sql = await getPgSql();
+    await sql`DELETE FROM filter_pages WHERE slug = ${slug}`;
+    return;
+  }
+
   const db = getDb();
   db.prepare("DELETE FROM filter_pages WHERE slug = ?").run(slug);
 }

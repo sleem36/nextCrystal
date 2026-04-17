@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { getAllCities } from "@/lib/cities-db";
 
-export function GET() {
+export async function GET() {
   try {
-    const activeCities = getAllCities(true);
-    const sourceCities = activeCities.length > 0 ? activeCities : getAllCities(false);
+    const activeCities = await getAllCities(true);
+    const sourceCities = activeCities.length > 0 ? activeCities : await getAllCities(false);
     const cities = sourceCities.map((city) => ({
       id: city.id,
       slug: city.slug,

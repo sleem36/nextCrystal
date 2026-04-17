@@ -32,8 +32,8 @@ function getActive(formData: FormData, key: string) {
 
 export async function createFaqAction(formData: FormData) {
   await assertAdmin();
-  const allFaqs = getAllFaqs(false);
-  createFaq({
+  const allFaqs = await getAllFaqs(false);
+  await createFaq({
     question: getText(formData, "question"),
     answer: getText(formData, "answer"),
     order_index: allFaqs.length > 0 ? Math.max(...allFaqs.map((f) => f.order_index)) + 1 : 1,
@@ -45,9 +45,9 @@ export async function createFaqAction(formData: FormData) {
 
 export async function updateFaqAction(id: number, formData: FormData) {
   await assertAdmin();
-  const current = getFaqById(id);
+  const current = await getFaqById(id);
   if (!current) throw new Error("FAQ не найден");
-  updateFaq(id, {
+  await updateFaq(id, {
     question: getText(formData, "question"),
     answer: getText(formData, "answer"),
     is_active: getActive(formData, "is_active"),
@@ -59,14 +59,14 @@ export async function updateFaqAction(id: number, formData: FormData) {
 
 export async function deleteFaqAction(id: number) {
   await assertAdmin();
-  deleteFaq(id);
+  await deleteFaq(id);
   revalidatePath("/cars");
   revalidatePath("/admin/faq");
 }
 
 export async function reorderFaqsAction(ids: number[]) {
   await assertAdmin();
-  reorderFaqs(ids);
+  await reorderFaqs(ids);
   revalidatePath("/cars");
   revalidatePath("/admin/faq");
 }
@@ -77,14 +77,14 @@ export async function createCityAction(formData: FormData) {
   if (!SLUG_RE.test(slug)) {
     throw new Error("Slug: только латиница, цифры и дефис");
   }
-  if (getCityBySlug(slug)) {
+  if (await getCityBySlug(slug)) {
     throw new Error("Город с таким slug уже существует");
   }
   const nameImya = getText(formData, "name_imya");
   if (!nameImya) {
     throw new Error("name_imya обязателен");
   }
-  createCity({
+  await createCity({
     slug,
     name_imya: nameImya,
     name_roditelny: getText(formData, "name_roditelny"),
@@ -101,14 +101,14 @@ export async function createCityAction(formData: FormData) {
 
 export async function updateCityAction(id: number, formData: FormData) {
   await assertAdmin();
-  const current = getCityById(id);
+  const current = await getCityById(id);
   if (!current) throw new Error("Город не найден");
 
   const slug = getText(formData, "slug").toLowerCase();
   if (!SLUG_RE.test(slug)) {
     throw new Error("Slug: только латиница, цифры и дефис");
   }
-  const existing = getCityBySlug(slug);
+  const existing = await getCityBySlug(slug);
   if (existing && existing.id !== id) {
     throw new Error("Город с таким slug уже существует");
   }
@@ -117,7 +117,7 @@ export async function updateCityAction(id: number, formData: FormData) {
     throw new Error("name_imya обязателен");
   }
 
-  updateCity(id, {
+  await updateCity(id, {
     slug,
     name_imya: nameImya,
     name_roditelny: getText(formData, "name_roditelny"),
@@ -134,7 +134,7 @@ export async function updateCityAction(id: number, formData: FormData) {
 
 export async function deleteCityAction(id: number) {
   await assertAdmin();
-  deleteCity(id);
+  await deleteCity(id);
   revalidatePath("/");
   revalidatePath("/admin/cities");
 }

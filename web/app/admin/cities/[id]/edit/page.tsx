@@ -13,7 +13,7 @@ export default async function AdminCitiesEditPage({
 }) {
   await requireAdminAuth();
   const { id } = await params;
-  const city = getCityById(Number(id));
+  const city = await getCityById(Number(id));
   if (!city) notFound();
   const cityId = city.id;
 

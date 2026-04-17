@@ -21,7 +21,7 @@ export default async function CarsPage() {
   const selectedCity = cookieStore.get("selected_city")?.value;
 
   const [cars, filterPages, faqs] = await Promise.all([getCars(), getAllFilterPages(), getAllFaqs(true)]);
-  const city = selectedCity ? getCityBySlug(selectedCity) : null;
+  const city = selectedCity ? await getCityBySlug(selectedCity) : null;
   const faqItems = faqs.map((faq) => ({
     question: city ? replaceCityPlaceholders(faq.question, city) : faq.question,
     answer: city ? replaceCityPlaceholders(faq.answer, city) : faq.answer,
