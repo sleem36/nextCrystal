@@ -17,11 +17,12 @@ export default async function AdminFaqEditPage({
   const faqId = Number(id);
   const faq = getFaqById(faqId);
   if (!faq) notFound();
+  const currentFaqId = faq.id;
 
   async function updateFaqFromForm(formData: FormData) {
     "use server";
     await requireAdminAuth();
-    await updateFaqAction(faq.id, formData);
+    await updateFaqAction(currentFaqId, formData);
     redirect("/admin/faq");
   }
 

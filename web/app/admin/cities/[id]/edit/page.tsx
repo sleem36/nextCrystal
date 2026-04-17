@@ -15,11 +15,12 @@ export default async function AdminCitiesEditPage({
   const { id } = await params;
   const city = getCityById(Number(id));
   if (!city) notFound();
+  const cityId = city.id;
 
   async function updateCityFromForm(formData: FormData) {
     "use server";
     await requireAdminAuth();
-    await updateCityAction(city.id, formData);
+    await updateCityAction(cityId, formData);
     redirect("/admin/cities");
   }
 
