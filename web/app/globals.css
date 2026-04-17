@@ -36,6 +36,12 @@ body {
   font-family: var(--font-inter);
 }
 
+button:not(:disabled),
+a[href],
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
 /* Layout containers: wide for cards/results, narrow for text/forms */
 .container-wide {
   width: min(calc(100% - 1.5rem), 96rem);
@@ -167,6 +173,40 @@ body {
     background-color 180ms ease-out;
 }
 
+/* Unified button hover motion/elevation */
+.btn-hover-primary {
+  transition: transform 300ms ease-out, box-shadow 300ms ease-out, background-color 300ms ease-out;
+}
+
+.btn-hover-primary:hover {
+  transform: translateY(-1px);
+  background-color: var(--color-brand-accent-dark) !important;
+  box-shadow: 0 8px 18px rgba(0, 118, 234, 0.28);
+}
+
+.btn-hover-primary:active {
+  transform: translateY(0);
+}
+
+.btn-hover-secondary {
+  transition:
+    transform 300ms ease-out,
+    box-shadow 300ms ease-out,
+    background-color 300ms ease-out,
+    border-color 300ms ease-out;
+}
+
+.btn-hover-secondary:hover {
+  transform: translateY(-1px);
+  background-color: rgb(248 250 252) !important;
+  border-color: rgb(148 163 184) !important;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+.btn-hover-secondary:active {
+  transform: translateY(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -181,5 +221,15 @@ body {
 
   .focus-target-highlight {
     transition: none;
+  }
+
+  .btn-hover-primary,
+  .btn-hover-secondary {
+    transition: none !important;
+  }
+
+  .btn-hover-primary:hover,
+  .btn-hover-secondary:hover {
+    transform: none !important;
   }
 }

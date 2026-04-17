@@ -11,7 +11,7 @@ import {
   type MouseEvent,
   type PointerEvent,
 } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Scale } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useEmblaCarousel from "embla-carousel-react";
 import { formatCurrency, formatMileage } from "@/lib/format";
@@ -353,21 +353,26 @@ export function CatalogCarCard({
         )}
 
         {compare ? (
-          <label
-            className="absolute left-2 top-2 z-[6] max-md:opacity-100 md:opacity-0 md:transition-opacity md:group-hover/card:opacity-100 md:group-focus-within/card:opacity-100 flex cursor-pointer select-none items-center gap-2 rounded-lg bg-black/55 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm backdrop-blur-sm"
-            onClick={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
+          <button
+            type="button"
+            data-no-card-nav
+            className={`absolute right-14 top-2 z-[7] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-[color:var(--color-brand-accent)] shadow-md backdrop-blur-sm transition hover:bg-white ${
+              compare.disabled ? "cursor-not-allowed opacity-50" : ""
+            }`}
+            onClick={(event) => {
+              event.stopPropagation();
+              if (!compare.disabled) {
+                compare.onToggle();
+              }
+            }}
+            onPointerDown={(event) => event.stopPropagation()}
+            aria-label={compare.checked ? "Убрать из сравнения" : "Добавить в сравнение"}
+            aria-pressed={compare.checked}
+            disabled={compare.disabled}
+            title={compare.disabled ? "Можно выбрать максимум 3 автомобиля" : "Добавить в сравнение"}
           >
-            <input
-              type="checkbox"
-              className="h-3.5 w-3.5 shrink-0 rounded border-white/50 bg-white/10 text-[color:var(--color-brand-accent)] focus:ring-2 focus:ring-white/50"
-              checked={compare.checked}
-              disabled={compare.disabled}
-              onChange={compare.onToggle}
-              aria-label={`Добавить к сравнению: ${car.brand} ${car.model}`}
-            />
-            <span aria-hidden>Сравнить</span>
-          </label>
+            <Scale className={`h-5 w-5 ${compare.checked ? "fill-current" : ""}`} />
+          </button>
         ) : null}
 
         {showWishlistToggle ? (

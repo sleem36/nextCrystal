@@ -24,18 +24,18 @@ export function CarPassportBlock({ passport }: { passport: CarPassport }) {
       <h2 className="text-lg font-semibold tracking-tight text-[color:var(--color-brand-primary)]">
         Паспорт автомобиля
       </h2>
-      <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
-        <div className="flex flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
+      <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2 md:auto-rows-fr">
+        <div className="flex h-full flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
           <dt className="text-xs font-medium text-slate-500">Владельцев по ПТС</dt>
           <dd className="font-semibold text-slate-900">{passport.owners}</dd>
         </div>
-        <div className="flex flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
+        <div className="flex h-full flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
           <dt className="text-xs font-medium text-slate-500">ПТС</dt>
           <dd>
             <StatusPill tone={ptsTone}>{ptsLabel}</StatusPill>
           </dd>
         </div>
-        <div className="flex flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
+        <div className="flex h-full flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
           <dt className="text-xs font-medium text-slate-500">Пробег</dt>
           <dd>
             <StatusPill tone={passport.mileageVerified ? "ok" : "warn"}>
@@ -43,7 +43,7 @@ export function CarPassportBlock({ passport }: { passport: CarPassport }) {
             </StatusPill>
           </dd>
         </div>
-        <div className="flex flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3 md:col-span-2">
+        <div className="flex h-full flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
           <dt className="text-xs font-medium text-slate-500">ДТП / повреждения</dt>
           <dd className="space-y-2">
             {passport.accident.has ? (
@@ -59,7 +59,7 @@ export function CarPassportBlock({ passport }: { passport: CarPassport }) {
           </dd>
         </div>
         {passport.paintedParts && passport.paintedParts.length > 0 ? (
-          <div className="flex flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3 md:col-span-2">
+          <div className="flex h-full flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
             <dt className="text-xs font-medium text-slate-500">Окрашенные элементы</dt>
             <dd className="flex flex-wrap gap-1.5">
               {passport.paintedParts.map((part) => (
@@ -71,7 +71,7 @@ export function CarPassportBlock({ passport }: { passport: CarPassport }) {
           </div>
         ) : null}
         {passport.warrantyWork ? (
-          <div className="flex flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3 md:col-span-2">
+          <div className="flex h-full flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50/80 p-3">
             <dt className="text-xs font-medium text-slate-500">Гарантии / условия</dt>
             <dd className="text-slate-800">{passport.warrantyWork}</dd>
           </div>

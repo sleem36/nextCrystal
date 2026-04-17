@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Scale } from "lucide-react";
 import { formatCurrency } from "@/lib/format";
 import { readRecentlyViewedIds } from "@/lib/recently-viewed";
+import { useCompareSelection } from "@/hooks/use-compare-selection";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import { getResolvedCarImages } from "@/lib/car-images-map";
 import type { Car } from "@/types/car";
@@ -19,6 +20,7 @@ type RecentlyViewedProps = {
 
 export function RecentlyViewed({ cars }: RecentlyViewedProps) {
   const [ids, setIds] = useState<string[]>([]);
+  const { compareIds, toggle } = useCompareSelection();
   const toggleWishlist = useWishlistStore((state) => state.toggle);
   const wishlistIds = useWishlistStore((state) => state.ids);
 
@@ -49,8 +51,33 @@ export function RecentlyViewed({ cars }: RecentlyViewedProps) {
         {list.map((car) => {
           const src = primaryImageSrc(car);
           const wished = wishlistIds.includes(car.id);
+          const compareChecked = compareIds.includes(car.id);
+          const compareDisabled = !compareChecked && compareIds.length >= 3;
           return (
             <li key={car.id} className="relative">
+              <button
+                type="button"
+                className={`absolute right-14 top-2 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-[color:var(--color-brand-accent)] shadow-md backdrop-blur-sm transition hover:bg-white ${
+                  compareDisabled ? "cursor-not-allowed opacity-50" : ""
+                }`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (!compareDisabled) {
+                    toggle(car.id);
+                  }
+                }}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                aria-label={compareChecked ? "Убрать из сравнения" : "Добавить в сравнение"}
+                aria-pressed={compareChecked}
+                disabled={compareDisabled}
+                title={compareDisabled ? "Можно выбрать максимум 3 автомобиля" : "Добавить в сравнение"}
+              >
+                <Scale className={`h-5 w-5 ${compareChecked ? "fill-current" : ""}`} />
+              </button>
               <button
                 type="button"
                 className="absolute right-2 top-2 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-[color:var(--color-brand-accent)] shadow-md backdrop-blur-sm transition hover:bg-white"

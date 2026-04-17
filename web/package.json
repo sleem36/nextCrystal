@@ -2,12 +2,18 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "predev": "node scripts/validate-package-json.mjs",
-    "prebuild": "node scripts/validate-package-json.mjs",
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "check:node": "node scripts/wrap-node.mjs scripts/check-node-version.mjs",
+    "predev": "node scripts/wrap-node.mjs scripts/validate-package-json.mjs && npm run check:node",
+    "prebuild": "node scripts/wrap-node.mjs scripts/validate-package-json.mjs && npm run check:node",
+    "prestart": "npm run check:node",
+    "prelint": "npm run check:node",
+    "dev": "node scripts/wrap-node.mjs node_modules/next/dist/bin/next dev",
+    "build": "node scripts/wrap-node.mjs node_modules/next/dist/bin/next build",
+    "start": "node scripts/wrap-node.mjs node_modules/next/dist/bin/next start",
     "lint": "eslint",
     "e2e:smoke": "playwright test tests/e2e/smoke.spec.ts",
     "download:images": "tsx scripts/download-car-images.ts",
@@ -16,6 +22,7 @@
     "generate:cars:crystal": "tsx scripts/generate-cars-from-crystal.ts"
   },
   "dependencies": {
+    "better-sqlite3": "^12.9.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",
@@ -27,13 +34,14 @@
     "zustand": "^5.0.12"
   },
   "devDependencies": {
-    "cheerio": "^1.2.0",
     "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/nodemailer": "^7.0.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cheerio": "^1.2.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "playwright": "^1.59.1",

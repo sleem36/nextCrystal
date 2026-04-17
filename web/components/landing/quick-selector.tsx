@@ -37,7 +37,7 @@ export function QuickSelector({ value, onChange, onComplete }: QuickSelectorProp
   const totalSteps = isCredit ? 6 : 5;
   const paymentMethodOptions: Array<{ id: PaymentMethod; label: string }> = [
     { id: "credit", label: "Кредит" },
-    { id: "cash", label: "Наличные" },
+    { id: "cash", label: "Trade-in" },
   ];
   const bodyTypeOptions: Array<{ id: SelectorState["bodyType"]; label: string }> = [
     { id: "any", label: "Любой" },

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Heart, MapPin, Menu, Phone, Scale, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,8 +31,13 @@ const catalogGroups = [
   },
 ];
 
-const CITY_STORAGE_KEY = "selected_city";
-const cityOptions = ["Москва", "Барнаул", "Новосибирск", "Екатеринбург", "Казань", "Краснодар"];
+const CITY_COOKIE_KEY = "selected_city";
+
+type CityOption = {
+  id: number;
+  slug: string;
+  name_imya: string;
+};
 
 type CallbackFormState = {
   name: string;
@@ -50,8 +55,8 @@ export function SiteHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [desktopSearchValue, setDesktopSearchValue] = useState("");
   const [mobileSearchValue, setMobileSearchValue] = useState("");
-  const [city, setCity] = useState("Москва");
-  const [cityModalOpen, setCityModalOpen] = useState(false);
+  const [city, setCity] = useState("");
+  const [cities, setCities] = useState<CityOption[]>([]);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [callbackState, setCallbackState] = useState<CallbackFormState>({ name: "", phone: "" });
   const [callbackSubmitting, setCallbackSubmitting] = useState(false);
@@ -79,13 +84,34 @@ export function SiteHeader() {
   }, [pathname]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      const storedCity = window.localStorage.getItem(CITY_STORAGE_KEY);
-      if (storedCity) {
-        setCity(storedCity);
+    const fetchCities = async () => {
+      try {
+        const response = await fetch("/api/cities", { cache: "no-store" });
+        if (!response.ok) return;
+        const payload = (await response.json()) as { cities?: CityOption[] };
+        const loadedCities = payload.cities ?? [];
+        setCities(loadedCities);
+
+        const cookieCitySlug = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith(`${CITY_COOKIE_KEY}=`))
+          ?.split("=")[1];
+        const decodedCookieCitySlug = cookieCitySlug ? decodeURIComponent(cookieCitySlug) : "";
+        if (decodedCookieCitySlug) {
+          const selected = loadedCities.find((item) => item.slug === decodedCookieCitySlug);
+          if (selected) {
+            setCity(selected.slug);
+            return;
+          }
+        }
+        if (loadedCities.length > 0) {
+          setCity(loadedCities[0].slug);
+        }
+      } catch {
+        // Ignore network errors: city picker remains hidden.
       }
-    }, 0);
-    return () => window.clearTimeout(timer);
+    };
+    void fetchCities();
   }, []);
 
   useEffect(
@@ -172,12 +198,11 @@ export function SiteHeader() {
       });
   };
 
-  const selectCity = (nextCity: string) => {
+  const selectCity = (event: ChangeEvent<HTMLSelectElement>) => {
+    const nextCity = event.target.value;
     setCity(nextCity);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(CITY_STORAGE_KEY, nextCity);
-    }
-    setCityModalOpen(false);
+    document.cookie = `${CITY_COOKIE_KEY}=${encodeURIComponent(nextCity)}; path=/; max-age=31536000`;
+    router.refresh();
   };
 
   const iconButtonClass =
@@ -206,15 +231,22 @@ export function SiteHeader() {
             </span>
           </Link>
 
-          <button
-            type="button"
-            onClick={() => setCityModalOpen(true)}
-            className="hidden items-center gap-1.5 rounded-lg border border-slate-300 px-2.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 md:inline-flex"
-            aria-label="Выбрать город"
-          >
+          <div className="hidden items-center gap-1.5 rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 md:inline-flex">
             <MapPin className="h-4 w-4 text-[color:var(--color-brand-accent)]" />
-            <span>{city}</span>
-          </button>
+            <select
+              value={city}
+              onChange={selectCity}
+              className="bg-transparent text-xs font-semibold outline-none"
+              aria-label="Выбрать город"
+            >
+              {cities.length === 0 ? <option value="">Города загружаются...</option> : null}
+              {cities.map((option) => (
+                <option key={option.id} value={option.slug}>
+                  {option.name_imya}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <nav className="relative hidden items-center gap-5 text-sm lg:flex">
             <div
@@ -380,14 +412,17 @@ export function SiteHeader() {
         {mobileMenuOpen ? (
           <div className="border-t border-slate-200 bg-white md:hidden">
             <div className="container-wide py-3">
-              <button
-                type="button"
-                onClick={() => setCityModalOpen(true)}
-                className="mb-3 inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700"
-              >
+              <div className="mb-3 inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700">
                 <MapPin className="h-4 w-4 text-[color:var(--color-brand-accent)]" />
-                {city}
-              </button>
+                <select value={city} onChange={selectCity} className="bg-transparent outline-none" aria-label="Выбрать город">
+                  {cities.length === 0 ? <option value="">Города загружаются...</option> : null}
+                  {cities.map((option) => (
+                    <option key={`mobile-city-${option.id}`} value={option.slug}>
+                      {option.name_imya}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="space-y-2 rounded-xl border border-slate-200 p-3">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Каталог</p>
                 <ul className="space-y-1.5">
@@ -462,30 +497,6 @@ export function SiteHeader() {
           </div>
           {callbackError ? <p className="text-sm text-rose-600">{callbackError}</p> : null}
         </form>
-      </Modal>
-
-      <Modal
-        open={cityModalOpen}
-        onClose={() => setCityModalOpen(false)}
-        title="Выберите город"
-        description="Сохраним выбор в браузере для персонализации каталога."
-      >
-        <div className="grid gap-2 sm:grid-cols-2">
-          {cityOptions.map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => selectCity(option)}
-              className={`rounded-lg border px-3 py-2 text-left text-sm font-medium transition ${
-                city === option
-                  ? "border-[color:var(--color-brand-accent)] bg-blue-50 text-[color:var(--color-brand-accent)]"
-                  : "border-slate-300 text-slate-700 hover:bg-slate-50"
-              }`}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
       </Modal>
     </>
   );

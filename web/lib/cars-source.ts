@@ -112,3 +112,7 @@ export async function getCarById(id: string): Promise<Car | null> {
   const cars = await getCars();
   return cars.find((c) => c.id === id) ?? null;
 }
+
+export async function getCarBySlug(slug: string): Promise<Car | null> {
+  return getCarById(slug);
+}

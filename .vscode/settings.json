@@ -1,0 +1,5 @@
+{
+  "terminal.integrated.env.windows": {
+    "PATH": "c:\\SCANNER\\dll32\\resources\\app\\resources\\helpers;${env:PATH}"
+  }
+}

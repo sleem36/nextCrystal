@@ -50,7 +50,7 @@ export function SelectionSummary({ selector }: SelectionSummaryProps) {
           </p>
         ) : (
           <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">
-            Способ оплаты: <span className="font-semibold">Наличные</span>
+            Способ оплаты: <span className="font-semibold">Trade-in</span>
           </p>
         )}
         <p className="rounded-xl bg-slate-50 px-3 py-2 text-slate-700">

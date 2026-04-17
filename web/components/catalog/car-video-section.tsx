@@ -22,7 +22,7 @@ export function CarVideoSection({
       <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-6 text-center shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
         <h2 className="text-lg font-semibold text-[color:var(--color-brand-primary)]">Видеообзор</h2>
         <p className="mt-2 text-sm text-slate-600">
-          Видео для этого авто еще не загружено. Отправим видеообзор в удобный мессенджер.
+          Видео для этого автомобиля пока не загружено. По заявке отправим обзор в удобный мессенджер.
         </p>
         <div className="mt-4">
           <a
@@ -35,9 +35,9 @@ export function CarVideoSection({
                 fromPage: "car_detail",
               })
             }
-            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] transition-colors hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+            className="btn-hover-primary inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
           >
-            Запросить видеообзор
+            Получить видеообзор
           </a>
         </div>
       </section>

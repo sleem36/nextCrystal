@@ -19,6 +19,8 @@ export function CarPhoneReveal({
   const [revealed, setRevealed] = useState(false);
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
   const phoneHref = `tel:${phoneLabel.replace(/\D/g, "")}`;
+  const secondaryCtaClass =
+    "btn-hover-secondary inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-[color:var(--color-brand-primary)] hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-primary)] focus-visible:ring-offset-2";
 
   return (
     <div className={className}>
@@ -34,14 +36,14 @@ export function CarPhoneReveal({
               fromPage: "car_detail",
             });
           }}
-          className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-[color:var(--color-brand-primary)] transition-colors hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-primary)] focus-visible:ring-offset-2"
+          className={secondaryCtaClass}
         >
           Показать номер
         </button>
       ) : (
         <a
           href={phoneHref}
-          className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-300 bg-white px-5 text-sm font-semibold text-[color:var(--color-brand-primary)] transition-colors hover:border-slate-400 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-primary)] focus-visible:ring-offset-2"
+          className={secondaryCtaClass}
         >
           {phoneLabel}
         </a>

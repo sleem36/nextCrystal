@@ -6,7 +6,6 @@ import { Heart } from "lucide-react";
 import { BookingModal } from "@/components/catalog/booking-modal";
 import { CatalogCarCard } from "@/components/catalog/catalog-car-card";
 import { useBookedCars } from "@/hooks/use-booked-cars";
-import { useCompareSelection } from "@/hooks/use-compare-selection";
 import { DEFAULT_CAR_LISTING_FILTERS } from "@/lib/car-filters";
 import { useWishlistStore } from "@/stores/wishlist-store";
 import type { Car } from "@/types/car";
@@ -19,7 +18,6 @@ export function FavoritesClient({ cars }: FavoritesClientProps) {
   const wishlistIds = useWishlistStore((state) => state.ids);
   const removeFromWishlist = useWishlistStore((state) => state.remove);
   const clearWishlist = useWishlistStore((state) => state.clear);
-  const { compareIds, toggle } = useCompareSelection();
   const { bookedIds, bookedUntilMap, refresh } = useBookedCars();
 
   const [leadModalState, setLeadModalState] = useState<{
@@ -111,11 +109,6 @@ export function FavoritesClient({ cars }: FavoritesClientProps) {
                 isCreditSubmitting={creditSubmittingId === car.id}
                 onRequestBooking={(nextCar) => setLeadModalState({ car: nextCar, type: "reservation" })}
                 onRequestCredit={(nextCar) => setLeadModalState({ car: nextCar, type: "credit" })}
-                compare={{
-                  checked: compareIds.includes(car.id),
-                  disabled: !compareIds.includes(car.id) && compareIds.length >= 3,
-                  onToggle: () => toggle(car.id),
-                }}
               />
             </div>
           ))}

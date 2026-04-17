@@ -20,12 +20,13 @@ function clamp(value: number, min: number, max: number) {
 export function CarBuyIntentControls({
   car,
   utm,
+  paymentMethod = "credit",
 }: {
   car: Car;
   utm: Record<string, string>;
+  paymentMethod?: BuyIntentType;
 }) {
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
-  const [chooserOpen, setChooserOpen] = useState(false);
   const [leadType, setLeadType] = useState<BuyIntentType | null>(null);
   const [downPayment, setDownPayment] = useState(0);
   const [creditTermYears, setCreditTermYears] = useState(5);
@@ -78,16 +79,12 @@ export function CarBuyIntentControls({
     };
   }, [car, leadType, utm, downPayment, creditTermMonths, estimatedMonthlyPayment]);
 
-  const openChooser = () => {
+  const openLead = (type: BuyIntentType) => {
     trackGoal(metrikaId, METRIKA_GOALS.clickWantToBuy, {
       carId: car.id,
       city: car.city,
       priceRub: car.priceRub,
     });
-    setChooserOpen(true);
-  };
-
-  const openLead = (type: BuyIntentType) => {
     if (type === "credit") {
       trackGoal(metrikaId, METRIKA_GOALS.selectBuyOptionCredit, { carId: car.id, city: car.city });
       trackGoal(metrikaId, METRIKA_GOALS.openCreditCalculator, { carId: car.id, city: car.city });
@@ -96,7 +93,6 @@ export function CarBuyIntentControls({
       trackGoal(metrikaId, METRIKA_GOALS.selectBuyOptionCash, { carId: car.id, city: car.city });
       trackGoal(metrikaId, METRIKA_GOALS.openFormCash, { carId: car.id, city: car.city });
     }
-    setChooserOpen(false);
     setLeadType(type);
   };
 
@@ -126,30 +122,14 @@ export function CarBuyIntentControls({
 
   return (
     <>
-      <Button type="button" className="px-6" onClick={openChooser}>
-        Хочу купить
+      <Button type="button" className="w-full px-6" onClick={() => openLead(paymentMethod)}>
+        Заявка на покупку в кредит
       </Button>
-
-      <Modal
-        open={chooserOpen}
-        onClose={() => setChooserOpen(false)}
-        title="Как хотите оформить покупку?"
-        description="Выберите удобный сценарий — откроем соответствующую форму."
-      >
-        <div className="space-y-3">
-          <Button type="button" className="w-full" onClick={() => openLead("credit")}>
-            Подать заявку на кредит
-          </Button>
-          <Button type="button" variant="secondary" className="w-full" onClick={() => openLead("cash")}>
-            Купить за собственные средства
-          </Button>
-        </div>
-      </Modal>
 
       <Modal
         open={leadType != null}
         onClose={() => setLeadType(null)}
-        title={leadType === "credit" ? "Подать заявку на кредит" : "Покупка за собственные средства"}
+        title={leadType === "credit" ? "Заявка на покупку в кредит" : "Заявка на покупку за наличные"}
         description={`${car.brand} ${car.model}, ${car.year}`}
       >
         {context ? (

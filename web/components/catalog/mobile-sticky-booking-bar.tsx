@@ -24,9 +24,9 @@ export function MobileStickyBookingBar({ priceRub }: { priceRub: number }) {
         </div>
         <a
           href="#lead-form"
-          className="inline-flex h-11 shrink-0 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-4 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] transition-colors hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+          className="btn-hover-primary inline-flex h-11 shrink-0 items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-4 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
         >
-          Забронировать
+          Оставить заявку
         </a>
       </div>
     </div>

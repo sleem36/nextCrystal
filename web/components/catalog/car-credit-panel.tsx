@@ -155,7 +155,7 @@ export function CarCreditPanel({
       <button
         type="button"
         onClick={() => setModalOpen(true)}
-        className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] transition-colors hover:bg-[color:var(--color-brand-accent-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 md:w-auto"
+        className="btn-hover-primary mt-4 inline-flex h-11 w-full items-center justify-center rounded-[var(--radius-button,0.5rem)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,118,234,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 md:w-auto"
       >
         Рассчитать кредит
       </button>

@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { Heart, Scale } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
+import { useCompareSelection } from "@/hooks/use-compare-selection";
 import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
+import { useWishlistStore } from "@/stores/wishlist-store";
 
 const BLUR =
   "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
@@ -14,9 +17,20 @@ type VehicleGalleryProps = {
   model: string;
   year: number;
   className?: string;
+  wishlistCarId?: string;
 };
 
-export function VehicleGallery({ images, brand, model, year, className = "" }: VehicleGalleryProps) {
+export function VehicleGallery({
+  images,
+  brand,
+  model,
+  year,
+  className = "",
+  wishlistCarId,
+}: VehicleGalleryProps) {
+  const { compareIds, toggle } = useCompareSelection();
+  const wishlistIds = useWishlistStore((state) => state.ids);
+  const toggleWishlist = useWishlistStore((state) => state.toggle);
   const title = `${brand} ${model}, ${year}`;
   const gallery = useMemo(() => images, [images]);
   const MAX_VISIBLE_GALLERY = 5;
@@ -35,6 +49,9 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
   const hasSlider = previewGallery.length > 1;
   const firstGallerySrc = previewGallery[0];
   const firstGalleryUnoptimized = firstGallerySrc ? shouldUnoptimizeRemoteImage(firstGallerySrc) : false;
+  const compareChecked = Boolean(wishlistCarId && compareIds.includes(wishlistCarId));
+  const compareDisabled = Boolean(wishlistCarId && !compareChecked && compareIds.length >= 3);
+  const isWishlisted = Boolean(wishlistCarId && wishlistIds.includes(wishlistCarId));
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     dragFree: false,
@@ -181,6 +198,50 @@ export function VehicleGallery({ images, brand, model, year, className = "" }: V
           onMouseMove={onHoverZoneMove}
           onMouseLeave={onHoverZoneLeave}
         >
+          {wishlistCarId ? (
+            <>
+              <button
+                type="button"
+                className={`absolute right-14 top-2 z-[7] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-[color:var(--color-brand-accent)] shadow-md backdrop-blur-sm transition hover:bg-white ${
+                  compareDisabled ? "cursor-not-allowed opacity-50" : ""
+                }`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (!compareDisabled) {
+                    toggle(wishlistCarId);
+                  }
+                }}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                aria-label={compareChecked ? "Убрать из сравнения" : "Добавить в сравнение"}
+                aria-pressed={compareChecked}
+                disabled={compareDisabled}
+                title={compareDisabled ? "Можно выбрать максимум 3 автомобиля" : "Добавить в сравнение"}
+              >
+                <Scale className={`h-5 w-5 ${compareChecked ? "fill-current" : ""}`} />
+              </button>
+              <button
+                type="button"
+                className="absolute right-2 top-2 z-[7] inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/60 bg-white/90 text-[color:var(--color-brand-accent)] shadow-md backdrop-blur-sm transition hover:bg-white"
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  toggleWishlist(wishlistCarId);
+                }}
+                onPointerDown={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }}
+                aria-label={isWishlisted ? "Удалить из избранного" : "Добавить в избранное"}
+                aria-pressed={isWishlisted}
+              >
+                <Heart className={`h-5 w-5 ${isWishlisted ? "fill-current" : ""}`} />
+              </button>
+            </>
+          ) : null}
           {hasSlider ? (
             <>
               <div className="absolute inset-0 overflow-hidden" ref={emblaRef}>

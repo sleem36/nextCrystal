@@ -39,32 +39,10 @@ const SORT_OPTIONS: Array<{ value: CarListingFilters["sort"]; label: string }> =
   { value: "popular_desc", label: "Популярность" },
 ];
 
-const FAQ_ITEMS = [
-  {
-    q: "Можно ли купить автомобиль без первого взноса?",
-    a: "Да, в кредитном калькуляторе можно выбрать первоначальный взнос от 0 ₽. Финальные условия зависят от банка.",
-  },
-  {
-    q: "Как проверить юридическую чистоту авто?",
-    a: "Перед продажей мы проверяем VIN, ограничения и историю владения. Ключевые данные показываем в карточке авто.",
-  },
-  {
-    q: "Сколько времени занимает оформление?",
-    a: "Обычно от одного дня. Точный срок зависит от выбранного способа покупки и банка.",
-  },
-  {
-    q: "Какие советы можно дать при покупке авто с пробегом в Челябинске?",
-    a: "При покупке авто с пробегом в Челябинске стоит обратить внимание на состояние кузова и двигателя, проверить историю автомобиля с помощью VIN-кода, сделать технический осмотр у специалиста и сравнить цены на подобные модели в разных источниках для получения лучшего предложения.",
-  },
-  {
-    q: "Где в Челябинске можно выгодно купить авто с пробегом от 50 000 до 150 000 км по цене ниже рыночной?",
-    a: "В Челябинске продажа автомобилей с пробегом от 50 000 до 150 000 км представлена на сайтах официальных дилеров Kia, Renault, Nissan, Hyundai и Volkswagen, а также в автосервисах с проверенной историей, где вы можете выбрать авто разных годов выпуска, с бензиновым двигателем, оформить кредит и получить гарантию на покупку.",
-  },
-  {
-    q: "Где в Челябинске можно купить авто с пробегом от 0 до 100 000 км по выгодной цене?",
-    a: "В Челябинске продажа автомобилей с пробегом от 0 до 100 000 км представлена на специализированных сайтах и в автосалонах, где вы найдете модели Kia, Haval, Renault, Skoda, Nissan, Toyota, Mercedes-Benz, Volkswagen и Hyundai с разной комплектацией и возможностью оформить кредит, а также получить сервисное обслуживание бензиновых и новых авто.",
-  },
-] as const;
+type CatalogFaqItem = {
+  question: string;
+  answer: string;
+};
 
 function carsCountLabel(count: number) {
   if (count % 10 === 1 && count % 100 !== 11) return "автомобиль";
@@ -111,7 +89,9 @@ function CatalogLeadBlock({
   );
 }
 
-function CatalogFaqBlock() {
+function CatalogFaqBlock({ items }: { items: CatalogFaqItem[] }) {
+  if (items.length === 0) return null;
+
   return (
     <section
       className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
@@ -124,10 +104,13 @@ function CatalogFaqBlock() {
         Частые вопросы
       </h2>
       <div className="mt-4 space-y-2">
-        {FAQ_ITEMS.map((item) => (
-          <details key={item.q} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-            <summary className="cursor-pointer text-sm font-semibold text-slate-900">{item.q}</summary>
-            <p className="mt-2 text-sm text-slate-700">{item.a}</p>
+        {items.map((item) => (
+          <details key={item.question} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <summary className="cursor-pointer text-sm font-semibold text-slate-900">{item.question}</summary>
+            <div
+              className="prose prose-slate mt-2 max-w-none text-sm text-slate-700"
+              dangerouslySetInnerHTML={{ __html: item.answer }}
+            />
           </details>
         ))}
       </div>
@@ -135,7 +118,22 @@ function CatalogFaqBlock() {
   );
 }
 
-export function CarsCatalogClient({ cars }: { cars: Car[] }) {
+export function CarsCatalogClient({
+  cars,
+  initialCars,
+  initialFilters,
+  basePath = "/cars",
+  popularFilterLinks = [],
+  faqItems = [],
+}: {
+  cars?: Car[];
+  initialCars?: Car[];
+  initialFilters?: Partial<CarListingFilters>;
+  basePath?: string;
+  popularFilterLinks?: Array<{ slug: string; name: string }>;
+  faqItems?: CatalogFaqItem[];
+}) {
+  const sourceCars = initialCars ?? cars ?? [];
   const { compareIds, toggle } = useCompareSelection();
   const { bookedIds, bookedUntilMap, refresh } = useBookedCars();
   const sp = useSearchParams();
@@ -163,33 +161,36 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
   );
 
   const filters = useMemo(
-    () => parseCarListingSearchParams(Object.fromEntries(sp.entries())),
-    [sp],
+    () => ({
+      ...parseCarListingSearchParams(Object.fromEntries(sp.entries())),
+      ...(initialFilters ?? {}),
+    }),
+    [sp, initialFilters],
   );
 
   const strictPriceBounds = useMemo(() => {
-    const pool = filterCarsForPriceBounds(cars, filters);
+    const pool = filterCarsForPriceBounds(sourceCars, filters);
     if (pool.length === 0) {
       return { min: 0, max: 0 };
     }
     const prices = pool.map((c) => c.priceRub);
     return { min: Math.min(...prices), max: Math.max(...prices) };
-  }, [cars, filters]);
+  }, [sourceCars, filters]);
 
   const colorOptions = useMemo(() => {
     const set = new Set<string>();
-    for (const c of cars) {
+    for (const c of sourceCars) {
       if (c.city === filters.city) {
         set.add(c.color);
       }
     }
     return Array.from(set).sort((a, b) => a.localeCompare(b, "ru"));
-  }, [cars, filters.city]);
+  }, [sourceCars, filters.city]);
 
-  const filtered = useMemo(() => filterCars(cars, filters), [cars, filters]);
+  const filtered = useMemo(() => filterCars(sourceCars, filters), [sourceCars, filters]);
   const relaxed = useMemo(
-    () => (filtered.length === 0 ? getRelaxedSuggestions(cars, filters) : []),
-    [cars, filters, filtered.length],
+    () => (filtered.length === 0 ? getRelaxedSuggestions(sourceCars, filters) : []),
+    [sourceCars, filters, filtered.length],
   );
 
   const showList = filtered.length > 0 ? filtered : relaxed;
@@ -267,7 +268,7 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
       transmission: f.transmission,
     });
     startTransition(() => {
-      router.push(`/cars?${params.toString()}`);
+      router.push(`${basePath}?${params.toString()}`);
     });
     setFiltersOpen(false);
     scrollCatalogToTop();
@@ -283,7 +284,7 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
     });
     const query = params.toString();
     startTransition(() => {
-      router.push(query ? `/cars?${query}` : "/cars");
+      router.push(query ? `${basePath}?${query}` : basePath);
     });
     setFiltersOpen(false);
     scrollCatalogToTop();
@@ -378,31 +379,50 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
       </section>
 
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          className={chipClass}
-          onClick={() =>
-            apply({
-              ...filters,
-              maxPriceRub: 1_000_000,
-              priceMinRub: 0,
-            })
-          }
-        >
-          До 1 млн ₽
-        </button>
-        <button
-          type="button"
-          className={chipClass}
-          onClick={() =>
-            apply({
-              ...filters,
-              maxMileageKm: 50_000,
-            })
-          }
-        >
-          Пробег до 50 000 км
-        </button>
+        {popularFilterLinks.length > 0 ? (
+          popularFilterLinks.map((item) => (
+            <button
+              key={item.slug}
+              type="button"
+              className={chipClass}
+              onClick={() => {
+                startTransition(() => {
+                  router.push(`/cars/${item.slug}`);
+                });
+              }}
+            >
+              {item.name || item.slug}
+            </button>
+          ))
+        ) : (
+          <>
+            <button
+              type="button"
+              className={chipClass}
+              onClick={() =>
+                apply({
+                  ...filters,
+                  maxPriceRub: 1_000_000,
+                  priceMinRub: 0,
+                })
+              }
+            >
+              До 1 млн ₽
+            </button>
+            <button
+              type="button"
+              className={chipClass}
+              onClick={() =>
+                apply({
+                  ...filters,
+                  maxMileageKm: 50_000,
+                })
+              }
+            >
+              Пробег до 50 000 км
+            </button>
+          </>
+        )}
       </div>
 
       <div className="flex items-center justify-between gap-3 lg:hidden">
@@ -615,9 +635,9 @@ export function CarsCatalogClient({ cars }: { cars: Car[] }) {
         </div>
       ) : null}
 
-      <RecentlyViewed cars={cars} />
+      <RecentlyViewed cars={sourceCars} />
 
-      <CatalogFaqBlock />
+      <CatalogFaqBlock items={faqItems} />
 
       <CatalogLeadBlock filters={filters} utm={utm} />
 
