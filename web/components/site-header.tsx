@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown, Heart, MapPin, Menu, Phone, Scale, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,20 +18,48 @@ const desktopNav = [
   { href: "/contacts", label: "Контакты" },
 ];
 
-const catalogGroups = [
-  {
-    title: "Тип кузова",
-    links: [
-      { href: "/cars", label: "Все автомобили" },
-      { href: "/cars?bodyType=suv", label: "Кроссоверы и SUV" },
-      { href: "/cars?bodyType=sedan", label: "Седаны" },
-      { href: "/cars?bodyType=hatchback", label: "Хэтчбеки" },
-      { href: "/cars?bodyType=liftback", label: "Лифтбеки" },
-    ],
-  },
+const catalogBodyTypeLinks = [
+  { href: "/cars?bodyType=suv", label: "Кроссоверы и SUV" },
+  { href: "/cars?bodyType=sedan", label: "Седаны" },
+  { href: "/cars?bodyType=hatchback", label: "Хэтчбеки" },
+  { href: "/cars?bodyType=liftback", label: "Лифтбеки" },
 ];
 
 const CITY_COOKIE_KEY = "selected_city";
+
+/** Одинаковая высота (40px), радиус и обводка для полей и кнопок в шапке */
+const headerControlChrome =
+  "box-border h-10 min-h-10 border border-slate-300 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]";
+
+const headerControlRounded = "rounded-xl";
+
+const headerIconButtonClass = `relative inline-flex size-10 shrink-0 items-center justify-center ${headerControlRounded} ${headerControlChrome} text-slate-700 transition hover:bg-slate-50`;
+
+function navRouteActive(pathname: string, href: string): boolean {
+  if (href === "/cars") {
+    return pathname === "/cars" || pathname.startsWith("/cars/");
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+/** Пункты меню: фиксированная высота h-10 как у поиска/города; активный — только линия + цвет (без тяжёлой заливки) */
+function navMenuSurfaceClass(active: boolean): string {
+  return [
+    "group/nav relative inline-flex h-10 shrink-0 items-center overflow-visible px-2.5 text-sm font-medium outline-none transition-colors duration-300",
+    active
+      ? "text-[color:var(--color-brand-accent)]"
+      : "text-slate-700 hover:text-[color:var(--color-brand-accent)]",
+  ].join(" ");
+}
+
+function navMenuUnderlineClass(active: boolean): string {
+  return [
+    "pointer-events-none absolute bottom-0 left-2 right-2 h-0.5 origin-left rounded-full bg-[color:var(--color-brand-accent)] transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] motion-reduce:duration-150",
+    active
+      ? "scale-x-100"
+      : "scale-x-0 group-hover/nav:scale-x-100",
+  ].join(" ");
+}
 
 type CityOption = {
   id: number;
@@ -58,6 +86,7 @@ export function SiteHeader() {
   const [city, setCity] = useState("");
   const [cities, setCities] = useState<CityOption[]>([]);
   const [callbackOpen, setCallbackOpen] = useState(false);
+  const [cityModalOpen, setCityModalOpen] = useState(false);
   const [callbackState, setCallbackState] = useState<CallbackFormState>({ name: "", phone: "" });
   const [callbackSubmitting, setCallbackSubmitting] = useState(false);
   const [callbackError, setCallbackError] = useState("");
@@ -198,26 +227,30 @@ export function SiteHeader() {
       });
   };
 
-  const selectCity = (event: ChangeEvent<HTMLSelectElement>) => {
-    const nextCity = event.target.value;
-    setCity(nextCity);
-    document.cookie = `${CITY_COOKIE_KEY}=${encodeURIComponent(nextCity)}; path=/; max-age=31536000`;
+  const applyCitySlug = (slug: string) => {
+    setCity(slug);
+    document.cookie = `${CITY_COOKIE_KEY}=${encodeURIComponent(slug)}; path=/; max-age=31536000`;
     router.refresh();
+    setCityModalOpen(false);
   };
 
-  const iconButtonClass =
-    "relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50";
+  const currentCityLabel = useMemo(() => {
+    const found = cities.find((c) => c.slug === city);
+    return found?.name_imya ?? (city || "Город");
+  }, [cities, city]);
+
+  const catalogRouteActive = navRouteActive(pathname, "/cars");
 
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/90 shadow-[0_2px_10px_rgba(15,23,42,0.04)] backdrop-blur-md">
-        <div className="container-wide flex h-[60px] items-center gap-2 md:h-[74px] md:gap-4">
+        <div className="container-wide flex h-[60px] items-center gap-2 md:h-[74px] md:gap-4 lg:gap-6">
           <button
             type="button"
             aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 text-slate-700 transition hover:bg-slate-50 md:hidden"
+            className={`${headerIconButtonClass} md:hidden`}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
           </button>
@@ -231,24 +264,25 @@ export function SiteHeader() {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-1.5 rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 md:inline-flex">
-            <MapPin className="h-4 w-4 text-[color:var(--color-brand-accent)]" />
-            <select
-              value={city}
-              onChange={selectCity}
-              className="bg-transparent text-xs font-semibold outline-none"
+          <div
+            className={`hidden min-w-0 shrink-0 items-center gap-1.5 px-3 text-sm font-semibold text-slate-700 md:inline-flex ${headerControlChrome} ${headerControlRounded}`}
+          >
+            <MapPin className="h-4 w-4 shrink-0 text-[color:var(--color-brand-accent)]" aria-hidden />
+            <button
+              type="button"
+              onClick={() => setCityModalOpen(true)}
+              disabled={cities.length === 0}
+              className="inline-flex h-full min-h-0 max-w-[200px] items-center gap-1 truncate bg-transparent text-sm font-semibold outline-none transition hover:text-[color:var(--color-brand-accent)] disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Выбрать город"
+              aria-haspopup="dialog"
+              aria-expanded={cityModalOpen}
             >
-              {cities.length === 0 ? <option value="">Города загружаются...</option> : null}
-              {cities.map((option) => (
-                <option key={option.id} value={option.slug}>
-                  {option.name_imya}
-                </option>
-              ))}
-            </select>
+              <span className="truncate">{cities.length === 0 ? "Загрузка…" : currentCityLabel}</span>
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-70" aria-hidden />
+            </button>
           </div>
 
-          <nav className="relative hidden items-center gap-5 text-sm lg:flex">
+          <nav className="relative hidden items-center gap-1 sm:gap-2 lg:gap-3 text-sm lg:flex">
             <div
               className="relative"
               onMouseEnter={openCatalogMenu}
@@ -262,21 +296,38 @@ export function SiteHeader() {
                 closeCatalogMenuWithDelay();
               }}
             >
-              <button
-                type="button"
-                className="inline-flex items-center gap-1 font-medium text-slate-700 transition hover:text-[color:var(--color-brand-accent)]"
-                aria-expanded={catalogOpen}
-                aria-label="Открыть категории каталога"
-                onClick={() => setCatalogOpen((prev) => !prev)}
-                onKeyDown={(event) => {
-                  if (event.key === "Escape") {
-                    setCatalogOpen(false);
-                  }
-                }}
+              <div
+                className={`inline-flex h-10 min-h-10 items-stretch overflow-hidden ${headerControlChrome} ${headerControlRounded}`}
               >
-                Каталог
-                <ChevronDown className="h-4 w-4" aria-hidden />
-              </button>
+                <Link
+                  href="/cars"
+                  className={`${navMenuSurfaceClass(catalogRouteActive)} rounded-none pr-1.5 pl-2`}
+                  aria-current={catalogRouteActive ? "page" : undefined}
+                  onClick={() => setCatalogOpen(false)}
+                >
+                  <span className="relative z-10">Каталог</span>
+                  <span aria-hidden className={navMenuUnderlineClass(catalogRouteActive)} />
+                </Link>
+                <button
+                  type="button"
+                  className={`inline-flex h-full min-h-0 w-9 shrink-0 items-center justify-center rounded-none border-l border-slate-200/90 border-t-0 border-b-0 border-r-0 bg-transparent text-slate-600 transition-colors duration-300 hover:bg-slate-50 hover:text-[color:var(--color-brand-accent)] ${
+                    catalogRouteActive ? "text-[color:var(--color-brand-accent)]" : ""
+                  }`}
+                  aria-expanded={catalogOpen}
+                  aria-label="Подкатегории каталога"
+                  onClick={() => setCatalogOpen((prev) => !prev)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Escape") {
+                      setCatalogOpen(false);
+                    }
+                  }}
+                >
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-300 ease-out ${catalogOpen ? "rotate-180" : ""}`}
+                    aria-hidden
+                  />
+                </button>
+              </div>
               <div
                 className={`absolute left-0 top-full z-50 w-72 origin-top rounded-xl border border-slate-200 bg-white p-3 shadow-xl transition duration-150 ${
                   catalogOpen
@@ -284,52 +335,57 @@ export function SiteHeader() {
                     : "pointer-events-none -translate-y-0.5 scale-95 opacity-0"
                 }`}
               >
-                  {catalogGroups.map((group) => (
-                    <div key={group.title}>
-                      <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        {group.title}
-                      </p>
-                      <ul className="space-y-1">
-                        {group.links.map((item) => (
-                          <li key={item.href}>
-                            <Link
-                              href={item.href}
-                              className="block rounded-md px-2 py-1.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-[color:var(--color-brand-accent)]"
-                              onClick={() => setCatalogOpen(false)}
-                            >
-                              {item.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                  <ul className="space-y-1">
+                    {catalogBodyTypeLinks.map((item) => (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          className="group/sub relative block overflow-hidden rounded-md px-2 py-1.5 text-sm text-slate-700 transition-all duration-300 ease-out before:absolute before:inset-y-0 before:left-0 before:w-0 before:rounded-md before:bg-gradient-to-r before:from-[color:var(--color-brand-accent)]/10 before:to-transparent before:transition-[width] before:duration-300 hover:before:w-full hover:text-[color:var(--color-brand-accent)] motion-reduce:before:transition-none"
+                          onClick={() => setCatalogOpen(false)}
+                        >
+                          <span className="relative z-10">{item.label}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
               </div>
             </div>
 
-            {desktopNav.slice(1).map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="font-medium text-slate-700 underline-offset-4 transition hover:text-[color:var(--color-brand-accent)] hover:underline"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {desktopNav.slice(1).map((item) => {
+              const active = navRouteActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`${navMenuSurfaceClass(active)} rounded-lg`}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <span className="relative z-10">{item.label}</span>
+                  <span aria-hidden className={navMenuUnderlineClass(active)} />
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="ml-auto hidden min-w-[280px] items-center md:flex lg:min-w-[340px]">
-            <form onSubmit={(event) => submitSearch(event, desktopSearchValue)} className="flex w-full gap-2">
+            <form
+              onSubmit={(event) => submitSearch(event, desktopSearchValue)}
+              className="flex w-full items-center gap-2"
+            >
               <input
                 type="search"
                 value={desktopSearchValue}
                 onChange={(event) => setDesktopSearchValue(event.target.value)}
                 placeholder="Поиск по марке или модели"
-                className="h-10 min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)]"
+                className={`min-w-0 flex-1 px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] ${headerControlChrome} ${headerControlRounded}`}
                 aria-label="Поиск автомобилей"
               />
-              <Button type="submit" variant="secondary" className="h-10 px-3">
-                <Search className="h-4 w-4" />
+              <Button
+                type="submit"
+                variant="secondary"
+                className={`!h-10 !min-h-10 !max-h-10 w-10 shrink-0 !p-0 ${headerControlRounded} shadow-[0_1px_2px_rgba(15,23,42,0.04)]`}
+              >
+                <Search className="h-4 w-4" aria-hidden />
               </Button>
             </form>
           </div>
@@ -339,7 +395,7 @@ export function SiteHeader() {
               type="button"
               aria-label={searchOpen ? "Скрыть поиск" : "Показать поиск"}
               onClick={() => setSearchOpen((prev) => !prev)}
-              className={`${iconButtonClass} md:hidden`}
+              className={`${headerIconButtonClass} md:hidden`}
             >
               <Search className="h-5 w-5" aria-hidden />
             </button>
@@ -347,7 +403,7 @@ export function SiteHeader() {
             <Link
               href="/compare"
               aria-label={`Сравнение, выбрано ${compareCount}`}
-              className={iconButtonClass}
+              className={headerIconButtonClass}
             >
               <Scale className="h-5 w-5" />
               {compareCount > 0 ? (
@@ -360,7 +416,7 @@ export function SiteHeader() {
             <Link
               href="/favorites"
               aria-label={`Избранное, выбрано ${wishlistCount}`}
-              className={iconButtonClass}
+              className={headerIconButtonClass}
             >
               <Heart className="h-5 w-5" />
               {wishlistCount > 0 ? (
@@ -372,7 +428,7 @@ export function SiteHeader() {
 
             <a
               href={phoneHref}
-              className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-300 px-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+              className={`inline-flex items-center gap-2 px-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 ${headerControlChrome} ${headerControlRounded}`}
             >
               <Phone className="h-4 w-4" />
               <span className="hidden lg:inline">{contactSite.phoneDisplay}</span>
@@ -380,7 +436,7 @@ export function SiteHeader() {
 
             <Button
               type="button"
-              className="hidden md:inline-flex"
+              className={`hidden min-h-0 px-4 text-sm md:inline-flex ${headerControlRounded} h-10 min-h-10 shadow-[0_1px_2px_rgba(15,23,42,0.04)]`}
               onClick={() => {
                 setCallbackError("");
                 setCallbackOpen(true);
@@ -412,44 +468,67 @@ export function SiteHeader() {
         {mobileMenuOpen ? (
           <div className="border-t border-slate-200 bg-white md:hidden">
             <div className="container-wide py-3">
-              <div className="mb-3 inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700">
-                <MapPin className="h-4 w-4 text-[color:var(--color-brand-accent)]" />
-                <select value={city} onChange={selectCity} className="bg-transparent outline-none" aria-label="Выбрать город">
-                  {cities.length === 0 ? <option value="">Города загружаются...</option> : null}
-                  {cities.map((option) => (
-                    <option key={`mobile-city-${option.id}`} value={option.slug}>
-                      {option.name_imya}
-                    </option>
-                  ))}
-                </select>
+              <div className="mb-3 flex h-11 w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700">
+                <MapPin className="h-4 w-4 shrink-0 text-[color:var(--color-brand-accent)]" aria-hidden />
+                <button
+                  type="button"
+                  onClick={() => setCityModalOpen(true)}
+                  disabled={cities.length === 0}
+                  className="flex h-full min-h-0 min-w-0 flex-1 items-center justify-between gap-2 bg-transparent text-left text-sm outline-none transition hover:text-[color:var(--color-brand-accent)] disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Выбрать город"
+                  aria-haspopup="dialog"
+                  aria-expanded={cityModalOpen}
+                >
+                  <span className="truncate">{cities.length === 0 ? "Загрузка…" : currentCityLabel}</span>
+                  <ChevronDown className="h-4 w-4 shrink-0 opacity-60" aria-hidden />
+                </button>
               </div>
               <div className="space-y-2 rounded-xl border border-slate-200 p-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Каталог</p>
+                <Link
+                  href="/cars"
+                  className={`block rounded-lg px-2 py-2 text-xs font-semibold uppercase tracking-wide transition-all duration-300 ${
+                    catalogRouteActive
+                      ? "bg-[color:var(--color-brand-accent)]/10 text-[color:var(--color-brand-accent)] ring-1 ring-[color:var(--color-brand-accent)]/35"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-[color:var(--color-brand-accent)]"
+                  }`}
+                  aria-current={catalogRouteActive ? "page" : undefined}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Каталог
+                </Link>
                 <ul className="space-y-1.5">
-                  {catalogGroups[0].links.map((item) => (
+                  {catalogBodyTypeLinks.map((item) => (
                     <li key={`mob-${item.href}`}>
                       <Link
                         href={item.href}
-                        className="block rounded-md px-2 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        className="group/msub relative block overflow-hidden rounded-md px-2 py-2 text-sm font-medium text-slate-700 transition-all duration-300 before:absolute before:inset-y-0 before:left-0 before:w-0 before:rounded-md before:bg-gradient-to-r before:from-[color:var(--color-brand-accent)]/12 before:to-transparent before:transition-[width] before:duration-300 hover:before:w-full hover:text-[color:var(--color-brand-accent)] motion-reduce:before:transition-none"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        {item.label}
+                        <span className="relative z-10">{item.label}</span>
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
               <nav className="mt-3 grid grid-cols-2 gap-2">
-                {desktopNav.slice(1).map((item) => (
-                  <Link
-                    key={`mob-nav-${item.href}`}
-                    href={item.href}
-                    className="rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {desktopNav.slice(1).map((item) => {
+                  const active = navRouteActive(pathname, item.href);
+                  return (
+                    <Link
+                      key={`mob-nav-${item.href}`}
+                      href={item.href}
+                      className={`rounded-lg border px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                        active
+                          ? "border-[color:var(--color-brand-accent)]/50 bg-[color:var(--color-brand-accent)]/10 text-[color:var(--color-brand-accent)] shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--color-brand-accent)_28%,transparent)]"
+                          : "border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                      }`}
+                      aria-current={active ? "page" : undefined}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </nav>
               <Button
                 type="button"
@@ -497,6 +576,33 @@ export function SiteHeader() {
           </div>
           {callbackError ? <p className="text-sm text-rose-600">{callbackError}</p> : null}
         </form>
+      </Modal>
+
+      <Modal
+        open={cityModalOpen}
+        onClose={() => setCityModalOpen(false)}
+        title="Выберите город"
+        description="Сохраним выбор в браузере для персонализации каталога."
+      >
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
+          {cities.map((option) => {
+            const selected = city === option.slug;
+            return (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => applyCitySlug(option.slug)}
+                className={`rounded-xl border px-3 py-2.5 text-left text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 ${
+                  selected
+                    ? "border-[color:var(--color-brand-accent)] bg-[color:var(--color-brand-accent)]/[0.06] text-[color:var(--color-brand-accent)]"
+                    : "border-slate-200 bg-white text-slate-800 hover:border-slate-300"
+                }`}
+              >
+                {option.name_imya}
+              </button>
+            );
+          })}
+        </div>
       </Modal>
     </>
   );
