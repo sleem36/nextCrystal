@@ -194,20 +194,12 @@ export function LeadForm({
             Оставьте заявку
           </h2>
           <p className="mt-2 text-sm text-slate-600">
-            Перезвоним и уточним варианты в бюджете{" "}
-            {context.paymentMethod === "credit" && context.monthlyBudget
-              ? formatCurrency(context.monthlyBudget)
-              : formatCurrency(context.maxPriceRub)}
-            .
+            Мы свяжемся с вами в ближайшее время, чтобы обсудить детали.
           </p>
         </div>
       ) : (
         <p className="text-sm text-slate-600">
-          Перезвоним и уточним варианты в бюджете{" "}
-          {context.paymentMethod === "credit" && context.monthlyBudget
-            ? formatCurrency(context.monthlyBudget)
-            : formatCurrency(context.maxPriceRub)}
-          .
+          Мы свяжемся с вами в ближайшее время, чтобы обсудить детали.
         </p>
       )}
 

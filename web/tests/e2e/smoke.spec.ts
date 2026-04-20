@@ -66,7 +66,9 @@ test("smoke: credit — monthlyBudget виден, в query и lead context", asy
   await expect(page).toHaveURL(/\/cars\?.*monthlyBudget=38000/);
 
   const leadBlock = page.locator("#catalog-lead");
-  await expect(leadBlock.getByText("Перезвоним и уточним варианты в бюджете 38 000 ₽.")).toBeVisible();
+  await expect(
+    leadBlock.getByText("Мы свяжемся с вами в ближайшее время, чтобы обсудить детали."),
+  ).toBeVisible();
 });
 
 test("smoke: cash — monthlyBudget скрыт, без query и lead context", async ({ page }) => {
@@ -79,5 +81,7 @@ test("smoke: cash — monthlyBudget скрыт, без query и lead context", a
   await expect(page).not.toHaveURL(/\/cars\?.*monthlyBudget=/);
 
   const leadBlock = page.locator("#catalog-lead");
-  await expect(leadBlock.getByText("Перезвоним и уточним варианты в бюджете 2 200 000 ₽.")).toBeVisible();
+  await expect(
+    leadBlock.getByText("Мы свяжемся с вами в ближайшее время, чтобы обсудить детали."),
+  ).toBeVisible();
 });
