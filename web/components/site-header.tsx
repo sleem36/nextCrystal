@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { useCompareSelection } from "@/hooks/use-compare-selection";
 import { METRIKA_GOALS, trackGoal } from "@/lib/analytics";
+import { setCityCookie } from "@/lib/city-cookie";
 import { contactSite, telHref } from "@/lib/contact-site";
 import { useWishlistStore } from "@/stores/wishlist-store";
 
@@ -229,7 +230,7 @@ export function SiteHeader() {
 
   const applyCitySlug = (slug: string) => {
     setCity(slug);
-    document.cookie = `${CITY_COOKIE_KEY}=${encodeURIComponent(slug)}; path=/; max-age=31536000`;
+    setCityCookie(slug);
     router.refresh();
     setCityModalOpen(false);
   };
@@ -367,7 +368,7 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="ml-auto hidden min-w-[280px] items-center md:flex lg:min-w-[340px]">
+          <div className="ml-auto hidden min-w-[280px] items-center xl:flex xl:min-w-[290px]">
             <form
               onSubmit={(event) => submitSearch(event, desktopSearchValue)}
               className="flex w-full items-center gap-2"
@@ -431,7 +432,7 @@ export function SiteHeader() {
               className={`inline-flex items-center gap-2 px-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 ${headerControlChrome} ${headerControlRounded}`}
             >
               <Phone className="h-4 w-4" />
-              <span className="hidden lg:inline">{contactSite.phoneDisplay}</span>
+              <span className="hidden whitespace-nowrap lg:inline">{contactSite.phoneDisplay}</span>
             </a>
 
             <Button
