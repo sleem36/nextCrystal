@@ -1,49 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import { useSyncExternalStore, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-const VIDEO_SRC = "/hero/hero-loop.mp4";
-const POSTER_SRC = "/hero/poster.jpg";
-const FALLBACK_IMG = "/hero/poster.jpg";
-const HERO_BLUR =
-  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
-const HERO_BG_MODE_KEY = "heroBgMode";
-
-type HeroBgMode = "video" | "image";
-
-function subscribeReducedMotion(onChange: () => void) {
-  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mq.addEventListener("change", onChange);
-  return () => mq.removeEventListener("change", onChange);
-}
-
-function getReducedMotionSnapshot() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-function getReducedMotionServerSnapshot() {
-  return false;
-}
-
-function subscribeHeroBgMode(onChange: () => void) {
-  window.addEventListener("storage", onChange);
-  return () => window.removeEventListener("storage", onChange);
-}
-
-function getHeroBgModeSnapshot(): HeroBgMode | null {
-  try {
-    const saved = window.localStorage.getItem(HERO_BG_MODE_KEY);
-    return saved === "video" || saved === "image" ? saved : null;
-  } catch {
-    return null;
-  }
-}
-
-function getHeroBgModeServerSnapshot(): HeroBgMode | null {
-  return null;
-}
+const VIDEO_MP4_SRC = "/hero/background.mp4";
 
 type HeroCompactProps = {
   onPrimaryClick: () => void;
@@ -51,78 +11,24 @@ type HeroCompactProps = {
 
 export function HeroCompact({ onPrimaryClick }: HeroCompactProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [videoFailed, setVideoFailed] = useState(false);
-  const [bgModeOverride, setBgModeOverride] = useState<HeroBgMode | null>(null);
-  const reduceMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    getReducedMotionSnapshot,
-    getReducedMotionServerSnapshot,
-  );
-  const savedBgMode = useSyncExternalStore(
-    subscribeHeroBgMode,
-    getHeroBgModeSnapshot,
-    getHeroBgModeServerSnapshot,
-  );
-
-  const bgMode = bgModeOverride ?? savedBgMode ?? (reduceMotion ? "image" : "video");
-  const showVideo = bgMode === "video" && !videoFailed;
-
-  function setBgMode(mode: HeroBgMode) {
-    setBgModeOverride(mode);
-    setVideoFailed(false);
-    try {
-      window.localStorage.setItem(HERO_BG_MODE_KEY, mode);
-    } catch {
-      // Ignore storage errors to keep UI responsive.
-    }
-  }
 
   return (
     <section
       className="relative left-1/2 isolate w-screen max-w-[100vw] -translate-x-1/2 overflow-hidden min-h-[88svh] md:min-h-[min(92svh,920px)]"
       aria-label="Первый экран"
     >
-      {/* Фон на весь viewport: рендерим видео только в режиме "Видео". */}
+      {/* Фон на весь viewport: только mp4-видео. */}
       <div className="absolute inset-0 z-0">
-        {bgMode === "image" ? (
-          <Image
-            src={POSTER_SRC}
-            alt=""
-            className="h-full w-full object-cover object-center"
-            fill
-            priority
-            sizes="100vw"
-            placeholder="blur"
-            blurDataURL={HERO_BLUR}
-          />
-        ) : (
-          <>
-            <Image
-              src={FALLBACK_IMG}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover object-center"
-              fill
-              priority
-              sizes="100vw"
-              placeholder="blur"
-              blurDataURL={HERO_BLUR}
-            />
-            {showVideo ? (
-              <video
-                className="hero-bg-video absolute inset-0 z-[1] h-full w-full object-cover object-center"
-                src={VIDEO_SRC}
-                poster={POSTER_SRC}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-hidden
-                onError={() => setVideoFailed(true)}
-              />
-            ) : null}
-          </>
-        )}
+        <video
+          className="hero-bg-video absolute inset-0 z-[1] h-full w-full object-cover object-center"
+          src={VIDEO_MP4_SRC}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden
+        />
       </div>
 
       {/* Снизу и слева сильнее — читаемость белого текста */}
@@ -140,37 +46,6 @@ export function HeroCompact({ onPrimaryClick }: HeroCompactProps) {
       />
 
       <div className="hero-grain absolute inset-0 z-[3]" aria-hidden />
-
-      <div className="absolute right-3 top-3 z-[5] sm:right-4 sm:top-4">
-        <div
-          className="inline-flex items-center gap-1 rounded-full border border-white/25 bg-black/40 p-1 backdrop-blur-[4px]"
-          role="group"
-          aria-label="Режим фона Hero: Видео или Картинка"
-        >
-          <button
-            type="button"
-            onClick={() => setBgMode("video")}
-            aria-label="Включить фоновое видео"
-            aria-pressed={bgMode === "video"}
-            className={`rounded-full px-3 py-1.5 text-[11px] font-medium text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black/30 sm:px-3.5 sm:text-xs ${
-              bgMode === "video" ? "bg-white/22" : "bg-transparent hover:bg-white/10"
-            }`}
-          >
-            Видео
-          </button>
-          <button
-            type="button"
-            onClick={() => setBgMode("image")}
-            aria-label="Включить фоновую картинку"
-            aria-pressed={bgMode === "image"}
-            className={`rounded-full px-3 py-1.5 text-[11px] font-medium text-white transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black/30 sm:px-3.5 sm:text-xs ${
-              bgMode === "image" ? "bg-white/22" : "bg-transparent hover:bg-white/10"
-            }`}
-          >
-            Картинка
-          </button>
-        </div>
-      </div>
 
       {/* Контент: напрямую на фоне, нижняя треть; без тяжёлой центральной карточки */}
       <div className="relative z-[4] mx-auto flex min-h-[88svh] max-w-3xl flex-col justify-end px-5 pb-10 pt-16 sm:px-6 sm:pb-12 md:min-h-[min(92svh,920px)] md:pb-14 md:pt-20">
