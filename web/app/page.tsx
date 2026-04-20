@@ -8,7 +8,7 @@ export default async function Home() {
   const cars = await getCars();
 
   return (
-    <div className="w-full flex-1 py-6 md:py-8">
+    <div className="w-full flex-1 pt-0 pb-6 md:pb-8">
       <main>
         <LandingMvp initialCars={cars} />
         <ReviewsSection />
