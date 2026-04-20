@@ -106,8 +106,10 @@ function parseFuel(value: string | undefined): FuelFilter {
 }
 
 function parsePaymentMethod(value: string | undefined): PaymentMethod {
-  if (!value) return "credit";
-  return PAYMENT_METHODS.includes(value as PaymentMethod) ? (value as PaymentMethod) : "credit";
+  if (!value) return DEFAULT_CAR_LISTING_FILTERS.paymentMethod;
+  return PAYMENT_METHODS.includes(value as PaymentMethod)
+    ? (value as PaymentMethod)
+    : DEFAULT_CAR_LISTING_FILTERS.paymentMethod;
 }
 
 const SORTS: CatalogSort[] = [
@@ -276,7 +278,8 @@ export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearch
 
 function matchesBudgetCityBodyTransmission(car: Car, f: CarListingFilters): boolean {
   if (f.paymentMethod === "credit" && car.monthlyPaymentRub > f.monthlyBudget) return false;
-  if (car.city !== f.city) return false;
+  const cityMatches = car.city === f.city || car.cities?.includes(f.city);
+  if (!cityMatches) return false;
   if (f.bodyType !== "any" && car.bodyType !== f.bodyType) return false;
   if (f.transmission !== "any" && car.transmission !== f.transmission) return false;
   return true;
@@ -411,7 +414,7 @@ export function getRelaxedSuggestions(cars: Car[], f: CarListingFilters): Car[] 
         (relaxedFilters.paymentMethod === "cash" ||
           car.monthlyPaymentRub <= relaxedFilters.monthlyBudget) &&
         car.priceRub <= relaxedFilters.maxPriceRub;
-      const cityMatch = car.city === f.city;
+      const cityMatch = car.city === f.city || car.cities?.includes(f.city);
       const bodyMatch = f.bodyType === "any" || car.bodyType === f.bodyType;
       const transmissionMatch =
         f.transmission === "any" || car.transmission === f.transmission;

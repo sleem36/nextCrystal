@@ -133,7 +133,7 @@ export function CarsCatalogClient({
   popularFilterLinks?: Array<{ slug: string; name: string }>;
   faqItems?: CatalogFaqItem[];
 }) {
-  const sourceCars = initialCars ?? cars ?? [];
+  const sourceCars = useMemo(() => initialCars ?? cars ?? [], [initialCars, cars]);
   const { compareIds, toggle } = useCompareSelection();
   const { bookedIds, bookedUntilMap, refresh } = useBookedCars();
   const sp = useSearchParams();
@@ -160,13 +160,18 @@ export function CarsCatalogClient({
     [sp],
   );
 
-  const filters = useMemo(
-    () => ({
-      ...parseCarListingSearchParams(Object.fromEntries(sp.entries())),
+  const filters = useMemo(() => {
+    const parsed = parseCarListingSearchParams(Object.fromEntries(sp.entries()));
+    const merged = {
+      ...parsed,
       ...(initialFilters ?? {}),
-    }),
-    [sp, initialFilters],
-  );
+    };
+    // Если город не задан в URL, подхватываем server-side город из cookie.
+    if (sp.has("city")) {
+      merged.city = parsed.city;
+    }
+    return merged;
+  }, [sp, initialFilters]);
 
   const strictPriceBounds = useMemo(() => {
     const pool = filterCarsForPriceBounds(sourceCars, filters);
@@ -180,7 +185,7 @@ export function CarsCatalogClient({
   const colorOptions = useMemo(() => {
     const set = new Set<string>();
     for (const c of sourceCars) {
-      if (c.city === filters.city) {
+      if (c.city === filters.city || c.cities?.includes(filters.city)) {
         set.add(c.color);
       }
     }
@@ -275,16 +280,15 @@ export function CarsCatalogClient({
   };
 
   const reset = () => {
-    const params = new URLSearchParams();
+    const params = carListingFiltersToSearchParams(DEFAULT_CAR_LISTING_FILTERS);
     for (const [key, value] of Object.entries(utm)) {
       params.set(key, value);
     }
     trackGoal(metrikaId, METRIKA_GOALS.catalogFiltersApplied, {
       action: "reset",
     });
-    const query = params.toString();
     startTransition(() => {
-      router.push(query ? `${basePath}?${query}` : basePath);
+      router.push(`${basePath}?${params.toString()}`);
     });
     setFiltersOpen(false);
     scrollCatalogToTop();

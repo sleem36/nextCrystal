@@ -35,6 +35,8 @@ export type Car = {
   fuel: CarFuel;
   color: string;
   city: string;
+  /** Список городов присутствия/доставки для карточки */
+  cities?: string[];
   /** Публичные URL изображений (листинг / галерея) */
   images: string[];
   trustPoints: string[];
