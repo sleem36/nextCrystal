@@ -1,5 +1,7 @@
 export const METRIKA_GOALS = {
   heroCtaClick: "hero_cta_click",
+  /** Переход в каталог со второго CTA на первом экране */
+  heroCatalogClick: "hero_catalog_click",
   quizCompleted: "quiz_completed",
   /** Переход в каталог с параметрами квиза */
   catalogFromQuizClick: "catalog_from_quiz_click",

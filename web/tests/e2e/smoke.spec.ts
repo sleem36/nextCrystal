@@ -85,3 +85,18 @@ test("smoke: cash — monthlyBudget скрыт, без query и lead context", a
     leadBlock.getByText("Мы свяжемся с вами в ближайшее время, чтобы обсудить детали."),
   ).toBeVisible();
 });
+
+test("smoke: reset filters выводит из состояния 0 результатов", async ({ page }) => {
+  await page.goto(
+    "/cars?paymentMethod=credit&monthlyBudget=1&maxPriceRub=1&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+  );
+
+  await expect(page.getByText("Найдено 0 автомобилей")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Нет подходящих вариантов" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Сбросить фильтры" }).first().click();
+
+  await expect(page).toHaveURL(/\/cars\?.*paymentMethod=cash/);
+  await expect(page).toHaveURL(/\/cars\?.*maxPriceRub=2500000/);
+  await expect(page.getByText(/Найдено [1-9]\d* автомобил/)).toBeVisible();
+});

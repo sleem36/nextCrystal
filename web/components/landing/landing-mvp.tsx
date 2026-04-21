@@ -236,6 +236,9 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
           openFunnel();
           window.setTimeout(focusQuickSelector, 80);
         }}
+        onCatalogClick={() => {
+          trackGoal(metrikaId, METRIKA_GOALS.heroCatalogClick, { source: "hero" });
+        }}
       />
       <AdvantagesSection />
 
