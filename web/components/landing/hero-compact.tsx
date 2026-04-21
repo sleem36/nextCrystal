@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CheckCircle2, ChevronRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const VIDEO_MP4_SRC = "/hero/background.mp4";
@@ -59,7 +60,7 @@ export function HeroCompact({
             Aurora Auto · Барнаул
           </p>
 
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-[2rem] md:leading-tight">
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-[2.8rem] md:leading-[1.08]">
             Проверенные авто с пробегом
           </h1>
 
@@ -67,9 +68,16 @@ export function HeroCompact({
             Подбор под платёж и сопровождение сделки в Барнауле. Только автомобили в наличии — не под заказ.
           </p>
 
-          <p className="mt-4 text-xs leading-snug text-white/85 sm:text-sm">
-            Проверка по 120 пунктам · юридическая чистота · без навязанных услуг
-          </p>
+          <div className="mt-4 grid gap-2 text-xs text-white/90 sm:text-sm">
+            <p className="inline-flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-emerald-300" aria-hidden />
+              <span>Проверенные автомобили</span>
+            </p>
+            <p className="inline-flex items-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-sky-300" aria-hidden />
+              <span>Прозрачные условия</span>
+            </p>
+          </div>
 
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-stretch">
             <Button
@@ -81,9 +89,10 @@ export function HeroCompact({
             <Link
               href={catalogHref}
               onClick={onCatalogClick}
-              className="inline-flex h-11 min-h-11 w-full items-center justify-center rounded-[var(--radius-button)] border border-white/45 bg-white/12 px-5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/22 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950/80 sm:w-auto"
+              className="inline-flex h-11 min-h-11 w-full items-center justify-center gap-1.5 px-1 text-sm font-semibold text-white/90 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/55 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950/80 sm:w-auto sm:justify-start"
             >
               Смотреть каталог
+              <ChevronRight className="h-4 w-4" aria-hidden />
             </Link>
           </div>
 
