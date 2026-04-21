@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AdvantagesSection } from "@/components/home/advantages-section";
 import { CarResults } from "@/components/landing/car-results";
 import { HeroCompact } from "@/components/landing/hero-compact";
@@ -25,7 +25,9 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
   const [funnelOpen, setFunnelOpen] = useState(false);
   const [quizComplete, setQuizComplete] = useState(false);
   const quickSelectorRef = useRef<HTMLDivElement | null>(null);
+  const resultsRef = useRef<HTMLElement | null>(null);
   const highlightTimeoutRef = useRef<number | null>(null);
+  const resultsHighlightTimeoutRef = useRef<number | null>(null);
 
   const [cars] = useState<Car[]>(initialCars);
   const [selector, setSelector] = useState<SelectorState>({
@@ -220,10 +222,51 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
     }, 1300);
   };
 
+  const focusQuizResults = useCallback(() => {
+    const target = resultsRef.current;
+    if (!target) return;
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const header = document.querySelector("header");
+    const headerOffset = header instanceof HTMLElement ? header.offsetHeight + 12 : 12;
+    const y = window.scrollY + target.getBoundingClientRect().top - headerOffset;
+
+    window.scrollTo({
+      top: Math.max(0, y),
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+
+    if (reduceMotion) return;
+
+    target.classList.add("focus-target-highlight");
+    if (resultsHighlightTimeoutRef.current) {
+      window.clearTimeout(resultsHighlightTimeoutRef.current);
+    }
+    resultsHighlightTimeoutRef.current = window.setTimeout(() => {
+      target.classList.remove("focus-target-highlight");
+      resultsHighlightTimeoutRef.current = null;
+    }, 1300);
+  }, []);
+
+  useEffect(() => {
+    if (!quizComplete) return;
+    const id = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        focusQuizResults();
+      });
+    });
+    return () => window.cancelAnimationFrame(id);
+  }, [quizComplete, focusQuizResults]);
+
   useEffect(() => {
     return () => {
       if (highlightTimeoutRef.current) {
         window.clearTimeout(highlightTimeoutRef.current);
+      }
+      if (resultsHighlightTimeoutRef.current) {
+        window.clearTimeout(resultsHighlightTimeoutRef.current);
       }
     };
   }, []);
@@ -275,8 +318,10 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
             {quizComplete ? (
               <div className="container-wide">
                 <section
+                  ref={resultsRef}
                   className="space-y-4 rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-opacity duration-[var(--motion-panel)] motion-reduce:transition-none md:p-5 lg:p-6"
                   id="results"
+                  tabIndex={-1}
                 >
                   <h2 className="text-lg font-semibold tracking-tight text-[color:var(--color-brand-primary)] md:text-xl">
                     Подходящие варианты
