@@ -18,6 +18,13 @@ export type City = {
   name_tvoritelny: string | null;
   name_predlozhny: string | null;
   domain_prefix: string | null;
+  contact_address: string | null;
+  contact_hours: string | null;
+  contact_phone: string | null;
+  contact_email: string | null;
+  contact_legal_email: string | null;
+  contact_yandex_map_url: string | null;
+  contact_gallery: string | null;
   is_active: number;
   created_at: string;
 };
