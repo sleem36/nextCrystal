@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
@@ -245,7 +246,7 @@ export function SiteHeader() {
   return (
     <>
       <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/90 shadow-[0_2px_10px_rgba(15,23,42,0.04)] backdrop-blur-md">
-        <div className="container-wide flex h-[60px] items-center gap-2 md:h-[74px] md:gap-4 lg:gap-6">
+        <div className="container-wide flex h-[60px] items-center gap-2 md:h-[74px] md:gap-3 lg:gap-4">
           <button
             type="button"
             aria-label={mobileMenuOpen ? "Закрыть меню" : "Открыть меню"}
@@ -256,13 +257,15 @@ export function SiteHeader() {
             {mobileMenuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
           </button>
 
-          <Link href="/" className="min-w-0 shrink-0">
-            <span className="block truncate text-base font-bold tracking-tight text-[color:var(--color-brand-primary)] md:text-lg">
-              Aurora Auto
-            </span>
-            <span className="hidden text-[11px] font-medium uppercase tracking-wide text-slate-500 md:block">
-              Автомобили с пробегом
-            </span>
+          <Link href="/" className="min-w-0 w-[200px] shrink-0" aria-label="Aurora Auto — на главную">
+            <Image
+              src="/brand/aurora-auto-logo.svg"
+              alt="Aurora Auto"
+              width={189}
+              height={33}
+              priority
+              className="h-auto w-full"
+            />
           </Link>
 
           <div

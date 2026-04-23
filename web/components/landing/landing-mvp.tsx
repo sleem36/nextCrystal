@@ -1,8 +1,29 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AdvantagesSection } from "@/components/home/advantages-section";
+import {
+  BadgeCheck,
+  Banknote,
+  CalendarClock,
+  Car as CarIcon,
+  CarFront,
+  CircleHelp,
+  Cog,
+  Clock3,
+  FileCheck2,
+  Gauge,
+  Handshake,
+  KeyRound,
+  Mountain,
+  Route,
+  SearchCheck,
+  ShieldCheck,
+  type LucideIcon,
+  Users,
+  Wallet,
+} from "lucide-react";
 import { CarResults } from "@/components/landing/car-results";
 import { HeroCompact } from "@/components/landing/hero-compact";
 import { LeadForm } from "@/components/landing/lead-form";
@@ -10,6 +31,10 @@ import { QuickSelector, SelectorState } from "@/components/landing/quick-selecto
 import { SelectionSummary } from "@/components/landing/selection-summary";
 import { Modal } from "@/components/ui/modal";
 import { METRIKA_GOALS, trackGoal } from "@/lib/analytics";
+import { getResolvedCarImages } from "@/lib/car-images-map";
+import { formatCurrency } from "@/lib/format";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-blur-placeholder";
+import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
 import { buildCarsUrlFromQuiz, saveQuizAnswers } from "@/lib/quiz-answers";
 import { Car } from "@/types/car";
 
@@ -18,6 +43,77 @@ const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || unde
 type LandingMvpProps = {
   initialCars: Car[];
 };
+
+const quickCollections: Array<{
+  label: string;
+  href: string;
+  matcher: (car: Car) => boolean;
+  icon: LucideIcon;
+}> = [
+  {
+    label: "С АКПП",
+    href: "/cars?paymentMethod=cash&transmission=automatic&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+    matcher: (car: Car) => car.transmission === "automatic",
+    icon: Cog,
+  },
+  {
+    label: "Кроссоверы",
+    href: "/cars?paymentMethod=cash&bodyType=suv&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+    matcher: (car: Car) => car.bodyType === "suv",
+    icon: Mountain,
+  },
+  {
+    label: "Семейные",
+    href: "/cars?paymentMethod=cash&bodyType=suv&maxPriceRub=2500000&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+    matcher: (car: Car) => car.bodyType === "suv" && car.priceRub <= 2500000,
+    icon: Users,
+  },
+  {
+    label: "До 2 млн",
+    href: "/cars?paymentMethod=cash&maxPriceRub=2000000&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+    matcher: (car: Car) => car.priceRub <= 2000000,
+    icon: Wallet,
+  },
+  {
+    label: "Свежие от 2020",
+    href: "/cars?paymentMethod=cash&yearFrom=2020&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+    matcher: (car: Car) => car.year >= 2020,
+    icon: CalendarClock,
+  },
+  {
+    label: "Малый пробег",
+    href: "/cars?paymentMethod=cash&maxMileageKm=80000&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+    matcher: (car: Car) => car.mileageKm <= 80000,
+    icon: Route,
+  },
+  {
+    label: "Седаны",
+    href: "/cars?paymentMethod=cash&bodyType=sedan&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+    matcher: (car: Car) => car.bodyType === "sedan",
+    icon: CarIcon,
+  },
+  {
+    label: "Полный привод",
+    href: "/cars?paymentMethod=cash&drive=awd&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
+    matcher: (car: Car) => car.drive === "awd",
+    icon: CarFront,
+  },
+];
+
+const faqPreview = [
+  {
+    q: "Можно ли оформить кредит без первоначального взноса?",
+    a: "Да, зависит от банка и конкретного автомобиля. Подберем оптимальные условия под ваш бюджет.",
+  },
+  {
+    q: "Проверяете ли авто перед продажей?",
+    a: "Каждый автомобиль проходит диагностику и юридическую проверку перед попаданием в каталог.",
+  },
+  {
+    q: "Можно ли забронировать авто дистанционно?",
+    a: "Да, можно оставить заявку, получить подтверждение и зафиксировать автомобиль до приезда.",
+  },
+];
 
 export function LandingMvp({ initialCars }: LandingMvpProps) {
   const [selectedCar, setSelectedCar] = useState<Car | undefined>();
@@ -57,9 +153,33 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
     }, {});
   }, []);
 
+  const skipCatalogHref = useMemo(() => {
+    const params = new URLSearchParams();
+    for (const [key, val] of Object.entries(utm)) {
+      if (val) params.set(key, val);
+    }
+    const query = params.toString();
+    return query ? `/cars?${query}` : "/cars";
+  }, [utm]);
+
   const catalogFromQuizHref = useMemo(
     () => buildCarsUrlFromQuiz(selector, utm),
     [selector, utm],
+  );
+  const featuredCars = useMemo(
+    () =>
+      [...cars]
+        .sort((a, b) => (b.bookingCount ?? b.viewCount ?? 0) - (a.bookingCount ?? a.viewCount ?? 0))
+        .slice(0, 6),
+    [cars],
+  );
+  const quickCollectionCards = useMemo(() => quickCollections, []);
+  const trustStats = useMemo(
+    () => ({
+      carsInStock: cars.length,
+      avgResponseMinutes: "5-10",
+    }),
+    [cars.length],
   );
 
   const primaryFilteredCars = useMemo(
@@ -283,7 +403,220 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
           trackGoal(metrikaId, METRIKA_GOALS.heroCatalogClick, { source: "hero" });
         }}
       />
-      <AdvantagesSection />
+      <section className="container-wide rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-6">
+        <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)]">Почему выбирают нас</h2>
+        <p className="mt-2 text-sm text-slate-600">
+          В наличии <strong>{trustStats.carsInStock}</strong> авто. Ответ менеджера обычно в течение{" "}
+          <strong>{trustStats.avgResponseMinutes} минут</strong>.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <ShieldCheck className="h-5 w-5 text-emerald-600" aria-hidden />
+            <p className="mt-2 text-sm font-semibold text-slate-900">Проверенные автомобили</p>
+            <p className="mt-1 text-xs text-slate-600">Диагностика состояния и юридическая чистота сделки.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <BadgeCheck className="h-5 w-5 text-sky-600" aria-hidden />
+            <p className="mt-2 text-sm font-semibold text-slate-900">Прозрачные условия</p>
+            <p className="mt-1 text-xs text-slate-600">Без скрытых услуг и навязанных доплат.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <Banknote className="h-5 w-5 text-indigo-600" aria-hidden />
+            <p className="mt-2 text-sm font-semibold text-slate-900">Подбор под платеж</p>
+            <p className="mt-1 text-xs text-slate-600">Помогаем уложиться в комфортный ежемесячный бюджет.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <Clock3 className="h-5 w-5 text-amber-600" aria-hidden />
+            <p className="mt-2 text-sm font-semibold text-slate-900">Сопровождение сделки</p>
+            <p className="mt-1 text-xs text-slate-600">Помогаем с документами и выдачей автомобиля без лишних шагов.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-wide rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)]">Популярные автомобили в наличии</h2>
+          <Link href="/cars" className="text-sm font-semibold text-[color:var(--color-brand-accent)] hover:underline">
+            Смотреть весь каталог
+          </Link>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+          {featuredCars.map((car, index) => {
+            const coverSrc = getResolvedCarImages(car)[0];
+            const coverUnoptimized = shouldUnoptimizeRemoteImage(coverSrc);
+            return (
+              <Link
+                key={car.id}
+                href={`/cars/${car.id}`}
+                className="group flex min-h-0 flex-col overflow-hidden rounded-[var(--radius-card)] border border-slate-200/90 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] motion-reduce:transform-none"
+                onClick={() =>
+                  trackGoal(metrikaId, METRIKA_GOALS.homeFeaturedCarClick, {
+                    carId: car.id,
+                  })
+                }
+              >
+                <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden rounded-t-[var(--radius-card)] bg-white">
+                  <Image
+                    src={coverSrc}
+                    alt={`${car.brand} ${car.model}, ${car.year}`}
+                    fill
+                    className="object-cover object-bottom transition duration-200 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    priority={index < 4}
+                    unoptimized={coverUnoptimized}
+                    placeholder={coverUnoptimized ? "empty" : "blur"}
+                    blurDataURL={coverUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
+                  />
+                </div>
+                <div className="flex min-h-0 flex-1 flex-col px-3 pb-3 pt-2.5">
+                  <p className="line-clamp-2 text-sm font-semibold leading-snug tracking-tight text-slate-900">
+                    {car.brand} {car.model}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {car.year} · {car.mileageKm.toLocaleString("ru-RU")} км
+                  </p>
+                  <p className="mt-auto pt-2 text-base font-semibold tabular-nums tracking-tight text-[color:var(--color-brand-primary)]">
+                    {formatCurrency(car.priceRub)}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="container-wide rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-6">
+        <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)]">Быстрые подборки</h2>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {quickCollectionCards.map((item) => {
+            const ItemIcon = item.icon;
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="group inline-flex overflow-hidden rounded-lg border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(0,0,0,0.06)]"
+                onClick={() =>
+                  trackGoal(metrikaId, METRIKA_GOALS.homeQuickCollectionClick, {
+                    label: item.label,
+                  })
+                }
+              >
+                <div className="flex items-center gap-1.5 px-2 py-1.5">
+                  <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-brand-accent)]/10 text-[color:var(--color-brand-accent)]">
+                    <ItemIcon className="h-3.5 w-3.5" aria-hidden />
+                  </span>
+                  <p className="whitespace-nowrap text-[11px] font-semibold text-slate-900 transition group-hover:text-[color:var(--color-brand-accent)] sm:text-xs">
+                    {item.label}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="container-wide grid gap-4 lg:grid-cols-2">
+        <div className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-6">
+          <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)]">Как проходит покупка</h2>
+          <ol className="mt-4 list-none space-y-3 p-0 text-sm text-slate-700">
+            <li className="flex items-center gap-3 rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-3 shadow-sm">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[color:var(--color-brand-accent)]/12 text-[color:var(--color-brand-accent)] ring-1 ring-[color:var(--color-brand-accent)]/20">
+                <SearchCheck className="h-5 w-5" aria-hidden />
+              </span>
+              <span className="min-w-0 leading-snug">
+                Подбираем варианты под ваш бюджет и задачи.
+              </span>
+            </li>
+            <li className="flex items-center gap-3 rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-3 shadow-sm">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/12 text-emerald-700 ring-1 ring-emerald-500/20">
+                <ShieldCheck className="h-5 w-5" aria-hidden />
+              </span>
+              <span className="min-w-0 leading-snug">
+                Проверяем историю, состояние и документы авто.
+              </span>
+            </li>
+            <li className="flex items-center gap-3 rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-3 shadow-sm">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-500/12 text-violet-700 ring-1 ring-violet-500/20">
+                <Handshake className="h-5 w-5" aria-hidden />
+              </span>
+              <span className="min-w-0 leading-snug">
+                Согласовываем условия покупки или кредита.
+              </span>
+            </li>
+            <li className="flex items-center gap-3 rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-3 shadow-sm">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/12 text-amber-800 ring-1 ring-amber-500/25">
+                <KeyRound className="h-5 w-5" aria-hidden />
+              </span>
+              <span className="min-w-0 leading-snug">
+                Оформляем сделку и передаем автомобиль.
+              </span>
+            </li>
+          </ol>
+        </div>
+        <div className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-6">
+          <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)]">Кредит и условия</h2>
+          <p className="mt-3 text-sm text-slate-700">
+            Подбираем программу под ваш платеж и помогаем с одобрением. Предложим несколько сценариев с разным сроком и первоначальным взносом.
+          </p>
+          <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+            Условия кредитования зависят от банка-партнера, возраста авто и вашей кредитной истории.
+          </div>
+          <button
+            type="button"
+            className="mt-4 inline-flex h-10 items-center rounded-[var(--radius-button)] bg-[color:var(--color-brand-accent)] px-4 text-sm font-semibold text-white transition hover:bg-[color:var(--color-brand-accent-hover)]"
+            onClick={() => {
+              trackGoal(metrikaId, METRIKA_GOALS.homeFinalCtaClick, { source: "credit_info" });
+              openFunnel();
+              window.setTimeout(focusQuickSelector, 80);
+            }}
+          >
+            Подобрать условия
+          </button>
+        </div>
+      </section>
+
+      <section className="container-wide rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-6">
+        <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)]">Частые вопросы</h2>
+        <div className="mt-4 space-y-2">
+          {faqPreview.map((item) => (
+            <details key={item.q} className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+              <summary className="cursor-pointer list-none text-sm font-semibold text-slate-900">
+                <span className="inline-flex items-center gap-2">
+                  <CircleHelp className="h-4 w-4 text-slate-500" aria-hidden />
+                  {item.q}
+                </span>
+              </summary>
+              <p className="mt-2 text-sm text-slate-700">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section className="container-wide rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)]">Нужна помощь с выбором?</h2>
+            <p className="mt-1 text-sm text-slate-600">Подберем несколько вариантов и свяжемся с вами в ближайшее время.</p>
+          </div>
+          <button
+            type="button"
+            className="inline-flex h-11 items-center justify-center rounded-[var(--radius-button)] bg-[color:var(--color-brand-accent)] px-5 text-sm font-semibold text-white transition hover:bg-[color:var(--color-brand-accent-hover)]"
+            onClick={() => {
+              trackGoal(metrikaId, METRIKA_GOALS.homeFinalCtaClick, { source: "final_block" });
+              openFunnel();
+              window.setTimeout(focusQuickSelector, 80);
+            }}
+          >
+            Оставить заявку
+          </button>
+        </div>
+        <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+          <p className="inline-flex items-center gap-2 font-medium">
+            <FileCheck2 className="h-4 w-4 text-slate-500" aria-hidden />
+            Консультация бесплатная. Ответ менеджера обычно в течение 5-10 минут.
+          </p>
+        </div>
+      </section>
 
       <div
         className={`grid transition-[grid-template-rows] duration-[var(--motion-panel)] ease-[var(--easing-standard)] motion-reduce:transition-none ${
@@ -296,6 +629,10 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
               <QuickSelector
                 value={selector}
                 onChange={setSelector}
+                skipCatalogHref={skipCatalogHref}
+                onSkipCatalog={() => {
+                  trackGoal(metrikaId, METRIKA_GOALS.quizSkipCatalogClick);
+                }}
                 onComplete={() => {
                   setQuizComplete(true);
                   saveQuizAnswers(selector);
