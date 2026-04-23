@@ -12,6 +12,9 @@ export function usePostgres() {
   return Boolean(getPostgresUrl());
 }
 
+/** Backward-compatible alias for repositories using legacy naming. */
+export const isPostgresEnabled = usePostgres;
+
 function getSql() {
   if (!sqlClient) {
     const url = getPostgresUrl();
@@ -66,10 +69,25 @@ export async function ensurePostgresSchema() {
           name_tvoritelny TEXT,
           name_predlozhny TEXT,
           domain_prefix TEXT,
+          contact_address TEXT,
+          contact_hours TEXT,
+          contact_phone TEXT,
+          contact_email TEXT,
+          contact_legal_email TEXT,
+          contact_yandex_map_url TEXT,
+          contact_gallery TEXT,
           is_active INTEGER DEFAULT 1,
           created_at TIMESTAMPTZ DEFAULT NOW()
         )
       `;
+
+      await sql`ALTER TABLE cities ADD COLUMN IF NOT EXISTS contact_address TEXT`;
+      await sql`ALTER TABLE cities ADD COLUMN IF NOT EXISTS contact_hours TEXT`;
+      await sql`ALTER TABLE cities ADD COLUMN IF NOT EXISTS contact_phone TEXT`;
+      await sql`ALTER TABLE cities ADD COLUMN IF NOT EXISTS contact_email TEXT`;
+      await sql`ALTER TABLE cities ADD COLUMN IF NOT EXISTS contact_legal_email TEXT`;
+      await sql`ALTER TABLE cities ADD COLUMN IF NOT EXISTS contact_yandex_map_url TEXT`;
+      await sql`ALTER TABLE cities ADD COLUMN IF NOT EXISTS contact_gallery TEXT`;
     })();
   }
   await ensureSchemaPromise;
