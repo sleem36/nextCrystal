@@ -47,55 +47,46 @@ type LandingMvpProps = {
 const quickCollections: Array<{
   label: string;
   href: string;
-  matcher: (car: Car) => boolean;
   icon: LucideIcon;
 }> = [
   {
     label: "С АКПП",
     href: "/cars?paymentMethod=cash&transmission=automatic&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
-    matcher: (car: Car) => car.transmission === "automatic",
     icon: Cog,
   },
   {
     label: "Кроссоверы",
     href: "/cars?paymentMethod=cash&bodyType=suv&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
-    matcher: (car: Car) => car.bodyType === "suv",
     icon: Mountain,
   },
   {
     label: "Семейные",
     href: "/cars?paymentMethod=cash&bodyType=suv&maxPriceRub=2500000&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
-    matcher: (car: Car) => car.bodyType === "suv" && car.priceRub <= 2500000,
     icon: Users,
   },
   {
     label: "До 2 млн",
     href: "/cars?paymentMethod=cash&maxPriceRub=2000000&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
-    matcher: (car: Car) => car.priceRub <= 2000000,
     icon: Wallet,
   },
   {
     label: "Свежие от 2020",
     href: "/cars?paymentMethod=cash&yearFrom=2020&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
-    matcher: (car: Car) => car.year >= 2020,
     icon: CalendarClock,
   },
   {
     label: "Малый пробег",
     href: "/cars?paymentMethod=cash&maxMileageKm=80000&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
-    matcher: (car: Car) => car.mileageKm <= 80000,
     icon: Route,
   },
   {
     label: "Седаны",
     href: "/cars?paymentMethod=cash&bodyType=sedan&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
-    matcher: (car: Car) => car.bodyType === "sedan",
     icon: CarIcon,
   },
   {
     label: "Полный привод",
     href: "/cars?paymentMethod=cash&drive=awd&city=%D0%91%D0%B0%D1%80%D0%BD%D0%B0%D1%83%D0%BB",
-    matcher: (car: Car) => car.drive === "awd",
     icon: CarFront,
   },
 ];
@@ -173,7 +164,6 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
         .slice(0, 6),
     [cars],
   );
-  const quickCollectionCards = useMemo(() => quickCollections, []);
   const trustStats = useMemo(
     () => ({
       carsInStock: cars.length,
@@ -488,7 +478,7 @@ export function LandingMvp({ initialCars }: LandingMvpProps) {
       <section className="container-wide rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-6">
         <h2 className="text-xl font-semibold text-[color:var(--color-brand-primary)]">Быстрые подборки</h2>
         <div className="mt-4 flex flex-wrap gap-2">
-          {quickCollectionCards.map((item) => {
+          {quickCollections.map((item) => {
             const ItemIcon = item.icon;
             return (
               <Link

@@ -5,6 +5,8 @@ import { z } from "zod";
 const callbackSchema = z.object({
   name: z.string().min(2).max(80),
   phone: z.string().min(6).max(32),
+  consent_data: z.boolean().optional(),
+  consent_marketing: z.boolean().optional(),
   source: z.string().default("header_callback"),
   page: z.string().optional(),
 });
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const { name, phone, source, page } = payload.data;
+    const { name, phone, consent_data, consent_marketing, source, page } = payload.data;
     const crmWebhook = process.env.CRM_CALLBACK_WEBHOOK_URL;
     const emailTo = process.env.LEADS_TO_EMAIL;
     const from = process.env.SMTP_FROM || process.env.SMTP_USER;
@@ -68,6 +70,8 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           name,
           phone,
+          consent_data: consent_data ?? null,
+          consent_marketing: consent_marketing ?? null,
           source,
           page,
           createdAt: new Date().toISOString(),
@@ -88,6 +92,8 @@ export async function POST(request: Request) {
           "Новая заявка на обратный звонок",
           `Имя: ${name}`,
           `Телефон: ${phone}`,
+          `Согласие на ПДн: ${typeof consent_data === "boolean" ? (consent_data ? "Да" : "Нет") : "Не указано"}`,
+          `Согласие на рассылку: ${typeof consent_marketing === "boolean" ? (consent_marketing ? "Да" : "Нет") : "Не указано"}`,
           `Источник: ${source}`,
           `Страница: ${page ?? "Не указана"}`,
         ].join("\n"),

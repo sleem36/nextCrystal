@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { contactSite, telHref } from "@/lib/contact-site";
 
+const ANY_LEAD_SUBMITTED_KEY = "aurora_any_lead_submitted_v1";
+
 export function SiteFooter() {
   const pathname = usePathname();
   const phoneHref = telHref(contactSite.phoneDigits);
@@ -46,6 +48,9 @@ export function SiteFooter() {
         if (!response.ok) {
           const data = (await response.json().catch(() => ({}))) as { error?: string };
           throw new Error(data.error || "Не удалось отправить форму.");
+        }
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(ANY_LEAD_SUBMITTED_KEY, "1");
         }
         setCallbackOpen(false);
         setCallbackState({ name: "", phone: "" });

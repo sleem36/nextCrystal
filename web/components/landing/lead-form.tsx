@@ -14,6 +14,8 @@ import type {
   TransmissionFilter,
 } from "@/components/landing/quick-selector";
 
+const ANY_LEAD_SUBMITTED_KEY = "aurora_any_lead_submitted_v1";
+
 type LeadFormProps = {
   variant?: "card" | "plain";
   /** Заголовок скрыт (например, заголовок в модалке) */
@@ -162,6 +164,9 @@ export function LeadForm({
       setPhone("");
       setPrepaymentAccepted(false);
       setWebsite("");
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(ANY_LEAD_SUBMITTED_KEY, "1");
+      }
       onSuccess?.();
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {

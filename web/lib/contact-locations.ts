@@ -1,3 +1,5 @@
+import type { City } from "@/lib/types";
+
 /**
  * Филиалы сети (координаты и контакты по данным публичной витрины aurora-auto.ru/contacts, блок CONTACTS).
  * При необходимости обновите адреса/телефоны у себя в CRM и здесь.
@@ -8,19 +10,28 @@ export type ContactBranch = {
   address: string;
   phone: string;
   email: string;
+  legalEmail?: string;
   hours: string;
   /** WGS84 */
   lat: number;
   lng: number;
   /** Фото салона с публичной витрины aurora-auto.ru (media/stores/{id}_{n}.png) */
   images: string[];
+  /** Кастомный embed/widget URL для Яндекс.Карты (если задан в админке). */
+  yandexMapEmbedUrl?: string;
 };
 
-/** База для фото филиалов (как в блоке CONTACTS на странице контактов CM) */
-const CM_STORES = "https://orenburg.aurora-auto.ru/media/stores";
+/** Локальные изображения для слайдера контактов (не зависят от внешнего CDN/DNS). */
+const LOCAL_CONTACT_IMAGES = [
+  "/images/reviews/review-1.svg",
+  "/images/reviews/review-2.svg",
+  "/images/reviews/review-3.svg",
+  "/images/reviews/review-4.svg",
+  "/images/reviews/review-5.svg",
+];
 
 function cmPhotos(storeNumericId: number, indices: number[]) {
-  return indices.map((n) => `${CM_STORES}/${storeNumericId}_${n}.png`);
+  return indices.map((_, idx) => LOCAL_CONTACT_IMAGES[(storeNumericId + idx) % LOCAL_CONTACT_IMAGES.length]);
 }
 
 /** Параметры виджета Яндекса: ll и pt — долгота, широта */
@@ -189,3 +200,36 @@ export const CONTACT_BRANCHES: ContactBranch[] = [
 
 export const DEFAULT_CONTACT_BRANCH_ID =
   (typeof process !== "undefined" && process.env.NEXT_PUBLIC_DEFAULT_CONTACT_BRANCH_ID?.trim()) || "barnaul";
+
+function parseGallery(value: string | null | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+export function mergeContactBranchesWithCities(cities: City[]): ContactBranch[] {
+  const fallbackBySlug = new Map(CONTACT_BRANCHES.map((branch) => [branch.id, branch]));
+
+  const merged = cities
+    .map<ContactBranch | null>((city) => {
+      const fallback = fallbackBySlug.get(city.slug);
+      if (!fallback) return null;
+      const gallery = parseGallery(city.contact_gallery);
+      return {
+        ...fallback,
+        city: city.name_imya || fallback.city,
+        address: city.contact_address || fallback.address,
+        hours: city.contact_hours || fallback.hours,
+        phone: city.contact_phone || fallback.phone,
+        email: city.contact_email || fallback.email,
+        legalEmail: city.contact_legal_email || CONTACT_LEGAL_EMAIL,
+        yandexMapEmbedUrl: city.contact_yandex_map_url || undefined,
+        images: gallery.length > 0 ? gallery : fallback.images,
+      };
+    })
+    .filter((branch): branch is ContactBranch => branch !== null);
+
+  return merged.length > 0 ? merged : CONTACT_BRANCHES;
+}

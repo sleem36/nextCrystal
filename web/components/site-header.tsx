@@ -14,6 +14,8 @@ import { setCityCookie } from "@/lib/city-cookie";
 import { contactSite, telHref } from "@/lib/contact-site";
 import { useWishlistStore } from "@/stores/wishlist-store";
 
+const ANY_LEAD_SUBMITTED_KEY = "aurora_any_lead_submitted_v1";
+
 const desktopNav = [
   { href: "/cars", label: "Каталог" },
   { href: "/about", label: "О компании" },
@@ -210,6 +212,9 @@ export function SiteHeader() {
           throw new Error(data.error || "Не удалось отправить форму.");
         }
         trackGoal(metrikaId, METRIKA_GOALS.submitLeadSuccess, { leadType: "header_callback" });
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(ANY_LEAD_SUBMITTED_KEY, "1");
+        }
         setCallbackOpen(false);
         setCallbackState({ name: "", phone: "" });
       })
