@@ -610,7 +610,7 @@ export function PopupCallback({
       <button
         type="button"
         onClick={openPopupFromTestButton}
-        className="fixed bottom-4 left-4 z-40 inline-flex h-10 items-center rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold text-[color:var(--color-brand-primary)] shadow-[0_6px_18px_rgba(15,23,42,0.15)] transition hover:border-[color:var(--color-brand-accent)] hover:text-[color:var(--color-brand-accent)]"
+        className="fixed bottom-36 right-4 z-40 inline-flex h-10 items-center rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold text-[color:var(--color-brand-primary)] shadow-[0_6px_18px_rgba(15,23,42,0.15)] transition hover:border-[color:var(--color-brand-accent)] hover:text-[color:var(--color-brand-accent)]"
       >
         Тест попапа
       </button>

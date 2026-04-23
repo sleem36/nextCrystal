@@ -278,8 +278,13 @@ export function carListingFiltersToSearchParams(f: CarListingFilters): URLSearch
 
 function matchesBudgetCityBodyTransmission(car: Car, f: CarListingFilters): boolean {
   if (f.paymentMethod === "credit" && car.monthlyPaymentRub > f.monthlyBudget) return false;
-  const cityMatches = car.city === f.city || car.cities?.includes(f.city);
-  if (!cityMatches) return false;
+  const hasSearchQuery = f.search.trim().length > 0;
+  // Для текстового поиска не ограничиваем выдачу одним городом:
+  // иначе при поиске по модели легко получить "0 автомобилей" из-за city-фильтра.
+  if (!hasSearchQuery) {
+    const cityMatches = car.city === f.city || car.cities?.includes(f.city);
+    if (!cityMatches) return false;
+  }
   if (f.bodyType !== "any" && car.bodyType !== f.bodyType) return false;
   if (f.transmission !== "any" && car.transmission !== f.transmission) return false;
   return true;
@@ -373,6 +378,7 @@ export function filterCars(cars: Car[], f: CarListingFilters): Car[] {
       matchesAccident(car, f) &&
       matchesPts(car, f) &&
       matchesColor(car, f) &&
+      matchesSearch(car, f) &&
       matchesVideo(car, f) &&
       matchesWithoutPaint(car, f),
   );
