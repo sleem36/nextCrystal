@@ -69,6 +69,61 @@ export const DEFAULT_CAR_LISTING_FILTERS: CarListingFilters = {
   sort: "default",
 };
 
+const KEYBOARD_LAYOUT_MAP: Record<string, string> = {
+  q: "й", w: "ц", e: "у", r: "к", t: "е", y: "н", u: "г", i: "ш", o: "щ", p: "з",
+  "[": "х", "]": "ъ", a: "ф", s: "ы", d: "в", f: "а", g: "п", h: "р", j: "о", k: "л",
+  l: "д", ";": "ж", "'": "э", z: "я", x: "ч", c: "с", v: "м", b: "и", n: "т", m: "ь",
+  ",": "б", ".": "ю",
+};
+
+const TRANSLIT_MAP: Array<[RegExp, string]> = [
+  [/sch/g, "щ"], [/yo/g, "ё"], [/zh/g, "ж"], [/ch/g, "ч"], [/sh/g, "ш"],
+  [/yu/g, "ю"], [/ya/g, "я"], [/ts/g, "ц"], [/kh/g, "х"], [/ye/g, "е"],
+  [/a/g, "а"], [/b/g, "б"], [/v/g, "в"], [/g/g, "г"], [/d/g, "д"], [/e/g, "е"],
+  [/z/g, "з"], [/i/g, "и"], [/y/g, "й"], [/k/g, "к"], [/l/g, "л"], [/m/g, "м"],
+  [/n/g, "н"], [/o/g, "о"], [/p/g, "п"], [/r/g, "р"], [/s/g, "с"], [/t/g, "т"],
+  [/u/g, "у"], [/f/g, "ф"], [/h/g, "х"], [/c/g, "к"],
+];
+
+function normalizeSearchText(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function latinToRuKeyboard(value: string): string {
+  return value
+    .split("")
+    .map((ch) => KEYBOARD_LAYOUT_MAP[ch] ?? ch)
+    .join("");
+}
+
+function latinToCyrillicTranslit(value: string): string {
+  let out = value;
+  for (const [re, to] of TRANSLIT_MAP) out = out.replace(re, to);
+  return out;
+}
+
+function levenshteinDistance(a: string, b: string): number {
+  if (a === b) return 0;
+  if (!a.length) return b.length;
+  if (!b.length) return a.length;
+  const dp = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i += 1) {
+    let prev = dp[0];
+    dp[0] = i;
+    for (let j = 1; j <= b.length; j += 1) {
+      const temp = dp[j];
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[j] = Math.min(dp[j] + 1, dp[j - 1] + 1, prev + cost);
+      prev = temp;
+    }
+  }
+  return dp[b.length];
+}
+
 function parseIntParam(value: string | undefined, fallback: number): number {
   if (value === undefined || value === "") return fallback;
   const n = Number.parseInt(value, 10);
@@ -344,10 +399,46 @@ function matchesWithoutPaint(car: Car, f: CarListingFilters): boolean {
 }
 
 function matchesSearch(car: Car, f: CarListingFilters): boolean {
-  const q = f.search.trim().toLowerCase();
+  const q = normalizeSearchText(f.search);
   if (!q) return true;
-  const haystack = `${car.brand} ${car.model} ${car.city} ${car.id}`.toLowerCase();
-  return haystack.includes(q);
+  const searchFields = [
+    car.brand,
+    car.model,
+    `${car.brand} ${car.model}`,
+    car.city,
+    ...(car.cities ?? []),
+    car.id,
+    car.color,
+    car.bodyType,
+  ]
+    .map(normalizeSearchText)
+    .filter(Boolean);
+
+  const haystack = searchFields.join(" ");
+  if (haystack.includes(q)) return true;
+
+  // Поддержка "не той раскладки" и базового транслита latin->cyrillic.
+  const variants = Array.from(
+    new Set([q, normalizeSearchText(latinToRuKeyboard(q)), normalizeSearchText(latinToCyrillicTranslit(q))]),
+  ).filter(Boolean);
+  if (variants.some((v) => haystack.includes(v))) return true;
+
+  // Лёгкий fuzzy: для коротких запросов смотрим расстояние Левенштейна до токенов.
+  if (q.length >= 3) {
+    const tokens = haystack.split(" ").filter(Boolean);
+    const threshold = q.length <= 5 ? 1 : 2;
+    for (const token of tokens) {
+      if (Math.abs(token.length - q.length) > threshold) continue;
+      if (levenshteinDistance(token, q) <= threshold) return true;
+      for (const v of variants) {
+        if (Math.abs(token.length - v.length) <= threshold && levenshteinDistance(token, v) <= threshold) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
 }
 
 /**

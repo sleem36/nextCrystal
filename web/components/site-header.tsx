@@ -76,6 +76,27 @@ type CallbackFormState = {
   phone: string;
 };
 
+type SearchCarLite = {
+  id: string;
+  brand: string;
+  model: string;
+  city?: string;
+};
+
+type SearchSuggestion = {
+  label: string;
+  href: string;
+  kind: "model";
+};
+
+function normalizeSearch(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function SiteHeader() {
   const router = useRouter();
   const pathname = usePathname();
@@ -87,6 +108,7 @@ export function SiteHeader() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [desktopSearchValue, setDesktopSearchValue] = useState("");
   const [mobileSearchValue, setMobileSearchValue] = useState("");
+  const [searchCars, setSearchCars] = useState<SearchCarLite[]>([]);
   const [city, setCity] = useState("");
   const [cities, setCities] = useState<CityOption[]>([]);
   const [callbackOpen, setCallbackOpen] = useState(false);
@@ -107,6 +129,58 @@ export function SiteHeader() {
     [callbackState],
   );
 
+  const desktopSuggestions = useMemo(() => {
+    const q = normalizeSearch(desktopSearchValue);
+    if (!q || q.length < 2) return [];
+    const out: SearchSuggestion[] = [];
+    const seen = new Set<string>();
+    for (const car of searchCars) {
+      const modelLabel = `${car.brand} ${car.model}`.trim();
+      const modelHaystack = normalizeSearch(`${car.brand} ${car.model} ${car.city ?? ""}`);
+      if (modelHaystack.includes(q)) {
+        const key = `m:${modelLabel}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          out.push({
+            label: modelLabel,
+            href: `/cars?search=${encodeURIComponent(modelLabel)}`,
+            kind: "model",
+          });
+        }
+      }
+      if (out.length >= 6) break;
+    }
+    return out;
+  }, [desktopSearchValue, searchCars]);
+
+  const mobileSuggestions = useMemo(() => {
+    const q = normalizeSearch(mobileSearchValue);
+    if (!q || q.length < 2) return [];
+    return desktopSuggestions.length && normalizeSearch(desktopSearchValue) === q
+      ? desktopSuggestions
+      : (() => {
+          const out: SearchSuggestion[] = [];
+          const seen = new Set<string>();
+          for (const car of searchCars) {
+            const modelLabel = `${car.brand} ${car.model}`.trim();
+            const modelHaystack = normalizeSearch(`${car.brand} ${car.model} ${car.city ?? ""}`);
+            if (modelHaystack.includes(q)) {
+              const key = `m:${modelLabel}`;
+              if (!seen.has(key)) {
+                seen.add(key);
+                out.push({
+                  label: modelLabel,
+                  href: `/cars?search=${encodeURIComponent(modelLabel)}`,
+                  kind: "model",
+                });
+              }
+            }
+            if (out.length >= 6) break;
+          }
+          return out;
+        })();
+  }, [desktopSearchValue, desktopSuggestions, mobileSearchValue, searchCars]);
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
       setMobileMenuOpen(false);
@@ -115,6 +189,27 @@ export function SiteHeader() {
     }, 0);
     return () => window.clearTimeout(timer);
   }, [pathname]);
+
+  useEffect(() => {
+    const fetchCarsForSearch = async () => {
+      try {
+        const response = await fetch("/api/cars", { cache: "force-cache" });
+        if (!response.ok) return;
+        const payload = (await response.json()) as { cars?: SearchCarLite[] };
+        setSearchCars(
+          (payload.cars ?? []).map((car) => ({
+            id: String(car.id ?? ""),
+            brand: String(car.brand ?? ""),
+            model: String(car.model ?? ""),
+            city: car.city ? String(car.city) : undefined,
+          })),
+        );
+      } catch {
+        // Ignore; search still works by direct submit.
+      }
+    };
+    void fetchCarsForSearch();
+  }, []);
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -177,6 +272,19 @@ export function SiteHeader() {
   const submitSearch = (event: FormEvent, value: string) => {
     event.preventDefault();
     const query = value.trim();
+    if (query) {
+      trackGoal(metrikaId, METRIKA_GOALS.searchSubmitted, {
+        queryLength: query.length,
+      });
+      const suggestions = normalizeSearch(value) === normalizeSearch(desktopSearchValue)
+        ? desktopSuggestions
+        : mobileSuggestions;
+      if (suggestions.length === 0) {
+        trackGoal(metrikaId, METRIKA_GOALS.searchNoResults, {
+          queryLength: query.length,
+        });
+      }
+    }
     if (!query) {
       router.push("/cars");
     } else {
@@ -247,6 +355,9 @@ export function SiteHeader() {
   }, [cities, city]);
 
   const catalogRouteActive = navRouteActive(pathname, "/cars");
+
+  const suggestionClass =
+    "block rounded-lg px-2 py-1.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-[color:var(--color-brand-accent)]";
 
   return (
     <>
@@ -379,7 +490,7 @@ export function SiteHeader() {
           <div className="ml-auto hidden min-w-[280px] items-center xl:flex xl:min-w-[290px]">
             <form
               onSubmit={(event) => submitSearch(event, desktopSearchValue)}
-              className="flex w-full items-center gap-2"
+              className="relative flex w-full items-center gap-2"
             >
               <input
                 type="search"
@@ -396,6 +507,23 @@ export function SiteHeader() {
               >
                 <Search className="h-4 w-4" aria-hidden />
               </Button>
+              {desktopSuggestions.length > 0 ? (
+                <div className="absolute left-0 right-12 top-[calc(100%+6px)] z-50 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                  {desktopSuggestions.map((item) => (
+                    <Link
+                      key={`${item.kind}-${item.label}`}
+                      href={item.href}
+                      className={suggestionClass}
+                      onClick={() => {
+                        trackGoal(metrikaId, METRIKA_GOALS.searchSuggestionClick, { kind: item.kind });
+                        setDesktopSearchValue(item.label);
+                      }}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              ) : null}
             </form>
           </div>
 
@@ -459,7 +587,7 @@ export function SiteHeader() {
         {searchOpen ? (
           <div className="border-t border-slate-200/90">
             <div className="container-wide py-2 md:py-3">
-              <form onSubmit={(event) => submitSearch(event, mobileSearchValue)} className="flex gap-2 md:hidden">
+              <form onSubmit={(event) => submitSearch(event, mobileSearchValue)} className="relative flex gap-2 md:hidden">
                 <input
                   type="search"
                   value={mobileSearchValue}
@@ -469,6 +597,24 @@ export function SiteHeader() {
                   aria-label="Поиск автомобилей"
                 />
                 <Button type="submit">Найти</Button>
+                {mobileSuggestions.length > 0 ? (
+                  <div className="absolute left-0 right-[66px] top-[calc(100%+6px)] z-50 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                    {mobileSuggestions.map((item) => (
+                      <Link
+                        key={`m-${item.kind}-${item.label}`}
+                        href={item.href}
+                        className={suggestionClass}
+                        onClick={() => {
+                          trackGoal(metrikaId, METRIKA_GOALS.searchSuggestionClick, { kind: item.kind });
+                          setMobileSearchValue(item.label);
+                          setSearchOpen(false);
+                        }}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
               </form>
             </div>
           </div>

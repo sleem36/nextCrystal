@@ -5,6 +5,9 @@ export const METRIKA_GOALS = {
   homeQuickCollectionClick: "home_quick_collection_click",
   homeFeaturedCarClick: "home_featured_car_click",
   homeFinalCtaClick: "home_final_cta_click",
+  searchSubmitted: "search_submitted",
+  searchSuggestionClick: "search_suggestion_click",
+  searchNoResults: "search_no_results",
   quizCompleted: "quiz_completed",
   /** Переход в каталог без завершения быстрого подбора */
   quizSkipCatalogClick: "quiz_skip_catalog_click",
