@@ -2,7 +2,12 @@ export const METRIKA_GOALS = {
   heroCtaClick: "hero_cta_click",
   /** Переход в каталог со второго CTA на первом экране */
   heroCatalogClick: "hero_catalog_click",
+  homeQuickCollectionClick: "home_quick_collection_click",
+  homeFeaturedCarClick: "home_featured_car_click",
+  homeFinalCtaClick: "home_final_cta_click",
   quizCompleted: "quiz_completed",
+  /** Переход в каталог без завершения быстрого подбора */
+  quizSkipCatalogClick: "quiz_skip_catalog_click",
   /** Переход в каталог с параметрами квиза */
   catalogFromQuizClick: "catalog_from_quiz_click",
   catalogOpened: "catalog_opened",
