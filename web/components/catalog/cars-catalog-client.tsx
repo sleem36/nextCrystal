@@ -375,15 +375,6 @@ export function CarsCatalogClient({
     <div className="space-y-6 pb-24 md:pb-0">
       <QuizCatalogBanner />
 
-      <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
-        <h1 className="text-xl font-semibold text-[color:var(--color-brand-primary)] md:text-2xl">
-          Каталог автомобилей с пробегом
-        </h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Проверенные авто в {filters.city}. Фокус на цене, платеже и состоянии.
-        </p>
-      </section>
-
       <CatalogTrustStrip />
 
       <div className="flex flex-wrap gap-2">
