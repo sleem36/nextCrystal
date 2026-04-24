@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { getAllCities } from "@/lib/cities-db";
 import { contactSite, telHref } from "@/lib/contact-site";
+import { mergeContactBranchesWithCities } from "@/lib/contact-locations";
 import { ContactsFeedbackForm } from "@/components/contacts/contacts-feedback-form";
 import { ContactsMapSection } from "@/components/contacts/contacts-map-section";
 
@@ -42,7 +44,10 @@ function IconVk(props: { className?: string }) {
 const iconBox =
   "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700";
 
-export function ContactsPageContent() {
+export async function ContactsPageContent() {
+  // Для страницы контактов используем полный справочник городов, иначе при
+  // выборочной активности (is_active) данные из админки могут не применяться.
+  const branches = mergeContactBranchesWithCities(await getAllCities(false));
   const tel = telHref(contactSite.phoneDigits);
   const mailto = `mailto:${contactSite.email}`;
   const hasRequisites = Boolean(
@@ -156,7 +161,7 @@ export function ContactsPageContent() {
         </div>
       </div>
 
-      <ContactsMapSection />
+      <ContactsMapSection branches={branches} />
 
       <section
         className="rounded-[var(--radius-card)] border border-slate-200 bg-slate-50 p-6 shadow-inner"

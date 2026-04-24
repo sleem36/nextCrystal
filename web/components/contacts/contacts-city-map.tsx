@@ -24,7 +24,7 @@ export function ContactsCityMap({ branches = CONTACT_BRANCHES, branchId }: Conta
   );
 
   const embedUrl = useMemo(
-    () => (branch ? buildYandexMapWidgetUrl(branch.lat, branch.lng) : ""),
+    () => (branch ? (branch.yandexMapEmbedUrl?.trim() || buildYandexMapWidgetUrl(branch.lat, branch.lng)) : ""),
     [branch],
   );
 
@@ -78,10 +78,10 @@ export function ContactsCityMap({ branches = CONTACT_BRANCHES, branchId }: Conta
             <div>
               <p className="font-bold text-slate-900">Юридический отдел</p>
               <a
-                href={`mailto:${CONTACT_LEGAL_EMAIL}`}
+                href={`mailto:${branch.legalEmail || CONTACT_LEGAL_EMAIL}`}
                 className="mt-1 inline-block break-all font-medium text-[color:var(--color-link)] underline-offset-2 hover:underline"
               >
-                {CONTACT_LEGAL_EMAIL}
+                {branch.legalEmail || CONTACT_LEGAL_EMAIL}
               </a>
             </div>
           </div>

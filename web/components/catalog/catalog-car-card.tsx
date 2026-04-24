@@ -19,11 +19,10 @@ import { getListingDerived } from "@/lib/car-listing-enrichment";
 import { getResolvedCarImages } from "@/lib/car-images-map";
 import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
 import { useWishlistStore } from "@/stores/wishlist-store";
+import { CatalogMiniCredit } from "@/components/catalog/catalog-mini-credit";
 import { Button } from "@/components/ui/button";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-blur-placeholder";
 import type { Car } from "@/types/car";
-
-const BLUR =
-  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
 
 function getGalleryImages(car: Car) {
   return getResolvedCarImages(car);
@@ -302,7 +301,7 @@ export function CatalogCarCard({
                       className="cursor-pointer object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover/card:scale-[1.035]"
                       sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       placeholder={imageUnoptimized ? "empty" : "blur"}
-                      blurDataURL={imageUnoptimized ? undefined : BLUR}
+                      blurDataURL={imageUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
                       priority={imagePriority && index === 0}
                       loading={imagePriority && index === 0 ? "eager" : "lazy"}
                       draggable={false}
@@ -344,7 +343,7 @@ export function CatalogCarCard({
               className="cursor-pointer object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover/card:scale-[1.035]"
               sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
               placeholder={singleCoverUnoptimized ? "empty" : "blur"}
-              blurDataURL={singleCoverUnoptimized ? undefined : BLUR}
+              blurDataURL={singleCoverUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
               priority={imagePriority}
               loading={imagePriority ? "eager" : "lazy"}
               draggable={false}
@@ -420,6 +419,17 @@ export function CatalogCarCard({
           {car.brand} {car.model}, {car.year}
         </Link>
 
+        <div className="flex flex-wrap gap-1.5">
+          {trustFacts.map((fact) => (
+            <span
+              key={`${car.id}-${fact}`}
+              className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700"
+            >
+              {fact}
+            </span>
+          ))}
+        </div>
+
         <div className="space-y-1 border-b border-slate-100 pb-2">
           <p className="text-lg font-bold text-slate-900">{formatCurrency(car.priceRub)}</p>
           {showDiscount ? (
@@ -443,16 +453,7 @@ export function CatalogCarCard({
           ) : null}
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
-          {trustFacts.slice(0, 2).map((fact) => (
-            <span
-              key={`${car.id}-${fact}`}
-              className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700"
-            >
-              {fact}
-            </span>
-          ))}
-        </div>
+        <CatalogMiniCredit priceRub={car.priceRub} />
 
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
           <span>

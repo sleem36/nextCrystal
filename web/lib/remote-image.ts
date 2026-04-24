@@ -7,8 +7,6 @@ const REMOTE_HOSTS_OK_FOR_OPTIMIZER = new Set([
   "plus.unsplash.com",
   "placehold.co",
   "i.ytimg.com",
-  /** Фото филиалов на странице контактов (см. contact-locations) */
-  "orenburg.aurora-auto.ru",
 ]);
 
 function extraHostsFromEnv(): string[] {

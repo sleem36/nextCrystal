@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import {
+  type ContactBranch,
   CONTACT_BRANCHES,
   DEFAULT_CONTACT_BRANCH_ID,
 } from "@/lib/contact-locations";
 import { ContactsCityMap } from "@/components/contacts/contacts-city-map";
 
-export function ContactsMapSection() {
-  const branches = CONTACT_BRANCHES;
+type ContactsMapSectionProps = {
+  branches?: ContactBranch[];
+};
+
+export function ContactsMapSection({ branches = CONTACT_BRANCHES }: ContactsMapSectionProps) {
   const [branchId, setBranchId] = useState(() => {
     if (branches.some((b) => b.id === DEFAULT_CONTACT_BRANCH_ID)) {
       return DEFAULT_CONTACT_BRANCH_ID;
@@ -38,7 +42,7 @@ export function ContactsMapSection() {
         </label>
       </div>
       <div className="mt-4">
-        <ContactsCityMap branchId={branchId} />
+        <ContactsCityMap branchId={branchId} branches={branches} />
       </div>
     </section>
   );

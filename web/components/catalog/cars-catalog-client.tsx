@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { BookingModal } from "@/components/catalog/booking-modal";
 import { CatalogCarCard } from "@/components/catalog/catalog-car-card";
 import { FilterSidebar } from "@/components/catalog/filter-sidebar";
+import { CatalogTrustStrip } from "@/components/catalog/catalog-trust-strip";
+import { MobileStickyCatalogCta } from "@/components/catalog/mobile-sticky-catalog-cta";
 import { QuizCatalogBanner } from "@/components/catalog/quiz-catalog-banner";
 import { RecentlyViewed } from "@/components/catalog/recently-viewed";
 import { LeadForm } from "@/components/landing/lead-form";
@@ -370,7 +372,7 @@ export function CarsCatalogClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 md:pb-0">
       <QuizCatalogBanner />
 
       <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
@@ -381,6 +383,8 @@ export function CarsCatalogClient({
           Проверенные авто в {filters.city}. Фокус на цене, платеже и состоянии.
         </p>
       </section>
+
+      <CatalogTrustStrip />
 
       <div className="flex flex-wrap gap-2">
         {popularFilterLinks.length > 0 ? (
@@ -665,6 +669,8 @@ export function CarsCatalogClient({
           setCreditSubmittingId(submitting ? carId : null);
         }}
       />
+
+      <MobileStickyCatalogCta />
     </div>
   );
 }

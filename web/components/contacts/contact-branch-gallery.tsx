@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import useEmblaCarousel from "embla-carousel-react";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-blur-placeholder";
 import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
 
-const BLUR =
-  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
+const CONTACT_GALLERY_FALLBACK_SRC = "/images/cars/placeholder.svg";
 
 type ContactBranchGalleryProps = {
   images: string[];
@@ -24,6 +24,8 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [failedPreviewIndexes, setFailedPreviewIndexes] = useState<Set<number>>(() => new Set());
+  const [failedGalleryIndexes, setFailedGalleryIndexes] = useState<Set<number>>(() => new Set());
   const scrollYRef = useRef(0);
   const hoverRafRef = useRef<number | null>(null);
   const hoverSegmentRef = useRef<number | null>(null);
@@ -56,6 +58,11 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
     if (!emblaApi) return;
     emblaApi.reInit();
   }, [emblaApi, previewGallery]);
+
+  useEffect(() => {
+    setFailedPreviewIndexes(new Set());
+    setFailedGalleryIndexes(new Set());
+  }, [gallery, previewGallery]);
 
   useEffect(() => {
     return () => {
@@ -169,24 +176,34 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
           <div className="absolute inset-0 overflow-hidden" ref={emblaRef}>
             <div className="flex h-full">
               {previewGallery.map((imageSrc, index) => {
-                const imageUnoptimized = shouldUnoptimizeRemoteImage(imageSrc);
+                const displaySrc = failedPreviewIndexes.has(index) ? CONTACT_GALLERY_FALLBACK_SRC : imageSrc;
+                const imageUnoptimized = shouldUnoptimizeRemoteImage(displaySrc);
                 return (
                   <div
                     key={`contact-gallery-${imageSrc}-${index}`}
                     className="relative h-full min-h-0 min-w-0 flex-[0_0_100%] shrink-0"
                   >
                     <Image
-                      src={imageSrc}
+                      src={displaySrc}
                       alt={`${cityLabel} — фото салона ${index + 1}`}
                       fill
                       unoptimized={imageUnoptimized}
                       className="cursor-zoom-in object-cover object-center"
                       sizes="(min-width: 1024px) 42vw, 100vw"
                       placeholder={imageUnoptimized ? "empty" : "blur"}
-                      blurDataURL={imageUnoptimized ? undefined : BLUR}
+                      blurDataURL={imageUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
                       priority={index === 0}
                       loading={index === 0 ? "eager" : "lazy"}
                       draggable={false}
+                      onError={() => {
+                        if (displaySrc === CONTACT_GALLERY_FALLBACK_SRC) return;
+                        setFailedPreviewIndexes((prev) => {
+                          if (prev.has(index)) return prev;
+                          const next = new Set(prev);
+                          next.add(index);
+                          return next;
+                        });
+                      }}
                       onClick={() => openLightbox(index)}
                     />
                   </div>
@@ -210,20 +227,34 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
         </>
       ) : (
         <div className="absolute inset-0">
+          {(() => {
+            const displaySrc = failedPreviewIndexes.has(0) ? CONTACT_GALLERY_FALLBACK_SRC : previewGallery[0];
+            return (
           <Image
-            src={previewGallery[0]}
+            src={displaySrc}
             alt={`${cityLabel}, салон`}
             fill
             unoptimized={singleCoverUnoptimized}
             className="cursor-zoom-in object-cover object-center"
             sizes="(min-width: 1024px) 42vw, 100vw"
             placeholder={singleCoverUnoptimized ? "empty" : "blur"}
-            blurDataURL={singleCoverUnoptimized ? undefined : BLUR}
+            blurDataURL={singleCoverUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
             priority
             loading="eager"
             draggable={false}
+            onError={() => {
+              if (displaySrc === CONTACT_GALLERY_FALLBACK_SRC) return;
+              setFailedPreviewIndexes((prev) => {
+                if (prev.has(0)) return prev;
+                const next = new Set(prev);
+                next.add(0);
+                return next;
+              });
+            }}
             onClick={() => openLightbox(0)}
           />
+            );
+          })()}
         </div>
       )}
 
@@ -258,21 +289,31 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
           <div className="h-full overflow-hidden" ref={lightboxEmblaRef}>
             <div className="flex h-full">
               {gallery.map((src, index) => {
-                const imageUnoptimized = shouldUnoptimizeRemoteImage(src);
+                const displaySrc = failedGalleryIndexes.has(index) ? CONTACT_GALLERY_FALLBACK_SRC : src;
+                const imageUnoptimized = shouldUnoptimizeRemoteImage(displaySrc);
                 return (
                   <div key={`full-${src}-${index}`} className="min-w-0 flex-[0_0_100%]">
                     <div className="relative h-full w-full">
                       <Image
-                        src={src}
+                        src={displaySrc}
                         alt={`${cityLabel} — галерея ${index + 1}`}
                         fill
                         unoptimized={imageUnoptimized}
                         className="object-contain"
                         sizes="100vw"
                         placeholder={imageUnoptimized ? "empty" : "blur"}
-                        blurDataURL={imageUnoptimized ? undefined : BLUR}
+                        blurDataURL={imageUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
                         loading={Math.abs(index - lightboxIndex) <= 1 ? "eager" : "lazy"}
                         draggable={false}
+                        onError={() => {
+                          if (displaySrc === CONTACT_GALLERY_FALLBACK_SRC) return;
+                          setFailedGalleryIndexes((prev) => {
+                            if (prev.has(index)) return prev;
+                            const next = new Set(prev);
+                            next.add(index);
+                            return next;
+                          });
+                        }}
                       />
                     </div>
                   </div>
@@ -284,7 +325,8 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
             <div className="absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/85 via-black/60 to-transparent px-3 pb-3 pt-8">
               <div className="mx-auto flex max-w-4xl gap-2 overflow-x-auto pb-1">
                 {gallery.map((src, index) => {
-                  const imageUnoptimized = shouldUnoptimizeRemoteImage(src);
+                  const displaySrc = failedGalleryIndexes.has(index) ? CONTACT_GALLERY_FALLBACK_SRC : src;
+                  const imageUnoptimized = shouldUnoptimizeRemoteImage(displaySrc);
                   return (
                     <button
                       key={`thumb-${src}-${index}`}
@@ -296,16 +338,25 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
                       aria-label={`Открыть фото ${index + 1}`}
                     >
                       <Image
-                        src={src}
+                        src={displaySrc}
                         alt=""
                         fill
                         unoptimized={imageUnoptimized}
                         className="object-cover"
                         sizes="96px"
                         placeholder={imageUnoptimized ? "empty" : "blur"}
-                        blurDataURL={imageUnoptimized ? undefined : BLUR}
+                        blurDataURL={imageUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
                         loading={Math.abs(index - lightboxIndex) <= 1 ? "eager" : "lazy"}
                         draggable={false}
+                        onError={() => {
+                          if (displaySrc === CONTACT_GALLERY_FALLBACK_SRC) return;
+                          setFailedGalleryIndexes((prev) => {
+                            if (prev.has(index)) return prev;
+                            const next = new Set(prev);
+                            next.add(index);
+                            return next;
+                          });
+                        }}
                       />
                     </button>
                   );

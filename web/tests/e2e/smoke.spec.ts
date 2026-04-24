@@ -17,6 +17,18 @@ test("smoke: /cars принимает фильтры через query (путь 
   await expect(page).toHaveURL(/\/cars\?.*monthlyBudget=.*maxPriceRub=.*/);
 });
 
+test("smoke: /cars показывает доверие, мини-кредит и мобильный CTA", async ({ page }) => {
+  await page.goto("/cars");
+
+  await expect(page.getByRole("heading", { name: "Почему нам доверяют" })).toBeVisible();
+  await expect(page.getByText("Проверка по VIN")).toBeVisible();
+  await expect(page.getByText("Примерный платёж").first()).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByRole("link", { name: "Подобрать авто" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Позвонить" })).toBeVisible();
+});
+
 test("smoke: /cars -> /cars/[id], есть блок заявки", async ({ page }) => {
   await page.goto("/cars");
   await page.locator('article[role="link"]').first().click();
