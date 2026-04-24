@@ -373,14 +373,28 @@ export function SiteHeader() {
             {mobileMenuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
           </button>
 
-          <Link href="/" className="min-w-0 w-[200px] shrink-0" aria-label="Aurora Auto — на главную">
+          <Link
+            href="/"
+            className="min-w-0 shrink-0 md:w-[200px]"
+            aria-label="Aurora Auto — на главную"
+          >
+            <Image
+              src="/brand/aurora-auto-logo-mark.svg"
+              alt=""
+              width={44}
+              height={44}
+              priority
+              unoptimized
+              className="size-10 md:hidden"
+            />
             <Image
               src="/brand/aurora-auto-logo.svg"
-              alt="Aurora Auto"
+              alt=""
               width={189}
               height={33}
               priority
-              className="h-auto w-full"
+              unoptimized
+              className="hidden h-auto w-full md:block"
             />
           </Link>
 
