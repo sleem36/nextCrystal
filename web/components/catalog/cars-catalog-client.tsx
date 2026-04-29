@@ -526,6 +526,7 @@ export function CarsCatalogClient({
                         car={car}
                         animationIndex={index}
                         imagePriority={index < 4}
+                        paymentMode={filters.paymentMethod}
                         isBooked={bookedIds.has(car.id)}
                         bookedUntilMs={bookedUntilMap[car.id] ?? null}
                         isBookingSubmitting={bookingSubmittingId === car.id}

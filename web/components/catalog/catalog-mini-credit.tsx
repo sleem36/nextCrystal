@@ -30,21 +30,21 @@ export function CatalogMiniCredit({ priceRub }: CatalogMiniCreditProps) {
   return (
     <div
       data-no-card-nav
-      className="rounded-xl border border-slate-200 bg-slate-50/90 px-3 py-2.5"
+      className="rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card-muted)]/90 px-3 py-2.5"
       onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => e.stopPropagation()}
     >
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Примерный платёж</p>
+          <p className="text-[11px] font-medium uppercase tracking-wide text-[color:var(--text-soft)]">Примерный платёж</p>
           <p className="text-base font-bold tabular-nums text-[color:var(--color-brand-accent)] md:text-lg">
-            {formatCurrency(monthly)} <span className="text-xs font-semibold text-slate-600">/мес</span>
+            {formatCurrency(monthly)} <span className="text-xs font-semibold text-[color:var(--text-muted)]">/мес</span>
           </p>
         </div>
-        <label className="flex flex-col gap-0.5 text-[11px] text-slate-600">
+        <label className="flex flex-col gap-0.5 text-[11px] text-[color:var(--text-muted)]">
           <span className="font-medium">Срок</span>
           <select
-            className="h-9 min-w-[5.5rem] rounded-lg border border-slate-300 bg-white px-2 text-sm font-medium text-slate-900"
+            className="h-9 min-w-[5.5rem] rounded-lg border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] px-2 text-sm font-medium text-[color:var(--text-strong)]"
             value={termMonths}
             onChange={(e) => setTermMonths(Number(e.target.value) as (typeof TERM_OPTIONS)[number])}
             aria-label="Срок кредита в месяцах"
@@ -57,7 +57,7 @@ export function CatalogMiniCredit({ priceRub }: CatalogMiniCreditProps) {
           </select>
         </label>
       </div>
-      <p className="mt-1.5 text-[10px] leading-snug text-slate-500">
+      <p className="mt-1.5 text-[10px] leading-snug text-[color:var(--text-soft)]">
         Взнос {Math.round(DOWN_PAYMENT_SHARE * 100)}%, ставка {DEFAULT_ANNUAL_RATE}% годовых — ориентир, не оферта банка.
       </p>
     </div>

@@ -84,6 +84,7 @@ export type CatalogCarCardProps = {
   bookedUntilMs: number | null;
   isBookingSubmitting?: boolean;
   isCreditSubmitting?: boolean;
+  paymentMode?: "credit" | "cash";
   onRequestBooking: (car: Car) => void;
   onRequestCredit: (car: Car) => void;
 };
@@ -98,6 +99,7 @@ export function CatalogCarCard({
   bookedUntilMs,
   isBookingSubmitting = false,
   isCreditSubmitting = false,
+  paymentMode = "cash",
   onRequestBooking,
   onRequestCredit,
 }: CatalogCarCardProps) {
@@ -260,6 +262,7 @@ export function CatalogCarCard({
 
   const hasApiMetrics = car.viewCount != null || car.bookingCount != null;
   const isWishlisted = wishlistIds.includes(car.id);
+  const creditPrimary = paymentMode === "credit";
 
   return (
     <article
@@ -463,13 +466,8 @@ export function CatalogCarCard({
 
         {!hasApiMetrics ? (
           <p className="text-xs text-slate-500">
-            {derived.bookingCount > 0 ? (
-              <>
-                Забронировали {derived.bookingCount}{" "}
-                {derived.bookingCount === 1 ? "раз" : "раза"} ·{" "}
-              </>
-            ) : null}
-            {derived.viewCount} смотрят сейчас
+            {derived.bookingCount > 0 ? `Броней: ${derived.bookingCount} · ` : ""}
+            Сейчас смотрят: {derived.viewCount}
           </p>
         ) : null}
 
@@ -477,6 +475,7 @@ export function CatalogCarCard({
           <div className="grid grid-cols-1 gap-2 sm:[grid-template-columns:repeat(2,minmax(0,1fr))] sm:items-stretch">
             <Button
               type="button"
+              variant={creditPrimary ? "secondary" : "primary"}
               className="box-border h-11 min-h-[44px] w-full min-w-0 px-3 text-[13px] font-semibold leading-tight sm:px-2 lg:px-3 lg:text-sm"
               disabled={isBooked || isBookingSubmitting}
               onClick={() => onRequestBooking(car)}
@@ -499,7 +498,7 @@ export function CatalogCarCard({
             </Button>
             <Button
               type="button"
-              variant="secondary"
+              variant={creditPrimary ? "primary" : "secondary"}
               className="box-border h-11 min-h-[44px] w-full min-w-0 px-3 text-[13px] font-semibold leading-tight sm:px-2 lg:px-3 lg:text-sm"
               disabled={isCreditSubmitting}
               onClick={() => onRequestCredit(car)}
