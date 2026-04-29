@@ -16,10 +16,12 @@ import { TradeInCtaPanel } from "@/components/catalog/trade-in-cta-panel";
 import { VehicleGallery } from "@/components/catalog/vehicle-gallery";
 import { getCarsWithFilters, type FilterPageFilters } from "@/lib/filter-page-filters";
 import { getFilterPageBySlug, getAllFilterPages } from "@/lib/filter-pages-db";
+import { sanitizeRichHtml } from "@/lib/sanitize-html";
 import { driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
 import { getResolvedCarImages } from "@/lib/car-images-map";
 import { getCarBySlug, getCars } from "@/lib/cars-source";
+import type { Car } from "@/types/car";
 import { utmFromSearchParams } from "@/lib/utm";
 
 export const revalidate = 3600;
@@ -78,16 +80,12 @@ export async function generateMetadata({
 }
 
 async function CarDetailView({
-  slug,
+  car,
   searchParams,
 }: {
-  slug: string;
+  car: Car;
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const car = await getCarBySlug(slug);
-  if (!car) {
-    notFound();
-  }
   const utm = utmFromSearchParams(searchParams);
   const paymentMethodRaw = Array.isArray(searchParams.paymentMethod)
     ? searchParams.paymentMethod[0]
@@ -244,7 +242,7 @@ export default async function CarsSlugPage({
   const car = await getCarBySlug(slug);
 
   if (car) {
-    return <CarDetailView slug={slug} searchParams={sp} />;
+    return <CarDetailView car={car} searchParams={sp} />;
   }
 
   const filterPage = await getFilterPageBySlug(slug);
@@ -279,7 +277,7 @@ export default async function CarsSlugPage({
           {filterPage.bottom_text ? (
             <div
               className="prose mt-3 max-w-none text-sm text-slate-700"
-              dangerouslySetInnerHTML={{ __html: filterPage.bottom_text }}
+                dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(filterPage.bottom_text) }}
             />
           ) : null}
         </section>

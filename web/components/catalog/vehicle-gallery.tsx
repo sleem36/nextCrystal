@@ -5,11 +5,9 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Heart, Scale } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import { useCompareSelection } from "@/hooks/use-compare-selection";
+import { IMAGE_BLUR_DATA_URL } from "@/lib/image-blur-placeholder";
 import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
 import { useWishlistStore } from "@/stores/wishlist-store";
-
-const BLUR =
-  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q==";
 
 type VehicleGalleryProps = {
   images: string[];
@@ -261,7 +259,7 @@ export function VehicleGallery({
                           className="cursor-zoom-in object-cover object-center"
                           sizes="(max-width: 1024px) 100vw, min(920px, 66vw)"
                           placeholder={imageUnoptimized ? "empty" : "blur"}
-                          blurDataURL={imageUnoptimized ? undefined : BLUR}
+                          blurDataURL={imageUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
                           priority={index === 0}
                           loading={index === 0 ? "eager" : "lazy"}
                           draggable={false}
@@ -296,7 +294,7 @@ export function VehicleGallery({
                 className="cursor-zoom-in object-cover object-center"
                 sizes="(max-width: 1024px) 100vw, min(920px, 66vw)"
                 placeholder={firstGalleryUnoptimized ? "empty" : "blur"}
-                blurDataURL={firstGalleryUnoptimized ? undefined : BLUR}
+                blurDataURL={firstGalleryUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
                 priority
                 loading="eager"
                 draggable={false}
@@ -322,13 +320,14 @@ export function VehicleGallery({
                 }`}
                 aria-label={`Показать фото ${index + 1}`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={src}
                   alt=""
-                  className="h-full w-full object-cover"
+                  fill
+                  unoptimized={shouldUnoptimizeRemoteImage(src)}
+                  className="object-cover"
+                  sizes="80px"
                   loading="lazy"
-                  decoding="async"
                   draggable={false}
                 />
               </button>
@@ -341,13 +340,14 @@ export function VehicleGallery({
                 aria-label={`Показать все фото (${gallery.length})`}
               >
                 {/* Фон как у соседних превью: последний видимый кадр + затемнение */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={previewGallery[previewGallery.length - 1]}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  fill
+                  unoptimized={shouldUnoptimizeRemoteImage(previewGallery[previewGallery.length - 1])}
+                  className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  sizes="80px"
                   loading="lazy"
-                  decoding="async"
                   draggable={false}
                 />
                 <span className="absolute inset-0 bg-black/45" aria-hidden />
@@ -393,14 +393,15 @@ export function VehicleGallery({
           <div className="h-full overflow-hidden" ref={lightboxEmblaRef}>
             <div className="flex h-full">
               {gallery.map((src, index) => (
-                <div key={`full-${index}`} className="min-w-0 flex-[0_0_100%]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                <div key={`full-${index}`} className="relative min-w-0 flex-[0_0_100%]">
+                  <Image
                     src={src}
                     alt={`${title} — галерея ${index + 1}`}
-                    className="h-full w-full object-contain"
+                    fill
+                    unoptimized={shouldUnoptimizeRemoteImage(src)}
+                    className="object-contain"
+                    sizes="100vw"
                     loading={Math.abs(index - lightboxIndex) <= 1 ? "eager" : "lazy"}
-                    decoding="async"
                     draggable={false}
                   />
                 </div>
@@ -420,13 +421,14 @@ export function VehicleGallery({
                     }`}
                     aria-label={`Открыть фото ${index + 1}`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={src}
                       alt=""
-                      className="h-full w-full object-cover"
+                      fill
+                      unoptimized={shouldUnoptimizeRemoteImage(src)}
+                      className="object-cover"
+                      sizes="96px"
                       loading={Math.abs(index - lightboxIndex) <= 1 ? "eager" : "lazy"}
-                      decoding="async"
                       draggable={false}
                     />
                     {index === lightboxIndex ? (

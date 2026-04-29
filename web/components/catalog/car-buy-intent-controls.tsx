@@ -129,7 +129,7 @@ export function CarBuyIntentControls({
       <Modal
         open={leadType != null}
         onClose={() => setLeadType(null)}
-        title={leadType === "credit" ? "Заявка на покупку в кредит" : "Заявка на покупку за наличные"}
+        title={leadType === "credit" ? "Заявка на покупку в кредит" : "Заявка по программе Trade-in"}
         description={`${car.brand} ${car.model}, ${car.year}`}
       >
         {context ? (

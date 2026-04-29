@@ -35,7 +35,7 @@ const fuelLabel: Record<"any" | "petrol" | "diesel" | "hybrid" | "electric", str
 
 const paymentMethodLabel: Record<"credit" | "cash", string> = {
   credit: "Кредит",
-  cash: "Наличные",
+  cash: "Trade-in",
 };
 
 const leadSchema = z.object({

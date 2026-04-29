@@ -398,24 +398,6 @@ export function SiteHeader() {
             />
           </Link>
 
-          <div
-            className={`hidden min-w-0 shrink-0 items-center gap-1.5 px-3 text-sm font-semibold text-slate-700 md:inline-flex ${headerControlChrome} ${headerControlRounded}`}
-          >
-            <MapPin className="h-4 w-4 shrink-0 text-[color:var(--color-brand-accent)]" aria-hidden />
-            <button
-              type="button"
-              onClick={() => setCityModalOpen(true)}
-              disabled={cities.length === 0}
-              className="inline-flex h-full min-h-0 max-w-[200px] items-center gap-1 truncate bg-transparent text-sm font-semibold outline-none transition hover:text-[color:var(--color-brand-accent)] disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Выбрать город"
-              aria-haspopup="dialog"
-              aria-expanded={cityModalOpen}
-            >
-              <span className="truncate">{cities.length === 0 ? "Загрузка…" : currentCityLabel}</span>
-              <ChevronDown className="h-4 w-4 shrink-0 opacity-70" aria-hidden />
-            </button>
-          </div>
-
           <nav className="relative hidden items-center gap-1 sm:gap-2 lg:gap-3 text-sm lg:flex">
             <div
               className="relative"
@@ -514,13 +496,7 @@ export function SiteHeader() {
                 className={`min-w-0 flex-1 px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] ${headerControlChrome} ${headerControlRounded}`}
                 aria-label="Поиск автомобилей"
               />
-              <Button
-                type="submit"
-                variant="secondary"
-                className={`!h-10 !min-h-10 !max-h-10 w-10 shrink-0 !p-0 ${headerControlRounded} shadow-[0_1px_2px_rgba(15,23,42,0.04)]`}
-              >
-                <Search className="h-4 w-4" aria-hidden />
-              </Button>
+              <span aria-hidden className="w-10 shrink-0" />
               {desktopSuggestions.length > 0 ? (
                 <div className="absolute left-0 right-12 top-[calc(100%+6px)] z-50 rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-1 shadow-lg">
                   {desktopSuggestions.map((item) => (
@@ -554,7 +530,7 @@ export function SiteHeader() {
             <Link
               href="/compare"
               aria-label={`Сравнение, выбрано ${compareCount}`}
-              className={headerIconButtonClass}
+              className={`!hidden md:!inline-flex ${headerIconButtonClass}`}
             >
               <Scale className="h-5 w-5" />
               {compareCount > 0 ? (
@@ -577,9 +553,27 @@ export function SiteHeader() {
               ) : null}
             </Link>
 
+            <div
+              className={`hidden min-w-0 shrink-0 items-center gap-1.5 px-3 text-sm font-semibold text-slate-700 md:inline-flex ${headerControlChrome} ${headerControlRounded}`}
+            >
+              <MapPin className="h-4 w-4 shrink-0 text-[color:var(--color-brand-accent)]" aria-hidden />
+              <button
+                type="button"
+                onClick={() => setCityModalOpen(true)}
+                disabled={cities.length === 0}
+                className="inline-flex h-full min-h-0 max-w-[180px] items-center gap-1 truncate bg-transparent text-sm font-semibold outline-none transition hover:text-[color:var(--color-brand-accent)] disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Выбрать город"
+                aria-haspopup="dialog"
+                aria-expanded={cityModalOpen}
+              >
+                <span className="truncate">{cities.length === 0 ? "Загрузка…" : currentCityLabel}</span>
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-70" aria-hidden />
+              </button>
+            </div>
+
             <a
               href={phoneHref}
-              className={`inline-flex items-center gap-2 px-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 ${headerControlChrome} ${headerControlRounded}`}
+              className={`hidden items-center gap-2 px-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 md:inline-flex ${headerControlChrome} ${headerControlRounded}`}
             >
               <Phone className="h-4 w-4" />
               <span className="hidden whitespace-nowrap lg:inline">{contactSite.phoneDisplay}</span>
@@ -587,7 +581,7 @@ export function SiteHeader() {
 
             <Button
               type="button"
-              className={`hidden min-h-0 px-4 text-sm md:inline-flex ${headerControlRounded} h-10 min-h-10 shadow-[0_1px_2px_rgba(15,23,42,0.04)]`}
+              className={`!hidden min-h-0 px-4 text-sm md:!inline-flex ${headerControlRounded} h-10 min-h-10 shadow-[0_1px_2px_rgba(15,23,42,0.04)]`}
               onClick={() => {
                 setCallbackError("");
                 setCallbackOpen(true);
@@ -699,6 +693,28 @@ export function SiteHeader() {
                   );
                 })}
               </nav>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Link
+                  href="/compare"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-card-muted)]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Scale className="h-4 w-4" aria-hidden />
+                  <span>Сравнение</span>
+                  {compareCount > 0 ? (
+                    <span className="inline-flex min-w-5 items-center justify-center rounded-full bg-[color:var(--color-brand-accent)] px-1 text-[10px] font-semibold text-white">
+                      {compareCountLabel}
+                    </span>
+                  ) : null}
+                </Link>
+                <a
+                  href={phoneHref}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-card-muted)]"
+                >
+                  <Phone className="h-4 w-4" aria-hidden />
+                  <span>Позвонить</span>
+                </a>
+              </div>
               <Button
                 type="button"
                 className="mt-3 w-full"

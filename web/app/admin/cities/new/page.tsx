@@ -21,7 +21,6 @@ export default async function AdminCitiesNewPage() {
       <h1 className="text-2xl font-semibold">Создать город</h1>
       <form
         action={createCityFromForm}
-        encType="multipart/form-data"
         className="space-y-4 rounded-xl border border-slate-200 bg-white p-6"
       >
         <Input name="slug" label="slug" required pattern="[a-z0-9-]+" />

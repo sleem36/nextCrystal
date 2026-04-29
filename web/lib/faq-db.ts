@@ -1,7 +1,8 @@
 import "server-only";
-import { getPgSql, usePostgres } from "@/lib/db-runtime";
-import { getDb } from "@/lib/filter-pages-db";
+import { BaseRepository, rawSql } from "@/lib/base-repository";
+import { getPgSql, isPostgresEnabled } from "@/lib/db-runtime";
 import type { Faq } from "@/lib/types";
+import { getDb } from "@/lib/sqlite-db";
 
 export type { Faq } from "@/lib/types";
 
@@ -17,8 +18,32 @@ function mapFaq(row: Record<string, unknown>): Faq {
   };
 }
 
+const faqRepository = new BaseRepository<Faq, number>({
+  table: "faq",
+  idColumn: "id",
+  selectColumns: ["id", "question", "answer", "order_index", "is_active", "created_at", "updated_at"],
+  defaultOrderBy: "order_index ASC, id ASC",
+  mapRow: mapFaq,
+  dbFactory: getDb,
+  beforeCreate: (data) => ({
+    question: data.question.trim(),
+    answer: data.answer.trim(),
+    order_index: data.order_index,
+    is_active: data.is_active ? 1 : 0,
+    created_at: rawSql("CURRENT_TIMESTAMP"),
+    updated_at: rawSql("CURRENT_TIMESTAMP"),
+  }),
+  beforeUpdate: (data) => ({
+    ...(data.question !== undefined ? { question: data.question.trim() } : {}),
+    ...(data.answer !== undefined ? { answer: data.answer.trim() } : {}),
+    ...(data.order_index !== undefined ? { order_index: data.order_index } : {}),
+    ...(data.is_active !== undefined ? { is_active: data.is_active } : {}),
+    updated_at: rawSql("CURRENT_TIMESTAMP"),
+  }),
+});
+
 export async function getAllFaqs(onlyActive = false): Promise<Faq[]> {
-  if (usePostgres()) {
+  if (isPostgresEnabled()) {
     const sql = await getPgSql();
     const rows = await sql<Faq[]>`
       SELECT
@@ -36,22 +61,24 @@ export async function getAllFaqs(onlyActive = false): Promise<Faq[]> {
     return rows;
   }
 
-  const db = getDb();
-  const rows = db
-    .prepare(
-      `
-        SELECT id, question, answer, order_index, is_active, created_at, updated_at
-        FROM faq
-        ${onlyActive ? "WHERE is_active = 1" : ""}
-        ORDER BY order_index ASC, id ASC
-      `,
-    )
-    .all() as Record<string, unknown>[];
-  return rows.map(mapFaq);
+  if (onlyActive) {
+    const rows = getDb()
+      .prepare(
+        `
+          SELECT id, question, answer, order_index, is_active, created_at, updated_at
+          FROM faq
+          WHERE is_active = 1
+          ORDER BY order_index ASC, id ASC
+        `,
+      )
+      .all() as Record<string, unknown>[];
+    return rows.map(mapFaq);
+  }
+  return faqRepository.getAll();
 }
 
 export async function getFaqById(id: number): Promise<Faq | null> {
-  if (usePostgres()) {
+  if (isPostgresEnabled()) {
     const sql = await getPgSql();
     const rows = await sql<Faq[]>`
       SELECT
@@ -69,22 +96,11 @@ export async function getFaqById(id: number): Promise<Faq | null> {
     return rows[0] ?? null;
   }
 
-  const db = getDb();
-  const row = db
-    .prepare(
-      `
-        SELECT id, question, answer, order_index, is_active, created_at, updated_at
-        FROM faq
-        WHERE id = ?
-        LIMIT 1
-      `,
-    )
-    .get(id) as Record<string, unknown> | undefined;
-  return row ? mapFaq(row) : null;
+  return faqRepository.getById(id);
 }
 
 export async function createFaq(data: Omit<Faq, "id" | "created_at" | "updated_at">): Promise<void> {
-  if (usePostgres()) {
+  if (isPostgresEnabled()) {
     const sql = await getPgSql();
     await sql`
       INSERT INTO faq (question, answer, order_index, is_active, created_at, updated_at)
@@ -93,22 +109,11 @@ export async function createFaq(data: Omit<Faq, "id" | "created_at" | "updated_a
     return;
   }
 
-  const db = getDb();
-  db.prepare(
-    `
-      INSERT INTO faq (question, answer, order_index, is_active, created_at, updated_at)
-      VALUES (@question, @answer, @order_index, @is_active, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    `,
-  ).run({
-    question: data.question.trim(),
-    answer: data.answer.trim(),
-    order_index: data.order_index,
-    is_active: data.is_active ? 1 : 0,
-  });
+  faqRepository.create(data);
 }
 
 export async function updateFaq(id: number, data: Partial<Faq>): Promise<void> {
-  if (usePostgres()) {
+  if (isPostgresEnabled()) {
     const current = await getFaqById(id);
     if (!current) return;
     const sql = await getPgSql();
@@ -125,44 +130,30 @@ export async function updateFaq(id: number, data: Partial<Faq>): Promise<void> {
     return;
   }
 
-  const db = getDb();
   const current = await getFaqById(id);
   if (!current) return;
-  db.prepare(
-    `
-      UPDATE faq
-      SET
-        question = @question,
-        answer = @answer,
-        order_index = @order_index,
-        is_active = @is_active,
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = @id
-    `,
-  ).run({
-    id,
-    question: (data.question ?? current.question).trim(),
-    answer: (data.answer ?? current.answer).trim(),
+  faqRepository.update(id, {
+    question: data.question ?? current.question,
+    answer: data.answer ?? current.answer,
     order_index: data.order_index ?? current.order_index,
     is_active: data.is_active ?? current.is_active,
   });
 }
 
 export async function deleteFaq(id: number): Promise<void> {
-  if (usePostgres()) {
+  if (isPostgresEnabled()) {
     const sql = await getPgSql();
     await sql`DELETE FROM faq WHERE id = ${id}`;
     return;
   }
 
-  const db = getDb();
-  db.prepare("DELETE FROM faq WHERE id = ?").run(id);
+  faqRepository.delete(id);
 }
 
 export async function reorderFaqs(ids: number[]): Promise<void> {
   if (ids.length === 0) return;
 
-  if (usePostgres()) {
+  if (isPostgresEnabled()) {
     const sql = await getPgSql();
     await sql.begin(async (trx) => {
       for (let index = 0; index < ids.length; index += 1) {

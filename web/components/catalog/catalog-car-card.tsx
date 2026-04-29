@@ -404,10 +404,10 @@ export function CatalogCarCard({
           </span>
         ) : null}
 
-        <div className="pointer-events-none absolute left-2 top-12 z-[4] flex flex-col gap-1.5">
+        <div className="pointer-events-none absolute left-2 top-2 z-[6] flex flex-col gap-1.5">
           {showDiscount ? (
             <span className="rounded-md bg-[color:var(--color-brand-accent-dark)] px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white shadow">
-              Скидка −{formatCurrency(discountRub)}
+              Выгода −{formatCurrency(discountRub)}
             </span>
           ) : null}
         </div>

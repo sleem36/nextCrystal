@@ -56,6 +56,9 @@ npm install
 npm run dev
 ```
 
+Требуемая версия Node.js: `22.x` (см. `engines` в `package.json` и `.nvmrc`).
+Если есть несколько версий Node, сначала переключитесь на 22-ю.
+
 Сайт: [http://localhost:3000](http://localhost:3000)  
 Style-guide: [http://localhost:3000/style-guide](http://localhost:3000/style-guide)
 
@@ -73,7 +76,12 @@ SMTP_USER=bot@example.com
 SMTP_PASS=secret
 SMTP_FROM=bot@example.com
 CARS_API_URL=
+SQLITE_DB_PATH=
+ADMIN_SECRET=change_me
+CRM_CALLBACK_WEBHOOK_URL=
 ```
+
+Полный список переменных (включая необязательные для контактов/карты/изображений) см. в `.env.example`.
 
 ### Роуты
 
@@ -119,7 +127,7 @@ CARS_API_URL=
 
 ### Payment method (`credit` / `cash`)
 
-- В первом шаге квиза выбирается `paymentMethod`: `credit` (Кредит) или `cash` (Наличные).
+- В первом шаге квиза выбирается `paymentMethod`: `credit` (Кредит) или `cash` (в UI — «Trade-in», обмен/оценка авто).
 - Для `credit` показывается поле `monthlyBudget`, и фильтрация учитывает и `monthlyBudget`, и `maxPriceRub`.
 - Для `cash` поле `monthlyBudget` скрыто, в query не передаётся, а фильтрация работает только от `maxPriceRub` (+ остальные параметры).
 - `paymentMethod` сохраняется в `localStorage` (квиз), прокидывается в `/cars` через query и передаётся в `lead context` / письмо менеджеру.

@@ -1,5 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { unstable_cache } from "next/cache";
+import { cache } from "react";
 import { z } from "zod";
 import type { Car } from "@/types/car";
 
@@ -63,10 +65,6 @@ function parseCarsPayload(data: unknown): Car[] {
   return parsed.map((car) => {
     const cityFromArray = car.cities?.find((item) => item.trim());
     const city = car.city?.trim() || cityFromArray || "Барнаул";
-    if (!car.city && car.cities && car.cities.length > 1) {
-      // TODO: when external source is normalized, remove fallback from cities[].
-      console.warn(`[cars-source] multiple cities for ${car.id}; using first valid city "${city}"`);
-    }
     return {
       ...car,
       city,
@@ -92,17 +90,26 @@ async function loadCarsFromExternalApi(url: string): Promise<Car[]> {
   return parseCarsPayload(payload);
 }
 
-/**
- * Список автомобилей. Сейчас: локальный JSON + Zod.
- * TODO: при появлении боевого API — заменить тело на fetch(CARS_API_URL) и тот же parseCarsPayload (или согласовать контракт).
- */
-export async function getCars(): Promise<Car[]> {
+const loadCarsFromFileCached = unstable_cache(
+  async () => loadCarsFromFile(),
+  ["cars-real-json"],
+  { revalidate: 3600, tags: ["cars"] },
+);
+
+async function loadCarsData(): Promise<Car[]> {
   const externalUrl = process.env.CARS_API_URL;
   if (externalUrl) {
     return loadCarsFromExternalApi(externalUrl);
   }
-  return loadCarsFromFile();
+  return loadCarsFromFileCached();
 }
+
+/**
+ * Список автомобилей. Сейчас: локальный JSON + Zod.
+ * `cache` — одна загрузка на запрос RSC; для файла — ещё `unstable_cache` (меньше чтения диска между запросами).
+ * TODO: при появлении боевого API — заменить тело на fetch(CARS_API_URL) и тот же parseCarsPayload (или согласовать контракт).
+ */
+export const getCars = cache(loadCarsData);
 
 /**
  * Одна машина по id. Сейчас: поиск в getCars().

@@ -3,10 +3,12 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { CarsCatalogClient } from "@/components/catalog/cars-catalog-client";
 import { getCityBySlug } from "@/lib/cities-db";
+import { CITY_COOKIE_KEY } from "@/lib/city-cookie";
 import { replaceCityPlaceholders } from "@/lib/city-utils";
 import { getCars } from "@/lib/cars-source";
 import { getAllFaqs } from "@/lib/faq-db";
 import { getAllFilterPages } from "@/lib/filter-pages-db";
+import { sanitizeRichHtml } from "@/lib/sanitize-html";
 
 export const revalidate = 3600;
 
@@ -18,13 +20,13 @@ export const metadata: Metadata = {
 
 export default async function CarsPage() {
   const cookieStore = await cookies();
-  const selectedCity = cookieStore.get("selected_city")?.value;
+  const selectedCity = cookieStore.get(CITY_COOKIE_KEY)?.value;
 
   const [cars, filterPages, faqs] = await Promise.all([getCars(), getAllFilterPages(), getAllFaqs(true)]);
   const city = selectedCity ? await getCityBySlug(selectedCity) : null;
   const faqItems = faqs.map((faq) => ({
     question: city ? replaceCityPlaceholders(faq.question, city) : faq.question,
-    answer: city ? replaceCityPlaceholders(faq.answer, city) : faq.answer,
+    answer: sanitizeRichHtml(city ? replaceCityPlaceholders(faq.answer, city) : faq.answer),
   }));
 
   return (
@@ -40,6 +42,7 @@ export default async function CarsPage() {
       <Suspense fallback={<div className="text-sm text-slate-600">Загрузка фильтров…</div>}>
         <CarsCatalogClient
           cars={cars}
+          initialFilters={city?.name_imya ? { city: city.name_imya } : undefined}
           popularFilterLinks={filterPages.map((page) => ({
             slug: page.slug,
             name: page.name,

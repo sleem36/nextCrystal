@@ -30,7 +30,6 @@ export default async function AdminCitiesEditPage({
       <h1 className="text-2xl font-semibold">Редактировать город #{city.id}</h1>
       <form
         action={updateCityFromForm}
-        encType="multipart/form-data"
         className="space-y-4 rounded-xl border border-slate-200 bg-white p-6"
       >
         <Input name="slug" label="slug" defaultValue={city.slug} required pattern="[a-z0-9-]+" />

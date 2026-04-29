@@ -1,4 +1,9 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { NextConfig } from "next";
+
+/** Каталог приложения (`web/`): ограничивает Turbopack и watcher, если IDE открыт на родителе репозитория. */
+const appRoot = path.dirname(fileURLToPath(import.meta.url));
 
 /** Разрешённые хосты для dev (HMR / _next), если открываете не через localhost — см. NEXT_DEV_ALLOWED_ORIGINS. */
 const allowedDevOrigins = process.env.NEXT_DEV_ALLOWED_ORIGINS?.split(",")
@@ -33,8 +38,11 @@ const extraRemotePatterns = extraImageHosts.map((hostname) => ({
 
 const nextConfig: NextConfig = {
   ...(allowedDevOrigins?.length ? { allowedDevOrigins } : {}),
+  turbopack: {
+    root: appRoot,
+  },
   experimental: {
-    optimizePackageImports: ["lucide-react", "framer-motion", "swiper"],
+    optimizePackageImports: ["lucide-react", "framer-motion"],
   },
   images: {
     remotePatterns: [...baseRemotePatterns, ...extraRemotePatterns],

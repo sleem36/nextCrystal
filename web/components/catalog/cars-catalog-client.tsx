@@ -38,7 +38,6 @@ const SORT_OPTIONS: Array<{ value: CarListingFilters["sort"]; label: string }> =
   { value: "year_asc", label: "Год: старше" },
   { value: "mileage_asc", label: "Пробег: меньше" },
   { value: "mileage_desc", label: "Пробег: больше" },
-  { value: "popular_desc", label: "Популярность" },
 ];
 
 type CatalogFaqItem = {
@@ -86,7 +85,6 @@ function CatalogLeadBlock({
         Не нашли подходящий вариант? Подберем вручную за 15 минут и свяжемся с вами.
       </div>
       <LeadForm context={context} variant="card" />
-      <p className="mt-2 text-xs text-slate-500">Ответ менеджера обычно в течение 5-10 минут.</p>
     </div>
   );
 }
