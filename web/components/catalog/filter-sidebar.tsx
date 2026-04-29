@@ -53,7 +53,9 @@ export function FilterSidebar({
   }, [filters]);
 
   const selectClass =
-    "select-arrow-offset h-12 w-full rounded-xl border border-slate-300 bg-white pl-4 pr-14 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2";
+    "select-arrow-offset h-12 w-full rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] pl-4 pr-14 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2";
+  const numberInputClass =
+    "h-12 rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2";
 
   const bounds = priceBounds;
   const displayMin =
@@ -98,7 +100,7 @@ export function FilterSidebar({
   };
 
   return (
-    <div className="rounded-[16px] border border-slate-200 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.06)] md:p-5">
+    <div className="rounded-[16px] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.06)] md:p-5">
       <h2 className="text-lg font-semibold text-[color:var(--color-brand-primary)]">Фильтры</h2>
 
       <div className="mt-4 space-y-5">
@@ -214,7 +216,7 @@ export function FilterSidebar({
           <span className="font-medium">Год</span>
           <div className="grid grid-cols-2 gap-2">
             <input
-              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              className={numberInputClass}
               type="number"
               min={2005}
               max={new Date().getFullYear()}
@@ -224,7 +226,7 @@ export function FilterSidebar({
               onChange={(e) => setDraft((d) => ({ ...d, yearFrom: Number(e.target.value) }))}
             />
             <input
-              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              className={numberInputClass}
               type="number"
               min={2005}
               max={new Date().getFullYear()}
@@ -239,7 +241,7 @@ export function FilterSidebar({
           <span className="font-medium">Пробег, км</span>
           <div className="grid grid-cols-2 gap-2">
             <input
-              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              className={numberInputClass}
               type="number"
               min={0}
               step={5000}
@@ -248,7 +250,7 @@ export function FilterSidebar({
               onChange={(e) => setDraft((d) => ({ ...d, mileageFromKm: Number(e.target.value) }))}
             />
             <input
-              className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+              className={numberInputClass}
               type="number"
               min={30000}
               step={5000}
@@ -361,7 +363,7 @@ export function FilterSidebar({
         </label>
       </div>
 
-      <div className="sticky bottom-0 z-20 -mx-4 mt-5 border-t border-slate-200 bg-white px-4 pt-3 pb-1 md:-mx-5 md:px-5">
+      <div className="sticky bottom-0 z-20 -mx-4 mt-5 border-t border-[color:var(--border-soft)] bg-[color:var(--surface-card)] px-4 pt-3 pb-1 md:-mx-5 md:px-5">
         <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
           <Button type="button" variant="secondary" onClick={handleReset} disabled={!canReset}>
             Сбросить фильтры

@@ -33,11 +33,11 @@ const CITY_COOKIE_KEY = "selected_city";
 
 /** Одинаковая высота (40px), радиус и обводка для полей и кнопок в шапке */
 const headerControlChrome =
-  "box-border h-10 min-h-10 border border-slate-300 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]";
+  "box-border h-10 min-h-10 border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] shadow-[0_1px_2px_rgba(15,23,42,0.04)]";
 
 const headerControlRounded = "rounded-xl";
 
-const headerIconButtonClass = `relative inline-flex size-10 shrink-0 items-center justify-center ${headerControlRounded} ${headerControlChrome} text-slate-700 transition hover:bg-slate-50`;
+const headerIconButtonClass = `relative inline-flex size-10 shrink-0 items-center justify-center ${headerControlRounded} ${headerControlChrome} text-slate-700 transition hover:bg-[color:var(--surface-card-muted)]`;
 
 function navRouteActive(pathname: string, href: string): boolean {
   if (href === "/cars") {
@@ -357,11 +357,11 @@ export function SiteHeader() {
   const catalogRouteActive = navRouteActive(pathname, "/cars");
 
   const suggestionClass =
-    "block rounded-lg px-2 py-1.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-[color:var(--color-brand-accent)]";
+    "block rounded-lg px-2 py-1.5 text-sm text-slate-700 transition hover:bg-[color:var(--surface-card-muted)] hover:text-[color:var(--color-brand-accent)]";
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/90 shadow-[0_2px_10px_rgba(15,23,42,0.04)] backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-[color:var(--border-soft)]/90 bg-[color:var(--surface-card)]/90 shadow-[0_2px_10px_rgba(15,23,42,0.04)] backdrop-blur-md">
         <div className="container-wide flex h-[60px] items-center gap-2 md:h-[74px] md:gap-3 lg:gap-4">
           <button
             type="button"
@@ -463,7 +463,7 @@ export function SiteHeader() {
                 </button>
               </div>
               <div
-                className={`absolute left-0 top-full z-50 w-72 origin-top rounded-xl border border-slate-200 bg-white p-3 shadow-xl transition duration-150 ${
+                className={`absolute left-0 top-full z-50 w-72 origin-top rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-3 shadow-xl transition duration-150 ${
                   catalogOpen
                     ? "pointer-events-auto translate-y-1 scale-100 opacity-100"
                     : "pointer-events-none -translate-y-0.5 scale-95 opacity-0"
@@ -522,7 +522,7 @@ export function SiteHeader() {
                 <Search className="h-4 w-4" aria-hidden />
               </Button>
               {desktopSuggestions.length > 0 ? (
-                <div className="absolute left-0 right-12 top-[calc(100%+6px)] z-50 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                <div className="absolute left-0 right-12 top-[calc(100%+6px)] z-50 rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-1 shadow-lg">
                   {desktopSuggestions.map((item) => (
                     <Link
                       key={`${item.kind}-${item.label}`}
@@ -607,12 +607,12 @@ export function SiteHeader() {
                   value={mobileSearchValue}
                   onChange={(event) => setMobileSearchValue(event.target.value)}
                   placeholder="Поиск по марке или модели"
-                  className="h-11 min-w-0 flex-1 rounded-xl border border-slate-300 bg-white px-4 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)]"
+                  className="h-11 min-w-0 flex-1 rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] px-4 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)]"
                   aria-label="Поиск автомобилей"
                 />
                 <Button type="submit">Найти</Button>
                 {mobileSuggestions.length > 0 ? (
-                  <div className="absolute left-0 right-[66px] top-[calc(100%+6px)] z-50 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                  <div className="absolute left-0 right-[66px] top-[calc(100%+6px)] z-50 rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-1 shadow-lg">
                     {mobileSuggestions.map((item) => (
                       <Link
                         key={`m-${item.kind}-${item.label}`}
@@ -635,7 +635,7 @@ export function SiteHeader() {
         ) : null}
 
         {mobileMenuOpen ? (
-          <div className="border-t border-slate-200 bg-white md:hidden">
+          <div className="border-t border-[color:var(--border-soft)] bg-[color:var(--surface-card)] md:hidden">
             <div className="container-wide py-3">
               <div className="mb-3 flex h-11 w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700">
                 <MapPin className="h-4 w-4 shrink-0 text-[color:var(--color-brand-accent)]" aria-hidden />

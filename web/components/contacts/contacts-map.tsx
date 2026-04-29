@@ -58,7 +58,7 @@ export function ContactsMap({ embedUrl, title, externalMapsUrl, fillHeight }: Co
   return (
     <div
       ref={containerRef}
-      className={`flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.06)] ${fillHeight ? "h-full min-h-0 max-lg:min-h-[min(100vw,360px)]" : ""}`}
+      className={`flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card-muted)] shadow-[0_1px_3px_rgba(0,0,0,0.06)] ${fillHeight ? "h-full min-h-0 max-lg:min-h-[min(100vw,360px)]" : ""}`}
     >
       <div className={mapFrameClass}>
         {activeSrc ? (
@@ -81,7 +81,7 @@ export function ContactsMap({ embedUrl, title, externalMapsUrl, fillHeight }: Co
                   <button
                     type="button"
                     onClick={() => setMapInteractive(true)}
-                    className="pointer-events-auto rounded-[var(--radius-button)] border border-slate-200 bg-white/95 px-4 py-2.5 text-center text-sm font-semibold text-slate-900 shadow-md backdrop-blur-sm transition-colors hover:bg-white"
+                    className="pointer-events-auto rounded-[var(--radius-button)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)]/95 px-4 py-2.5 text-center text-sm font-semibold text-[color:var(--text-strong)] shadow-md backdrop-blur-sm transition-colors hover:bg-[color:var(--surface-card)]"
                   >
                     Нажмите, чтобы управлять картой
                   </button>
@@ -92,7 +92,7 @@ export function ContactsMap({ embedUrl, title, externalMapsUrl, fillHeight }: Co
                 <button
                   type="button"
                   onClick={() => setMapInteractive(false)}
-                  className="pointer-events-auto rounded-[var(--radius-button)] border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-md backdrop-blur-sm transition-colors hover:bg-white md:text-sm"
+                  className="pointer-events-auto rounded-[var(--radius-button)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)]/95 px-3 py-1.5 text-xs font-semibold text-[color:var(--text-default)] shadow-md backdrop-blur-sm transition-colors hover:bg-[color:var(--surface-card)] md:text-sm"
                 >
                   Вернуть прокрутку страницы
                 </button>
@@ -100,7 +100,7 @@ export function ContactsMap({ embedUrl, title, externalMapsUrl, fillHeight }: Co
             )}
           </>
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center text-sm text-slate-600">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center text-sm text-[color:var(--text-muted)]">
             <p className="max-w-sm">Карта загружается при прокрутке к блоку — страница остаётся быстрой.</p>
             <a
               href={externalMapsUrl ?? contactSite.mapsYandexUrl}

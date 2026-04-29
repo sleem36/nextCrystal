@@ -1,16 +1,35 @@
-@import "tailwindcss";
+@import "../node_modules/tailwindcss/index.css";
 
 :root {
   /* Primary = типографика/структура; CTA = accent */
-  --background: #f3f4f6;
-  --foreground: #171717;
+  --background: #f6f3ec;
+  --background-soft-start: #faf8f3;
+  --background-soft-end: #f3efe6;
+  --foreground: #111827;
   --font-inter: "Inter", "Segoe UI", system-ui, sans-serif;
-  --color-brand-primary: #171717;
+  --color-brand-primary: #0f172a;
   --color-brand-accent: #0076ea;
   --color-brand-accent-hover: #1e8ffe;
   --color-brand-accent-dark: #005db8;
-  --color-brand-muted: #6b7280;
+  --color-brand-muted: #5b6472;
   --color-link: #0076ea;
+  --text-strong: #0f172a;
+  --text-default: #1f2937;
+  --text-muted: #5b6472;
+  --text-soft: #7a8290;
+  --surface-card: #fffdfa;
+  --surface-card-muted: #fcfaf5;
+  --border-soft: #ddd7ca;
+  --border-strong: #cfc6b4;
+  --footer-bg: #1f1b16;
+  --footer-border: #34312b;
+  --footer-text: #b3aca1;
+  --footer-text-muted: #918a7f;
+  --footer-text-soft: #7c7569;
+  --footer-link: #d5cec3;
+  --footer-link-hover: #f0e9dc;
+  --footer-button-border: #7f776a;
+  --footer-button-border-hover: #cbc1b1;
   /* Hero: не плоский чёрный — тёплый затемняющий градиент поверх фото/видео */
   --hero-overlay-top: rgba(15, 23, 42, 0.55);
   --hero-overlay-mid: rgba(30, 41, 59, 0.45);
@@ -31,7 +50,9 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image: linear-gradient(180deg, var(--background-soft-start) 0%, var(--background-soft-end) 100%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-inter);
 }

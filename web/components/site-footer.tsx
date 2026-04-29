@@ -72,21 +72,21 @@ export function SiteFooter() {
 
   return (
     <>
-      <footer className="mt-auto border-t border-slate-800/80 bg-[#1a1a1a] text-slate-400">
+      <footer className="mt-auto border-t border-[color:var(--footer-border)] bg-[color:var(--footer-bg)] text-[color:var(--footer-text)]">
         <div className="container-wide grid w-full gap-6 py-8 text-xs md:grid-cols-3 md:gap-6 md:text-sm lg:gap-8">
           <div className="space-y-3">
             <p className="font-semibold text-white">Aurora Auto</p>
-            <p className="max-w-sm text-slate-500">
+            <p className="max-w-sm text-[color:var(--footer-text-muted)]">
               Надёжные автомобили с пробегом. Условия на странице носят информационный характер.
             </p>
-            <div className="space-y-1 text-slate-300">
+            <div className="space-y-1 text-[color:var(--footer-link)]">
               <a className="block font-semibold text-white transition-colors hover:text-sky-300" href={phoneHref}>
                 {contactSite.phoneDisplay}
               </a>
               <a className="block transition-colors hover:text-white" href={`mailto:${contactSite.email}`}>
                 {contactSite.email}
               </a>
-              <p className="text-slate-500">{contactSite.hoursLine}</p>
+              <p className="text-[color:var(--footer-text-muted)]">{contactSite.hoursLine}</p>
             </div>
             <button
               type="button"
@@ -94,23 +94,23 @@ export function SiteFooter() {
                 setCallbackError("");
                 setCallbackOpen(true);
               }}
-              className="inline-flex h-9 items-center rounded-[var(--radius-button,0.5rem)] border border-slate-500 px-3 text-sm font-semibold text-slate-100 transition-colors hover:border-slate-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1a1a]"
+              className="inline-flex h-9 items-center rounded-[var(--radius-button,0.5rem)] border border-[color:var(--footer-button-border)] px-3 text-sm font-semibold text-[color:var(--footer-link-hover)] transition-colors hover:border-[color:var(--footer-button-border-hover)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--footer-bg)]"
             >
               Связаться с нами
             </button>
-            <p className="text-slate-600">© {new Date().getFullYear()} Aurora Auto</p>
+            <p className="text-[color:var(--footer-text-soft)]">© {new Date().getFullYear()} Aurora Auto</p>
           </div>
 
           <div className="space-y-2">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-slate-600">Документы</p>
+            <p className="text-[11px] font-medium uppercase tracking-wide text-[color:var(--footer-text-soft)]">Документы</p>
             <div className="grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
-              <Link className="text-xs text-slate-500 transition-colors hover:text-slate-300" href="/legal/privacy">
+              <Link className="text-xs text-[color:var(--footer-text-muted)] transition-colors hover:text-[color:var(--footer-link)]" href="/legal/privacy">
                 Политика конфиденциальности
               </Link>
-              <Link className="text-xs text-slate-500 transition-colors hover:text-slate-300" href="/legal/terms">
+              <Link className="text-xs text-[color:var(--footer-text-muted)] transition-colors hover:text-[color:var(--footer-link)]" href="/legal/terms">
                 Пользовательское соглашение
               </Link>
-              <Link className="text-xs text-slate-500 transition-colors hover:text-slate-300" href="/legal/consent">
+              <Link className="text-xs text-[color:var(--footer-text-muted)] transition-colors hover:text-[color:var(--footer-link)]" href="/legal/consent">
                 Согласие на обработку ПДН
               </Link>
             </div>
@@ -118,26 +118,26 @@ export function SiteFooter() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <p className="text-[11px] font-medium uppercase tracking-wide text-slate-600">Разделы</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-[color:var(--footer-text-soft)]">Разделы</p>
               <div className="flex flex-col gap-1.5">
-                <Link className="text-slate-500 transition-colors hover:text-slate-300" href="/about">
+                <Link className="text-[color:var(--footer-text-muted)] transition-colors hover:text-[color:var(--footer-link)]" href="/about">
                   О компании
                 </Link>
-                <Link className="text-slate-500 transition-colors hover:text-slate-300" href="/contacts">
+                <Link className="text-[color:var(--footer-text-muted)] transition-colors hover:text-[color:var(--footer-link)]" href="/contacts">
                   Контакты
                 </Link>
               </div>
             </div>
 
             <div className="space-y-2">
-              <p className="text-[11px] font-medium uppercase tracking-wide text-slate-600">Мы в соцсетях</p>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-[color:var(--footer-text-soft)]">Мы в соцсетях</p>
               <div className="flex flex-wrap gap-2">
                 <a
                   href={contactSite.vkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Открыть сообщество ВКонтакте"
-                  className="inline-flex h-9 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-600 bg-transparent px-3 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1a1a]"
+                  className="inline-flex h-9 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-[color:var(--footer-button-border)] bg-transparent px-3 text-sm font-semibold text-[color:var(--footer-link)] transition-colors hover:border-[color:var(--footer-button-border-hover)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--footer-bg)]"
                 >
                   ВКонтакте
                 </a>
@@ -146,7 +146,7 @@ export function SiteFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Открыть Telegram"
-                  className="inline-flex h-9 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-slate-600 bg-transparent px-3 text-sm font-semibold text-slate-200 transition-colors hover:border-slate-400 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#1a1a1a]"
+                  className="inline-flex h-9 items-center justify-center rounded-[var(--radius-button,0.5rem)] border border-[color:var(--footer-button-border)] bg-transparent px-3 text-sm font-semibold text-[color:var(--footer-link)] transition-colors hover:border-[color:var(--footer-button-border-hover)] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--footer-bg)]"
                 >
                   Telegram
                 </a>

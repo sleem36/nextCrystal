@@ -263,7 +263,7 @@ export function CatalogCarCard({
 
   return (
     <article
-      className={`group/card relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[16px] border border-slate-200/80 bg-white shadow-[0_4px_18px_rgba(0,0,0,0.07)] transition-[transform,box-shadow,border-color] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:z-[1] hover:border-slate-300 hover:shadow-[0_16px_38px_rgba(0,0,0,0.14)] motion-safe:hover:-translate-y-[2px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 ${
+      className={`group/card relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[16px] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] shadow-[0_4px_18px_rgba(0,0,0,0.07)] transition-[transform,box-shadow,border-color] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:z-[1] hover:border-[color:var(--border-strong)] hover:shadow-[0_16px_38px_rgba(0,0,0,0.14)] motion-safe:hover:-translate-y-[2px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 ${
         isBooked ? "opacity-55 grayscale-[0.35]" : ""
       } catalog-card-enter`}
       style={{ animationDelay: `${delayMs}ms` }}
@@ -423,7 +423,7 @@ export function CatalogCarCard({
           {trustFacts.map((fact) => (
             <span
               key={`${car.id}-${fact}`}
-              className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-700"
+              className="inline-flex items-center rounded-full border border-[color:var(--border-soft)] bg-[color:var(--surface-card-muted)] px-2.5 py-1 text-[11px] font-medium text-slate-700"
             >
               {fact}
             </span>

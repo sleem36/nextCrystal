@@ -26,12 +26,12 @@ export function ContactsMapSection({ branches = CONTACT_BRANCHES }: ContactsMapS
         <h2 id="contacts-map-heading" className="text-lg font-semibold text-[color:var(--color-brand-primary)]">
           Как добраться
         </h2>
-        <label className="flex flex-col gap-2 text-sm text-slate-700 sm:flex-row sm:items-center sm:gap-0">
-          <span className="shrink-0 font-semibold text-slate-800 sm:whitespace-nowrap">Город</span>
+        <label className="flex flex-col gap-2 text-sm text-[color:var(--text-default)] sm:flex-row sm:items-center sm:gap-0">
+          <span className="shrink-0 font-semibold text-[color:var(--text-strong)] sm:whitespace-nowrap">Город</span>
           <select
             value={branchId}
             onChange={(e) => setBranchId(e.target.value)}
-            className="h-11 w-full min-w-[200px] rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 sm:ml-3"
+            className="h-11 w-full min-w-[200px] rounded-lg border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] px-3 text-sm text-[color:var(--text-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2 sm:ml-3"
           >
             {branches.map((b) => (
               <option key={b.id} value={b.id}>

@@ -157,7 +157,7 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
 
   if (previewGallery.length === 0) {
     return (
-      <div className="flex aspect-[16/10] items-center justify-center rounded-[var(--radius-card)] border border-dashed border-slate-200 bg-slate-50 text-sm text-slate-500">
+      <div className="flex aspect-[16/10] items-center justify-center rounded-[var(--radius-card)] border border-dashed border-[color:var(--border-soft)] bg-[color:var(--surface-card-muted)] text-sm text-[color:var(--text-soft)]">
         Фото салона появятся после загрузки съёмки
       </div>
     );
@@ -167,7 +167,7 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
 
   return (
     <div
-      className="relative aspect-[16/10] w-full overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100"
+      className="relative aspect-[16/10] w-full overflow-hidden rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card-muted)]"
       onMouseMove={onHoverZoneMove}
       onMouseLeave={onHoverZoneLeave}
     >

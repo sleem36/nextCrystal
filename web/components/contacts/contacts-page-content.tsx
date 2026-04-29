@@ -42,7 +42,7 @@ function IconVk(props: { className?: string }) {
 }
 
 const iconBox =
-  "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700";
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card-muted)] text-[color:var(--text-default)]";
 
 export async function ContactsPageContent() {
   // Для страницы контактов используем полный справочник городов, иначе при
@@ -60,7 +60,9 @@ export async function ContactsPageContent() {
         <h1 className="text-3xl font-semibold tracking-tight text-[color:var(--color-brand-primary)] md:text-4xl">
           Контакты
         </h1>
-        <p className="text-base text-slate-600 md:text-lg">Свяжитесь с нами удобным способом — ответим в рабочее время.</p>
+        <p className="text-base text-[color:var(--text-muted)] md:text-lg">
+          Свяжитесь с нами удобным способом — ответим в рабочее время.
+        </p>
       </header>
 
       <div className="grid gap-8 lg:grid-cols-2 lg:items-stretch lg:gap-x-10">
@@ -73,28 +75,32 @@ export async function ContactsPageContent() {
               <li>
                 <a
                   href={tel}
-                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:border-slate-300 hover:bg-slate-50"
+                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-card-muted)]"
                 >
                   <span className={iconBox}>
                     <IconPhone className="h-5 w-5" />
                   </span>
                   <span>
-                    <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">Телефон</span>
-                    <span className="font-semibold text-slate-900">{contactSite.phoneDisplay}</span>
+                    <span className="block text-xs font-medium uppercase tracking-wide text-[color:var(--text-soft)]">
+                      Телефон
+                    </span>
+                    <span className="font-semibold text-[color:var(--text-strong)]">{contactSite.phoneDisplay}</span>
                   </span>
                 </a>
               </li>
               <li>
                 <a
                   href={mailto}
-                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:border-slate-300 hover:bg-slate-50"
+                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-card-muted)]"
                 >
                   <span className={iconBox}>
                     <IconMail className="h-5 w-5" />
                   </span>
                   <span className="min-w-0 break-all">
-                    <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">Email</span>
-                    <span className="font-semibold text-slate-900">{contactSite.email}</span>
+                    <span className="block text-xs font-medium uppercase tracking-wide text-[color:var(--text-soft)]">
+                      Email
+                    </span>
+                    <span className="font-semibold text-[color:var(--text-strong)]">{contactSite.email}</span>
                   </span>
                 </a>
               </li>
@@ -103,14 +109,16 @@ export async function ContactsPageContent() {
                   href={contactSite.telegramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:border-slate-300 hover:bg-slate-50"
+                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-card-muted)]"
                 >
                   <span className={`${iconBox} text-[#229ED9]`}>
                     <IconTelegram className="h-5 w-5" />
                   </span>
                   <span>
-                    <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">Telegram</span>
-                    <span className="font-semibold text-slate-900">Написать в Telegram</span>
+                    <span className="block text-xs font-medium uppercase tracking-wide text-[color:var(--text-soft)]">
+                      Telegram
+                    </span>
+                    <span className="font-semibold text-[color:var(--text-strong)]">Написать в Telegram</span>
                   </span>
                 </a>
               </li>
@@ -119,14 +127,16 @@ export async function ContactsPageContent() {
                   href={contactSite.vkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:border-slate-300 hover:bg-slate-50"
+                  className="flex items-center gap-3 rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-colors hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-card-muted)]"
                 >
                   <span className={`${iconBox} text-[#0077FF]`}>
                     <IconVk className="h-5 w-5" />
                   </span>
                   <span>
-                    <span className="block text-xs font-medium uppercase tracking-wide text-slate-500">ВКонтакте</span>
-                    <span className="font-semibold text-slate-900">Группа и сообщения</span>
+                    <span className="block text-xs font-medium uppercase tracking-wide text-[color:var(--text-soft)]">
+                      ВКонтакте
+                    </span>
+                    <span className="font-semibold text-[color:var(--text-strong)]">Группа и сообщения</span>
                   </span>
                 </a>
               </li>
@@ -134,25 +144,25 @@ export async function ContactsPageContent() {
           </section>
 
           <section
-            className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+            className="rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
             aria-labelledby="contacts-hours-heading"
           >
-            <h2 id="contacts-hours-heading" className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+            <h2 id="contacts-hours-heading" className="text-sm font-semibold uppercase tracking-wide text-[color:var(--text-soft)]">
               Режим работы
             </h2>
-            <p className="mt-2 text-lg font-medium text-slate-900">{contactSite.hoursLine}</p>
-            <p className="mt-1 text-sm text-slate-600">Отдел продаж и приём заявок — без выходных.</p>
+            <p className="mt-2 text-lg font-medium text-[color:var(--text-strong)]">{contactSite.hoursLine}</p>
+            <p className="mt-1 text-sm text-[color:var(--text-muted)]">Отдел продаж и приём заявок — без выходных.</p>
           </section>
 
           <section
-            className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
+            className="rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
             aria-labelledby="contacts-address-heading"
           >
-            <h2 id="contacts-address-heading" className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+            <h2 id="contacts-address-heading" className="text-sm font-semibold uppercase tracking-wide text-[color:var(--text-soft)]">
               Адрес
             </h2>
-            <p className="mt-2 text-base font-medium text-slate-900">{contactSite.addressFull}</p>
-            <p className="mt-2 text-sm text-slate-600">{contactSite.landmark}</p>
+            <p className="mt-2 text-base font-medium text-[color:var(--text-strong)]">{contactSite.addressFull}</p>
+            <p className="mt-2 text-sm text-[color:var(--text-muted)]">{contactSite.landmark}</p>
           </section>
         </div>
 
@@ -164,7 +174,7 @@ export async function ContactsPageContent() {
       <ContactsMapSection branches={branches} />
 
       <section
-        className="rounded-[var(--radius-card)] border border-slate-200 bg-slate-50 p-6 shadow-inner"
+        className="rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card-muted)] p-6 shadow-inner"
         aria-labelledby="contacts-req-heading"
       >
         <h2 id="contacts-req-heading" className="text-lg font-semibold text-[color:var(--color-brand-primary)]">
@@ -174,37 +184,37 @@ export async function ContactsPageContent() {
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             {contactSite.orgInn ? (
               <div>
-                <dt className="font-medium text-slate-700">ИНН</dt>
-                <dd className="mt-0.5 text-slate-900">{contactSite.orgInn}</dd>
+                <dt className="font-medium text-[color:var(--text-default)]">ИНН</dt>
+                <dd className="mt-0.5 text-[color:var(--text-strong)]">{contactSite.orgInn}</dd>
               </div>
             ) : null}
             {contactSite.orgKpp ? (
               <div>
-                <dt className="font-medium text-slate-700">КПП</dt>
-                <dd className="mt-0.5 text-slate-900">{contactSite.orgKpp}</dd>
+                <dt className="font-medium text-[color:var(--text-default)]">КПП</dt>
+                <dd className="mt-0.5 text-[color:var(--text-strong)]">{contactSite.orgKpp}</dd>
               </div>
             ) : null}
             {contactSite.orgOgrn ? (
               <div>
-                <dt className="font-medium text-slate-700">ОГРН</dt>
-                <dd className="mt-0.5 text-slate-900">{contactSite.orgOgrn}</dd>
+                <dt className="font-medium text-[color:var(--text-default)]">ОГРН</dt>
+                <dd className="mt-0.5 text-[color:var(--text-strong)]">{contactSite.orgOgrn}</dd>
               </div>
             ) : null}
             {contactSite.orgRs ? (
               <div className="sm:col-span-2">
-                <dt className="font-medium text-slate-700">Расчётный счёт</dt>
-                <dd className="mt-0.5 text-slate-900">{contactSite.orgRs}</dd>
+                <dt className="font-medium text-[color:var(--text-default)]">Расчётный счёт</dt>
+                <dd className="mt-0.5 text-[color:var(--text-strong)]">{contactSite.orgRs}</dd>
               </div>
             ) : null}
             {contactSite.orgBank ? (
               <div className="sm:col-span-2">
-                <dt className="font-medium text-slate-700">Банк</dt>
-                <dd className="mt-0.5 text-slate-900">{contactSite.orgBank}</dd>
+                <dt className="font-medium text-[color:var(--text-default)]">Банк</dt>
+                <dd className="mt-0.5 text-[color:var(--text-strong)]">{contactSite.orgBank}</dd>
               </div>
             ) : null}
           </dl>
         ) : (
-          <p className="mt-3 text-sm text-slate-600">
+          <p className="mt-3 text-sm text-[color:var(--text-muted)]">
             ИНН, КПП, ОГРН и банковские реквизиты для договора и счёта высылаются по запросу на{" "}
             <a className="font-medium text-[color:var(--color-link)] underline-offset-2 hover:underline" href={mailto}>
               {contactSite.email}
@@ -212,7 +222,7 @@ export async function ContactsPageContent() {
             .
           </p>
         )}
-        <p className="mt-4 text-xs text-slate-500">
+        <p className="mt-4 text-xs text-[color:var(--text-soft)]">
           <Link href="/legal/terms" className="text-[color:var(--color-link)] underline-offset-2 hover:underline">
             Условия использования
           </Link>

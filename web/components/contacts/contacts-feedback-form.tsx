@@ -77,14 +77,14 @@ export function ContactsFeedbackForm() {
 
   return (
     <section
-      className="flex h-full min-h-0 flex-col rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] sm:p-5"
+      className="flex h-full min-h-0 flex-col rounded-[var(--radius-card)] border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] sm:p-5"
       aria-labelledby="contacts-form-heading"
     >
       <div className="shrink-0">
         <h2 id="contacts-form-heading" className="text-lg font-semibold text-[color:var(--color-brand-primary)]">
           Обратная связь
         </h2>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-[color:var(--text-muted)]">
           Оставьте контакты — перезвоним в рабочее время. Сообщение по желанию.
         </p>
       </div>
@@ -117,7 +117,7 @@ export function ContactsFeedbackForm() {
           />
         </div>
 
-        <label className="flex min-h-0 flex-1 flex-col gap-2 text-sm text-slate-700">
+        <label className="flex min-h-0 flex-1 flex-col gap-2 text-sm text-[color:var(--text-default)]">
           <span className="shrink-0 font-medium">Сообщение</span>
           <textarea
             name="message"
@@ -125,7 +125,7 @@ export function ContactsFeedbackForm() {
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
             maxLength={4000}
-            className="min-h-[6rem] flex-1 resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 transition placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
+            className="min-h-[6rem] flex-1 resize-y rounded-xl border border-[color:var(--border-soft)] bg-[color:var(--surface-card)] px-4 py-3 text-sm text-[color:var(--text-strong)] transition placeholder:text-[color:var(--text-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand-accent)] focus-visible:ring-offset-2"
             placeholder="Например: удобное время для звонка или вопрос по проезду"
           />
         </label>
