@@ -277,7 +277,7 @@ export function CatalogCarCard({
       onKeyDown={onCardKeyDown}
     >
       <div
-        className="relative aspect-[16/10] w-full cursor-pointer overflow-hidden bg-slate-100"
+        className="relative aspect-[320/213] w-full cursor-pointer overflow-hidden bg-slate-100"
         onMouseMove={onHoverZoneMove}
         onMouseLeave={onHoverZoneLeave}
         onPointerDown={onCardPointerDown}
@@ -301,7 +301,7 @@ export function CatalogCarCard({
                       alt={`${car.brand} ${car.model} — фото ${index + 1}`}
                       fill
                       unoptimized={imageUnoptimized}
-                      className="cursor-pointer object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover/card:scale-[1.035]"
+                      className="cursor-pointer object-cover object-bottom transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
                       sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                       placeholder={imageUnoptimized ? "empty" : "blur"}
                       blurDataURL={imageUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
@@ -343,7 +343,7 @@ export function CatalogCarCard({
               alt={`${car.brand} ${car.model}, ${car.year}`}
               fill
               unoptimized={singleCoverUnoptimized}
-              className="cursor-pointer object-cover object-center transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover/card:scale-[1.035]"
+              className="cursor-pointer object-cover object-bottom transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
               sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
               placeholder={singleCoverUnoptimized ? "empty" : "blur"}
               blurDataURL={singleCoverUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}

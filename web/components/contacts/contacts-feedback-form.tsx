@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { formatRuPhoneInput, isValidRuPhone } from "@/lib/phone";
 
 export function ContactsFeedbackForm() {
   const [name, setName] = useState("");
@@ -16,7 +17,7 @@ export function ContactsFeedbackForm() {
 
   const phoneError = useMemo(() => {
     if (!phone) return "Укажите телефон";
-    if (phone.replace(/\D/g, "").length < 10) return "Введите корректный номер";
+    if (!isValidRuPhone(phone)) return "Введите корректный номер";
     return "";
   }, [phone]);
 
@@ -110,7 +111,7 @@ export function ContactsFeedbackForm() {
             type="tel"
             inputMode="tel"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(formatRuPhoneInput(e.target.value))}
             autoComplete="tel"
             placeholder="+7 (___) ___-__-__"
             error={status === "error" ? phoneError : ""}

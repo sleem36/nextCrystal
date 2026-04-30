@@ -12,6 +12,7 @@ import { useCompareSelection } from "@/hooks/use-compare-selection";
 import { METRIKA_GOALS, trackGoal } from "@/lib/analytics";
 import { setCityCookie } from "@/lib/city-cookie";
 import { contactSite, telHref } from "@/lib/contact-site";
+import { formatRuPhoneInput, isValidRuPhone } from "@/lib/phone";
 import { useWishlistStore } from "@/stores/wishlist-store";
 
 const ANY_LEAD_SUBMITTED_KEY = "aurora_any_lead_submitted_v1";
@@ -125,7 +126,7 @@ export function SiteHeader() {
   const phoneHref = telHref(contactSite.phoneDigits);
 
   const canSubmitCallback = useMemo(
-    () => callbackState.name.trim().length > 1 && callbackState.phone.trim().length >= 6,
+    () => callbackState.name.trim().length > 1 && isValidRuPhone(callbackState.phone),
     [callbackState],
   );
 
@@ -746,8 +747,13 @@ export function SiteHeader() {
           />
           <Input
             label="Телефон"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             value={callbackState.phone}
-            onChange={(event) => setCallbackState((prev) => ({ ...prev, phone: event.target.value }))}
+            onChange={(event) =>
+              setCallbackState((prev) => ({ ...prev, phone: formatRuPhoneInput(event.target.value) }))
+            }
             placeholder="+7 (___) ___-__-__"
             required
           />

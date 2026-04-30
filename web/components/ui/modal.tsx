@@ -15,6 +15,11 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
   const descId = useId();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) return;
@@ -34,7 +39,7 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (e.key !== "Tab" || !dialogEl) return;
@@ -70,7 +75,7 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
       document.body.style.paddingRight = prevPaddingRight;
       previousActiveElementRef.current?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { METRIKA_GOALS, trackGoal } from "@/lib/analytics";
 import { formatCurrency } from "@/lib/format";
+import { formatRuPhoneInput, isValidRuPhone } from "@/lib/phone";
 import { CarBodyType } from "@/types/car";
 import type {
   DriveFilter,
@@ -79,7 +80,7 @@ export function LeadForm({
       return "Телефон обязателен";
     }
 
-    if (phone.replace(/\D/g, "").length < 10) {
+    if (!isValidRuPhone(phone)) {
       return "Введите корректный номер";
     }
 
@@ -212,8 +213,11 @@ export function LeadForm({
         <Input
           label="Телефон"
           required
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
           value={phone}
-          onChange={(event) => setPhone(event.target.value)}
+          onChange={(event) => setPhone(formatRuPhoneInput(event.target.value))}
           placeholder="+7 (___) ___-__-__"
           error={status === "error" ? phoneError || errorMessage || "Не удалось отправить форму" : ""}
         />

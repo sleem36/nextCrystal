@@ -20,6 +20,7 @@ import {
 } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatRuPhoneInput, isValidRuPhone } from "@/lib/phone";
 
 const POPUP_DISMISSED_KEY = "callback_popup_dismissed_v1";
 const POPUP_SUBMITTED_KEY = "callback_popup_submitted_v1";
@@ -46,13 +47,6 @@ type Ripple = {
   x: number;
   y: number;
 };
-
-function isPhoneValid(value: string): boolean {
-  const trimmed = value.trim();
-  const normalized = trimmed.startsWith("+") ? `+${trimmed.slice(1).replace(/\D/g, "")}` : trimmed.replace(/\D/g, "");
-  if (!/^\+?\d{10,15}$/.test(normalized)) return false;
-  return true;
-}
 
 export function PopupCallback({
   delayMs = 30000,
@@ -92,7 +86,7 @@ export function PopupCallback({
 
   const phoneError = useMemo(() => {
     if (!phone.trim()) return "Укажите телефон.";
-    if (!isPhoneValid(phone)) return "Введите корректный номер (10-15 цифр).";
+    if (!isValidRuPhone(phone)) return "Введите корректный номер.";
     return "";
   }, [phone]);
 
@@ -498,8 +492,10 @@ export function PopupCallback({
                     <span className="mb-1 block text-xs font-medium text-slate-100">Телефон</span>
                     <input
                       type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
                       value={phone}
-                      onChange={(event) => setPhone(event.target.value)}
+                      onChange={(event) => setPhone(formatRuPhoneInput(event.target.value))}
                       placeholder="+7 (___) ___-__-__"
                       className="h-11 w-full rounded-xl border border-white/35 bg-white/20 px-3 text-sm text-white outline-none transition-all duration-200 placeholder:text-slate-200 focus:border-[color:var(--color-brand-accent)] focus:shadow-[0_0_0_2px_rgba(0,118,234,0.25)]"
                       required
