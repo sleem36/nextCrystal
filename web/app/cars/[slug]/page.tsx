@@ -18,7 +18,13 @@ import { VehicleGallery } from "@/components/catalog/vehicle-gallery";
 import { getCarsWithFilters, type FilterPageFilters } from "@/lib/filter-page-filters";
 import { getFilterPageBySlug, getAllFilterPages } from "@/lib/filter-pages-db";
 import { sanitizeRichHtml } from "@/lib/sanitize-html";
-import { driveLabel, fuelLabel, transmissionLabel } from "@/lib/car-labels";
+import {
+  bodyWithDoorsLabel,
+  driveLabel,
+  engineSpecLabel,
+  fuelLabel,
+  transmissionLabel,
+} from "@/lib/car-labels";
 import { formatCurrency, formatMileage } from "@/lib/format";
 import { getResolvedCarImages } from "@/lib/car-images-map";
 import { getCarBySlug, getCars } from "@/lib/cars-source";
@@ -28,10 +34,6 @@ import { utmFromSearchParams } from "@/lib/utm";
 export const revalidate = 3600;
 
 type CarExtraFields = {
-  powerHp?: number;
-  steeringWheel?: string;
-  vin?: string;
-  trim?: string;
   options?: string[];
   exteriorOptions?: string[];
   safetyOptions?: string[];
@@ -98,14 +100,18 @@ async function CarDetailView({
   const extra = car as typeof car & CarExtraFields;
   const options = [...(extra.options ?? []), ...(extra.safetyOptions ?? []), ...(extra.exteriorOptions ?? [])];
   const facts = [
-    car.year ? { label: "Год", value: String(car.year) } : null,
-    car.mileageKm > 0 ? { label: "Пробег", value: `${formatMileage(car.mileageKm)} км` } : null,
-    extra.powerHp ? { label: "Мощность", value: `${extra.powerHp} л.с.` } : null,
+    { label: "Год выпуска", value: String(car.year) },
+    car.mileageKm > 0
+      ? { label: "Пробег", value: `${formatMileage(car.mileageKm)} км` }
+      : null,
+    { label: "Кузов", value: bodyWithDoorsLabel(car.bodyType, car.doorCount) },
+    { label: "Двигатель", value: engineSpecLabel(car.fuel, car.engineVolumeL) },
+    car.powerHp ? { label: "Мощность", value: `${car.powerHp} л.с.` } : null,
     { label: "КПП", value: transmissionLabel(car.transmission) },
     { label: "Привод", value: driveLabel(car.drive) },
-    extra.steeringWheel ? { label: "Руль", value: extra.steeringWheel } : null,
-    maskVin(extra.vin) ? { label: "VIN", value: maskVin(extra.vin) as string } : null,
-    extra.trim ? { label: "Комплектация", value: extra.trim } : null,
+    car.steeringWheel ? { label: "Руль", value: car.steeringWheel } : null,
+    maskVin(car.vin) ? { label: "VIN", value: maskVin(car.vin) as string } : null,
+    car.trim ? { label: "Комплектация", value: car.trim } : null,
   ].filter((item): item is { label: string; value: string } => Boolean(item));
   const topTrustFacts = [
     {
@@ -217,38 +223,38 @@ async function CarDetailView({
                 </div>
               ))}
             </div>
-            <div className="mt-4 flex flex-wrap gap-2 lg:mt-auto">
+            <div className="mt-4 flex flex-wrap gap-2">
               <CarBuyIntentControls car={car} utm={utm} paymentMethod={paymentMethod} />
             </div>
-            <div className="mt-4 hidden gap-3 lg:grid lg:grid-cols-2">
-              <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+            <div className="mt-4 hidden gap-4 lg:grid lg:grid-cols-2">
+              <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4 md:p-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Ключевые факты
                 </p>
-                <dl className="mt-2 space-y-2 text-sm">
+                <dl className="mt-3 space-y-4 text-sm">
                   {quickSpecs.map((spec) => (
-                    <div key={spec.label}>
+                    <div key={spec.label} className="space-y-1">
                       <dt className="flex items-center gap-1.5 text-xs text-slate-500">
-                        <spec.Icon className="h-3.5 w-3.5" aria-hidden />
+                        <spec.Icon className="h-3.5 w-3.5 shrink-0 text-[color:var(--color-brand-accent)]" aria-hidden />
                         <span>{spec.label}</span>
                       </dt>
-                      <dd className="font-semibold text-slate-900">{spec.value}</dd>
+                      <dd className="pl-5 text-[15px] font-semibold leading-snug text-slate-900">{spec.value}</dd>
                     </div>
                   ))}
                 </dl>
               </div>
-              <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+              <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4 md:p-5">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Паспорт автомобиля
                 </p>
-                <dl className="mt-2 space-y-2 text-sm">
+                <dl className="mt-3 space-y-4 text-sm">
                   {passportSummary.map((item) => (
-                    <div key={item.label}>
+                    <div key={item.label} className="space-y-1">
                       <dt className="flex items-center gap-1.5 text-xs text-slate-500">
-                        <item.Icon className="h-3.5 w-3.5" aria-hidden />
+                        <item.Icon className="h-3.5 w-3.5 shrink-0 text-[color:var(--color-brand-accent)]" aria-hidden />
                         <span>{item.label}</span>
                       </dt>
-                      <dd className="font-semibold text-slate-900">{item.value}</dd>
+                      <dd className="pl-5 text-[15px] font-semibold leading-snug text-slate-900">{item.value}</dd>
                     </div>
                   ))}
                 </dl>

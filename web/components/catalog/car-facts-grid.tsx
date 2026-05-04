@@ -3,10 +3,12 @@ type FactItem = {
   value: string;
 };
 
+const iconClass = "h-4 w-4 shrink-0 text-[color:var(--color-brand-accent)]";
+
 function factIcon(label: string) {
-  const iconClass = "h-4 w-4 text-slate-500";
   switch (label) {
     case "Год":
+    case "Год выпуска":
       return (
         <svg viewBox="0 0 24 24" fill="none" className={iconClass} aria-hidden>
           <rect x="3.5" y="4.5" width="17" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
@@ -21,6 +23,32 @@ function factIcon(label: string) {
           <path d="M12 15.5l3.7-3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
           <circle cx="12" cy="15.5" r="1.4" fill="currentColor" />
           <path d="M7.2 13.6l.01-.01M16.8 13.6l.01-.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      );
+    case "Кузов":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={iconClass} aria-hidden>
+          <path
+            d="M4.5 16.2l1.2-5.1c.3-1.1 1.2-1.8 2.3-1.8h2.2l1.3-2.5c.3-.5.8-.8 1.4-.8h5.2c.8 0 1.5.5 1.8 1.2l1.6 4.2c.2.4.2.8.2 1.3v1.5"
+            stroke="currentColor"
+            strokeWidth="1.65"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="8.2" cy="16.5" r="1.8" stroke="currentColor" strokeWidth="1.65" />
+          <circle cx="18.2" cy="16.5" r="1.8" stroke="currentColor" strokeWidth="1.65" />
+        </svg>
+      );
+    case "Двигатель":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={iconClass} aria-hidden>
+          <path
+            d="M5 14.5V10h3.2l2-2.2h4.6l2.4 2.2H19v4.5h-2.2l-1.8 2.2H12l-2.4-2.2H5z"
+            stroke="currentColor"
+            strokeWidth="1.65"
+            strokeLinejoin="round"
+          />
+          <path d="M8.5 12.5h4M14 10.8v5.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
         </svg>
       );
     case "Город":
@@ -46,6 +74,14 @@ function factIcon(label: string) {
           <circle cx="17.8" cy="17.2" r="2.3" stroke="currentColor" strokeWidth="1.7" />
           <circle cx="12" cy="9.3" r="2.1" stroke="currentColor" strokeWidth="1.7" />
           <path d="M7.8 15.8l2.7-4.4M16.2 15.8l-2.7-4.4M8.5 17.2h6.9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        </svg>
+      );
+    case "Руль":
+      return (
+        <svg viewBox="0 0 24 24" fill="none" className={iconClass} aria-hidden>
+          <circle cx="12" cy="14" r="4.5" stroke="currentColor" strokeWidth="1.65" />
+          <path d="M12 9.5V6M8.5 11h-2M15.5 11h2" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" />
+          <path d="M12 18.5v2.2" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" />
         </svg>
       );
     case "Владельцы":
@@ -84,15 +120,18 @@ export function CarFactsGrid({ facts }: { facts: FactItem[] }) {
 
   return (
     <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Ключевые факты</h2>
-      <dl className="mt-3 grid gap-2 text-sm md:grid-cols-2">
+      <h2 className="text-lg font-semibold tracking-tight text-slate-900">Характеристики</h2>
+      <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
         {facts.map((item) => (
-          <div key={item.label} className="rounded-lg bg-slate-50 px-3 py-2">
+          <div
+            key={`${item.label}-${item.value}`}
+            className="rounded-lg border border-slate-100 bg-slate-50/80 px-3 py-2.5"
+          >
             <dt className="flex items-center gap-2 text-xs text-slate-500">
               {factIcon(item.label)}
               <span>{item.label}</span>
             </dt>
-            <dd className="pl-6 font-semibold text-slate-900">{item.value}</dd>
+            <dd className="mt-1 pl-6 text-[15px] font-semibold leading-snug text-slate-900">{item.value}</dd>
           </div>
         ))}
       </dl>

@@ -619,6 +619,10 @@
     "transmission": "automatic",
     "drive": "awd",
     "fuel": "petrol",
+    "engineVolumeL": 4.8,
+    "doorCount": 5,
+    "powerHp": 245,
+    "steeringWheel": "Левый",
     "color": "Серебристый",
     "cities": [
       "Оренбург",
@@ -657,6 +661,10 @@
     "transmission": "manual",
     "drive": "fwd",
     "fuel": "petrol",
+    "engineVolumeL": 1.6,
+    "doorCount": 5,
+    "powerHp": 122,
+    "steeringWheel": "Левый",
     "color": "Серебристый",
     "cities": [
       "Оренбург",

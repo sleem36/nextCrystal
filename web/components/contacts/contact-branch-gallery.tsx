@@ -60,8 +60,10 @@ export function ContactBranchGallery({ images, cityLabel }: ContactBranchGallery
   }, [emblaApi, previewGallery]);
 
   useEffect(() => {
-    setFailedPreviewIndexes(new Set());
-    setFailedGalleryIndexes(new Set());
+    queueMicrotask(() => {
+      setFailedPreviewIndexes(new Set());
+      setFailedGalleryIndexes(new Set());
+    });
   }, [gallery, previewGallery]);
 
   useEffect(() => {

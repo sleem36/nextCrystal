@@ -8,12 +8,13 @@ function getPostgresUrl() {
   return process.env.DATABASE_URL?.trim() || process.env.POSTGRES_URL?.trim() || "";
 }
 
-export function usePostgres() {
+/** Наличие строки подключения Postgres (не React Hook — имя без префикса `use`). */
+export function isPostgresConfigured() {
   return Boolean(getPostgresUrl());
 }
 
 /** Backward-compatible alias for repositories using legacy naming. */
-export const isPostgresEnabled = usePostgres;
+export const isPostgresEnabled = isPostgresConfigured;
 
 function getSql() {
   if (!sqlClient) {
@@ -27,7 +28,7 @@ function getSql() {
 }
 
 export async function ensurePostgresSchema() {
-  if (!usePostgres()) return;
+  if (!isPostgresConfigured()) return;
   if (!ensureSchemaPromise) {
     ensureSchemaPromise = (async () => {
       const sql = getSql();

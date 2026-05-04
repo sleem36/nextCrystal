@@ -56,6 +56,12 @@ export const carSchema = z.object({
   oldPriceRub: z.number().positive().optional(),
   viewCount: z.number().int().nonnegative().optional(),
   bookingCount: z.number().int().nonnegative().optional(),
+  engineVolumeL: z.number().positive().optional(),
+  doorCount: z.number().int().min(2).max(5).optional(),
+  powerHp: z.number().int().positive().optional(),
+  steeringWheel: z.string().min(1).optional(),
+  vin: z.string().min(1).optional(),
+  trim: z.string().min(1).optional(),
 });
 
 export const carsArraySchema = z.array(carSchema);
