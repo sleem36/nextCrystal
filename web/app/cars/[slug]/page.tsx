@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AlertTriangle, Calendar, FileText, Gauge, GitFork, ShieldCheck } from "lucide-react";
 import { CarCreditPanel } from "@/components/catalog/car-credit-panel";
 import { CarBuyIntentControls } from "@/components/catalog/car-buy-intent-controls";
 import { CarDetailLeadClient } from "@/components/catalog/car-detail-lead-client";
@@ -123,6 +124,25 @@ async function CarDetailView({
       tone: "border-emerald-200 bg-emerald-50/70 text-emerald-900",
     },
   ];
+  const quickSpecs = [
+    { label: "Пробег", value: `${formatMileage(car.mileageKm)} км`, Icon: Gauge },
+    { label: "Год", value: String(car.year), Icon: Calendar },
+    { label: "КПП", value: transmissionLabel(car.transmission), Icon: FileText },
+    { label: "Привод", value: driveLabel(car.drive), Icon: GitFork },
+  ];
+  const passportSummary = [
+    { label: "Владельцев по ПТС", value: String(car.passport.owners), Icon: FileText },
+    {
+      label: "ПТС",
+      value: car.passport.ptsStatus === "original" ? "Оригинал ПТС" : "Дубликат ПТС",
+      Icon: ShieldCheck,
+    },
+    {
+      label: "ДТП / повреждения",
+      value: car.passport.accident.has ? "Есть в истории" : "Не зафиксированы",
+      Icon: AlertTriangle,
+    },
+  ];
   const carUrl = `${siteUrl}/cars/${car.id}`;
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -149,7 +169,7 @@ async function CarDetailView({
   };
 
   return (
-    <article className="container-wide mx-auto max-w-[1280px] space-y-8 pb-24 pt-4 md:pb-16 md:pt-6">
+    <article className="container-wide mx-auto max-w-[1360px] space-y-8 pb-24 pt-4 md:pb-16 md:pt-6">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <RecentlyViewedTracker carId={car.id} />
@@ -169,17 +189,16 @@ async function CarDetailView({
           ← К каталогу
         </Link>
       </nav>
-      <section className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(340px,1fr)] lg:items-stretch">
+      <section className="grid items-start gap-6 lg:items-stretch lg:gap-8 lg:grid-cols-[minmax(0,752px)_minmax(520px,1fr)]">
         <VehicleGallery
           images={galleryImages}
           brand={car.brand}
           model={car.model}
           year={car.year}
-          className="lg:h-full"
           wishlistCarId={car.id}
         />
-        <div className="space-y-4 lg:h-full">
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5">
+        <div className="lg:h-full">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] md:p-5 lg:flex lg:h-full lg:flex-col">
             <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--color-brand-primary)] md:text-3xl">
               {car.brand} {car.model}, {car.year}
             </h1>
@@ -198,13 +217,49 @@ async function CarDetailView({
                 </div>
               ))}
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2 lg:mt-auto">
               <CarBuyIntentControls car={car} utm={utm} paymentMethod={paymentMethod} />
             </div>
+            <div className="mt-4 hidden gap-3 lg:grid lg:grid-cols-2">
+              <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Ключевые факты
+                </p>
+                <dl className="mt-2 space-y-2 text-sm">
+                  {quickSpecs.map((spec) => (
+                    <div key={spec.label}>
+                      <dt className="flex items-center gap-1.5 text-xs text-slate-500">
+                        <spec.Icon className="h-3.5 w-3.5" aria-hidden />
+                        <span>{spec.label}</span>
+                      </dt>
+                      <dd className="font-semibold text-slate-900">{spec.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Паспорт автомобиля
+                </p>
+                <dl className="mt-2 space-y-2 text-sm">
+                  {passportSummary.map((item) => (
+                    <div key={item.label}>
+                      <dt className="flex items-center gap-1.5 text-xs text-slate-500">
+                        <item.Icon className="h-3.5 w-3.5" aria-hidden />
+                        <span>{item.label}</span>
+                      </dt>
+                      <dd className="font-semibold text-slate-900">{item.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
           </div>
-          <CarFactsGrid facts={facts} />
-          <CarPassportBlock passport={car.passport} />
         </div>
+      </section>
+      <section className="grid items-start gap-4 lg:hidden lg:grid-cols-2">
+        <CarFactsGrid facts={facts} />
+        <CarPassportBlock passport={car.passport} />
       </section>
       {paymentMethod === "credit" ? (
         <CarCreditPanel
@@ -216,11 +271,11 @@ async function CarDetailView({
         />
       ) : null}
       <CarOptionsChips options={options} />
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
-        <div className="space-y-6">
+      <section className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
+        <div className="flex min-h-0 flex-col">
           <CarVideoSection url={car.videoReviewUrl} leadHref="#lead-form" carId={car.id} city={car.city} paymentMethod={paymentMethod} />
         </div>
-        <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <div className="flex min-h-0 flex-col">
           <TradeInCtaPanel leadHref="#lead-form" />
         </div>
       </section>

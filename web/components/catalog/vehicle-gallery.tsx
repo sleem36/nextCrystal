@@ -192,7 +192,7 @@ export function VehicleGallery({
     <>
       <div className={`space-y-2 lg:space-y-2 ${className}`}>
         <div
-          className="relative aspect-[16/9] w-full overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100 lg:aspect-[4/3]"
+          className="relative mx-auto aspect-[752/500] w-full max-w-[752px] overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-slate-100"
           onMouseMove={onHoverZoneMove}
           onMouseLeave={onHoverZoneLeave}
         >
@@ -257,7 +257,7 @@ export function VehicleGallery({
                           fill
                           unoptimized={imageUnoptimized}
                           className="cursor-zoom-in object-cover object-center"
-                          sizes="(max-width: 1024px) 100vw, min(920px, 66vw)"
+                          sizes="(max-width: 768px) 100vw, 752px"
                           placeholder={imageUnoptimized ? "empty" : "blur"}
                           blurDataURL={imageUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
                           priority={index === 0}
@@ -292,7 +292,7 @@ export function VehicleGallery({
                 fill
                 unoptimized={firstGalleryUnoptimized}
                 className="cursor-zoom-in object-cover object-center"
-                sizes="(max-width: 1024px) 100vw, min(920px, 66vw)"
+                sizes="(max-width: 768px) 100vw, 752px"
                 placeholder={firstGalleryUnoptimized ? "empty" : "blur"}
                 blurDataURL={firstGalleryUnoptimized ? undefined : IMAGE_BLUR_DATA_URL}
                 priority

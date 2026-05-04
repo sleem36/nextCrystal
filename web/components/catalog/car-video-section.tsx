@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { METRIKA_GOALS, trackGoal } from "@/lib/analytics";
 import { toYouTubeEmbedUrl } from "@/lib/video-embed";
@@ -19,12 +19,12 @@ export function CarVideoSection({
   const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID || 0) || undefined;
   if (!url) {
     return (
-      <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-6 text-center shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
+      <section className="flex h-full min-h-0 flex-col rounded-[var(--radius-card)] border border-slate-200 bg-white p-6 text-center shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
         <h2 className="text-lg font-semibold text-[color:var(--color-brand-primary)]">Видеообзор</h2>
         <p className="mt-2 text-sm text-slate-600">
           Видео для этого автомобиля пока не загружено. По заявке отправим обзор в удобный мессенджер.
         </p>
-        <div className="mt-4">
+        <div className="mt-auto pt-6">
           <a
             href={leadHref}
             onClick={() =>
@@ -47,7 +47,7 @@ export function CarVideoSection({
   const embed = toYouTubeEmbedUrl(url);
   if (!embed) {
     return (
-      <section className="rounded-[var(--radius-card)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
+      <section className="flex h-full min-h-0 flex-col rounded-[var(--radius-card)] border border-slate-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
         <h2 className="text-lg font-semibold text-[color:var(--color-brand-primary)]">Видеообзор</h2>
         <p className="mt-2 text-sm text-slate-600">
           <a
@@ -64,7 +64,7 @@ export function CarVideoSection({
   }
 
   return (
-    <section className="space-y-3">
+    <section className="flex h-full min-h-0 flex-col space-y-3">
       <h2 className="text-lg font-semibold text-[color:var(--color-brand-primary)] md:text-xl">Видеообзор</h2>
       <div className="overflow-hidden rounded-[var(--radius-card)] border border-slate-200 bg-black shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
       <div className="aspect-video w-full">
