@@ -19,7 +19,6 @@ import { getListingDerived } from "@/lib/car-listing-enrichment";
 import { getResolvedCarImages } from "@/lib/car-images-map";
 import { shouldUnoptimizeRemoteImage } from "@/lib/remote-image";
 import { useWishlistStore } from "@/stores/wishlist-store";
-import { CatalogMiniCredit } from "@/components/catalog/catalog-mini-credit";
 import { Button } from "@/components/ui/button";
 import { IMAGE_BLUR_DATA_URL } from "@/lib/image-blur-placeholder";
 import type { Car } from "@/types/car";
@@ -434,10 +433,12 @@ export function CatalogCarCard({
         </div>
 
         <div className="space-y-1 border-b border-slate-100 pb-2">
-          <p className="text-lg font-bold text-slate-900">{formatCurrency(car.priceRub)}</p>
-          {showDiscount ? (
-            <p className="text-xs text-slate-500 line-through">{formatCurrency(derived.oldPriceRub)}</p>
-          ) : null}
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <p className="text-lg font-bold text-slate-900">{formatCurrency(car.priceRub)}</p>
+            {showDiscount ? (
+              <p className="text-xs text-slate-500 line-through">{formatCurrency(derived.oldPriceRub)}</p>
+            ) : null}
+          </div>
           {hasApiMetrics ? (
             <p className="text-xs text-slate-600">
               {car.viewCount != null ? (
@@ -456,11 +457,9 @@ export function CatalogCarCard({
           ) : null}
         </div>
 
-        <CatalogMiniCredit priceRub={car.priceRub} />
-
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
           <span>
-            {formatMileage(car.mileageKm)} км · {car.year}
+            {formatMileage(car.mileageKm)} км
           </span>
         </div>
 

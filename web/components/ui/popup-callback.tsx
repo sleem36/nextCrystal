@@ -59,7 +59,6 @@ export function PopupCallback({
   enableAnimations = true,
 }: PopupCallbackProps) {
   const [open, setOpen] = useState(false);
-  const [teaserOpen, setTeaserOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [consentData, setConsentData] = useState(false);
@@ -112,7 +111,9 @@ export function PopupCallback({
   const showPopup = useCallback(() => {
     if (!canShowPopup()) return;
     shownRef.current = true;
-    setTeaserOpen(true);
+    setStatus("idle");
+    setErrorMessage("");
+    setOpen(true);
   }, [canShowPopup]);
 
   const openPopupFromTestButton = useCallback(() => {
@@ -123,27 +124,13 @@ export function PopupCallback({
     shownRef.current = true;
     setStatus("idle");
     setErrorMessage("");
-    setOpen(false);
-    setTeaserOpen(true);
+    setOpen(true);
   }, []);
 
   const closePopup = useCallback(() => {
     setOpen(false);
     persistHidden(false);
   }, [persistHidden]);
-
-  const closeTeaser = useCallback(() => {
-    setTeaserOpen(false);
-    persistHidden(false);
-  }, [persistHidden]);
-
-  const openFromTeaser = useCallback(() => {
-    shownRef.current = true;
-    setStatus("idle");
-    setErrorMessage("");
-    setTeaserOpen(false);
-    setOpen(true);
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -569,40 +556,6 @@ export function PopupCallback({
         </motion.div>
         ) : null}
       </AnimatePresence>
-      <AnimatePresence>
-        {teaserOpen && !open ? (
-          <motion.div
-            initial={{ opacity: 0, y: 16, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.98 }}
-            transition={{ duration: 0.2 }}
-            className="fixed bottom-4 right-4 z-40 max-w-[320px] rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_10px_30px_rgba(2,6,23,0.22)]"
-          >
-            <button
-              type="button"
-              onClick={closeTeaser}
-              className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
-              aria-label="Скрыть виджет"
-            >
-              <X className="h-4 w-4" aria-hidden />
-            </button>
-            <p className="pr-8 text-sm font-semibold text-[color:var(--color-brand-primary)]">
-              Нужна помощь с подбором?
-            </p>
-            <p className="mt-1 text-xs text-slate-600">
-              Подскажем по бюджету, кредиту и подходящим вариантам за пару минут.
-            </p>
-            <button
-              type="button"
-              onClick={openFromTeaser}
-              className="mt-3 inline-flex h-9 items-center rounded-lg bg-[color:var(--color-brand-accent)] px-3 text-sm font-semibold text-white transition hover:bg-[color:var(--color-brand-accent-hover)]"
-            >
-              Открыть форму
-            </button>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-
       <button
         type="button"
         onClick={openPopupFromTestButton}

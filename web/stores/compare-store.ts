@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { persist, type PersistStorage, type StateStorage } from "zustand/middleware";
+import { persist, type PersistStorage } from "zustand/middleware";
 import {
   COMPARE_STORAGE_KEY,
   MAX_COMPARE_CARS,
@@ -16,21 +16,10 @@ type CompareState = {
   setIds: (ids: string[]) => void;
 };
 
-const compareStateStorage: StateStorage = {
-  getItem: () => {
-    const ids = readCompareIdsFromStorage();
-    return JSON.stringify({ state: { ids }, version: 0 });
-  },
+const compareStateStorage: PersistStorage<Pick<CompareState, "ids">> = {
+  getItem: () => ({ state: { ids: readCompareIdsFromStorage() }, version: 0 }),
   setItem: (_name, value) => {
-    try {
-      const parsed =
-        typeof value === "string"
-          ? (JSON.parse(value) as { state?: { ids?: string[] } })
-          : (value as { state?: { ids?: string[] } });
-      writeCompareIdsToStorage(parsed.state?.ids ?? []);
-    } catch {
-      // ignore
-    }
+    writeCompareIdsToStorage(value.state.ids ?? []);
   },
   removeItem: () => {
     if (typeof window !== "undefined") {
@@ -48,9 +37,8 @@ export const useCompareStore = create<CompareState>()(
     }),
     {
       name: COMPARE_STORAGE_KEY,
-      storage: compareStateStorage as unknown as PersistStorage<{ ids: string[] }>,
+      storage: compareStateStorage,
       partialize: (s) => ({ ids: s.ids }),
-      skipHydration: true,
     },
   ),
 );
